@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>KaTeX Test</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.js"></script>
+</head>
+<body>
+    <h1>KaTeX 测试</h1>
+    
+    <h2>测试1: 简单上标</h2>
+    <div id="test1"></div>
+    
+    <h2>测试2: 分数</h2>
+    <div id="test2"></div>
+    
+    <h2>测试3: 根号</h2>
+    <div id="test3"></div>
+    
+    <script>
+        try {
+            katex.render("x^2", document.getElementById("test1"));
+            console.log("Test 1 success");
+        } catch (e) {
+            console.error("Test 1 error:", e);
+            document.getElementById("test1").innerHTML = "Error: " + e.message;
+        }
+        
+        try {
+            katex.render("\\frac{1}{2}", document.getElementById("test2"));
+            console.log("Test 2 success");
+        } catch (e) {
+            console.error("Test 2 error:", e);
+            document.getElementById("test2").innerHTML = "Error: " + e.message;
+        }
+        
+        try {
+            katex.render("\\sqrt{x}", document.getElementById("test3"));
+            console.log("Test 3 success");
+        } catch (e) {
+            console.error("Test 3 error:", e);
+            document.getElementById("test3").innerHTML = "Error: " + e.message;
+        }
+    </script>
+</body>
+</html>
