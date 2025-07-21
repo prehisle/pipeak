@@ -185,12 +185,12 @@ const MarkdownRenderer = ({
 
       switch (match.type) {
         case 'code':
-          element.className = 'bg-gray-100 text-gray-800 px-2 py-1 rounded text-sm font-mono border border-gray-300'
+          element.className = 'bg-gray-100 text-gray-800 px-3 py-2 rounded text-lg font-mono border border-gray-300'  // 改为text-lg，增加内边距
           element.textContent = match.content
           break
 
         case 'bold':
-          element.innerHTML = `<strong class="font-semibold text-gray-900">${match.content}</strong>`
+          element.innerHTML = `<strong class="font-bold text-gray-900 text-lg">${match.content}</strong>`  // 增大粗体字体
           break
 
         case 'inline-math':
@@ -264,9 +264,9 @@ const MarkdownRenderer = ({
 
   // 主题样式
   const themeClasses = {
-    default: 'leading-relaxed',
-    compact: 'leading-normal text-sm',
-    large: 'leading-loose text-lg'
+    default: 'leading-relaxed text-lg',  // 增大默认字体
+    compact: 'leading-relaxed text-base',
+    large: 'leading-loose text-xl'  // 进一步增大large主题
   }
 
   return (
@@ -274,7 +274,7 @@ const MarkdownRenderer = ({
       ref={containerRef}
       className={`markdown-renderer ${themeClasses[theme]} ${className}`}
       style={{
-        fontSize: theme === 'compact' ? '14px' : theme === 'large' ? '16px' : '15px'
+        fontSize: theme === 'compact' ? '16px' : theme === 'large' ? '20px' : '18px'  // 全面增大字体
       }}
     />
   )

@@ -11,6 +11,7 @@ import PracticePage from './pages/PracticePage'
 import ReviewPage from './pages/ReviewPage'
 import TestPage from './pages/TestPage'
 import RenderTestPage from './pages/RenderTestPage'
+import StyleTestPage from './pages/StyleTestPage'
 
 // 布局组件
 import Layout from './components/Layout'
@@ -63,6 +64,7 @@ function App() {
           <Route path="practice/:practiceId" element={<PracticePage />} />
           <Route path="practice-demo" element={<PracticeDemo />} />
           <Route path="review" element={<ReviewPage />} />
+          <Route path="style-test" element={<StyleTestPage />} />
         </Route>
         
         {/* 404 路由 */}

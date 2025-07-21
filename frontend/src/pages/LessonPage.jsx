@@ -191,7 +191,7 @@ const LessonPage = () => {
         <h1 className="text-3xl font-bold text-gray-900 mb-2">
           {currentLesson.title}
         </h1>
-        <p className="text-gray-600 mb-4">
+        <p className="text-lg text-gray-600 mb-4">
           {currentLesson.description}
         </p>
 
@@ -204,7 +204,7 @@ const LessonPage = () => {
             }}
           ></div>
         </div>
-        <p className="text-sm text-gray-500 mt-2">
+        <p className="text-base text-gray-500 mt-2">
           {currentCardIndex + 1} / {currentLesson.cards.length}
         </p>
       </div>
@@ -223,11 +223,11 @@ const LessonPage = () => {
                       </div>
                     </div>
                     <div className="ml-4 flex-1">
-                      <h3 className="text-lg font-semibold text-blue-900 mb-4">
+                      <h3 className="text-xl font-semibold text-blue-900 mb-6">
                         知识点 {currentCardIndex + 1}
                       </h3>
-                      <div className="text-blue-800">
-                        <MarkdownRenderer content={currentCard.content} theme="compact" />
+                      <div className="text-blue-800 text-lg leading-relaxed">
+                        <MarkdownRenderer content={currentCard.content} theme="default" />
                       </div>
                     </div>
                   </div>
@@ -311,7 +311,7 @@ const LessonPage = () => {
       </div>
 
       {/* 键盘快捷键提示 */}
-      <div className="mt-6 text-center text-sm text-gray-500">
+      <div className="mt-6 text-center text-base text-gray-500">
         <p>💡 使用键盘快捷键：← → 切换卡片，ESC 返回课程列表</p>
       </div>
     </div>

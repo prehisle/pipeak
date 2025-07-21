@@ -175,27 +175,36 @@ class Review:
             return review
     
     @classmethod
+    def find_by_id(cls, review_id):
+        """根据ID查找复习记录"""
+        db = get_db()
+        review_data = db.reviews.find_one({'_id': ObjectId(review_id)})
+        if review_data:
+            return cls.from_dict(review_data)
+        return None
+
+    @classmethod
     def get_review_stats(cls, user_id):
         """获取用户复习统计信息"""
         db = get_db()
-        
+
         # 总复习题目数
         total_reviews = db.reviews.count_documents({'user_id': str(user_id)})
-        
+
         # 今日到期复习数
         today = datetime.utcnow().replace(hour=23, minute=59, second=59, microsecond=999999)
         due_today = db.reviews.count_documents({
             'user_id': str(user_id),
             'next_review_date': {'$lte': today}
         })
-        
+
         # 明日到期复习数
         tomorrow = today + timedelta(days=1)
         due_tomorrow = db.reviews.count_documents({
             'user_id': str(user_id),
             'next_review_date': {'$gte': today, '$lte': tomorrow}
         })
-        
+
         return {
             'total_reviews': total_reviews,
             'due_today': due_today,

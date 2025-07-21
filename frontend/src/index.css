@@ -1,3 +1,8 @@
+/* Tailwind CSS 基础样式 */
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
 /* 全局样式 - LaTeX 速成训练器 */
 
 /* CSS 变量定义 */
@@ -186,13 +191,25 @@ body {
   }
 }
 
-/* KaTeX 样式覆盖 */
+/* KaTeX 样式覆盖 - 增大字体以提高可读性 */
 .katex {
-  font-size: 1.1em;
+  font-size: 1.3em;  /* 从1.1em增大到1.3em */
+  line-height: 1.4;
 }
 
 .katex-display {
-  margin: var(--spacing-md) 0;
+  margin: var(--spacing-lg) 0;  /* 增加上下间距 */
+  font-size: 1.4em;  /* 显示模式的公式更大 */
+}
+
+/* 知识点区域的LaTeX公式特别优化 */
+.markdown-renderer .katex {
+  font-size: 1.6em !important;  /* 知识点区域的公式更大 */
+}
+
+.markdown-renderer .katex-display {
+  font-size: 1.8em !important;  /* 知识点区域的显示公式最大 */
+  margin: var(--spacing-xl) 0;
 }
 
 /* 工具类 */
@@ -225,3 +242,35 @@ body {
 .text-error { color: var(--color-error); }
 .text-success { color: var(--color-success); }
 .text-secondary { color: var(--text-secondary); }
+
+/* 课程列表样式 - 直接使用 CSS 属性 */
+.lesson-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1.5rem;
+  border-radius: 0.5rem;
+  transition: all 0.2s ease;
+  margin-bottom: 1rem;
+}
+
+.lesson-pending {
+  background-color: #ffffff;
+  border: 1px solid #e5e7eb;
+  cursor: pointer;
+}
+
+.lesson-pending:hover {
+  border-color: #93c5fd;
+  box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+  transform: translateY(-1px);
+}
+
+.lesson-completed {
+  background-color: #f0fdf4;
+  border: 2px solid #4ade80;
+}
+
+.lesson-completed:hover {
+  background-color: #dcfce7;
+}

@@ -111,7 +111,7 @@ const PracticeCard = ({
             
             {/* 目标效果预览 */}
             <div className="bg-white p-4 rounded-lg border border-green-200 mb-4">
-              <p className="text-sm text-gray-600 mb-2">目标效果：</p>
+              <p className="text-base text-gray-600 mb-2">目标效果：</p>
               <div className="text-center">
                 <MarkdownRenderer content={card.target_formula} />
               </div>
@@ -120,7 +120,7 @@ const PracticeCard = ({
 
           {/* 答案输入区域 */}
           <div className="mb-4">
-            <label className="block text-sm font-medium text-green-800 mb-2">
+            <label className="block text-base font-medium text-green-800 mb-2">
               请输入 LaTeX 代码：
             </label>
             <div className="relative">
@@ -129,7 +129,7 @@ const PracticeCard = ({
                 onChange={(e) => setUserAnswer(e.target.value)}
                 onKeyDown={handleKeyPress}
                 placeholder="例如：$x^2$"
-                className="w-full px-4 py-3 border border-green-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500 font-mono text-sm resize-none"
+                className="w-full px-4 py-3 border border-green-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500 font-mono text-base resize-none"
                 rows="3"
                 disabled={isCorrect}
               />
@@ -143,7 +143,7 @@ const PracticeCard = ({
           {/* 实时预览 */}
           {userAnswer.trim() && (
             <div className="mb-4">
-              <p className="text-sm font-medium text-green-800 mb-2">实时预览：</p>
+              <p className="text-base font-medium text-green-800 mb-2">实时预览：</p>
               <div className="bg-gray-50 p-4 rounded-lg border border-gray-200">
                 <div className="text-center">
                   <MarkdownRenderer content={userAnswer} />
@@ -201,7 +201,7 @@ const PracticeCard = ({
 
           {/* 难度标识 */}
           <div className="mt-4 flex items-center gap-2">
-            <span className="text-sm text-gray-600">难度：</span>
+            <span className="text-base text-gray-600">难度：</span>
             <span className={`px-2 py-1 rounded text-xs font-medium ${
               card.difficulty === 'easy' 
                 ? 'bg-green-100 text-green-800'

@@ -99,4 +99,25 @@ export const practiceAPI = {
   }
 }
 
+// 复习相关的 API
+export const reviewAPI = {
+  // 获取今日复习任务
+  getTodayReviews: async () => {
+    const response = await api.get('/reviews/today')
+    return response.data
+  },
+
+  // 提交复习答案
+  submitReview: async (data) => {
+    const response = await api.post('/reviews/submit', data)
+    return response.data
+  },
+
+  // 获取复习统计
+  getStats: async () => {
+    const response = await api.get('/reviews/stats')
+    return response.data
+  }
+}
+
 export default api

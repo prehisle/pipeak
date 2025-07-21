@@ -62,10 +62,16 @@ def submit_practice():
             'submitted_at': datetime.utcnow()
         }
 
-        db.practice_records.insert_one(practice_record)
+        result = db.practice_records.insert_one(practice_record)
+        practice_record_id = result.inserted_id
 
         # 更新用户进度
         update_user_progress(db, user_id, lesson_id, card_index, is_correct)
+
+        # 集成复习系统：创建或更新复习记录
+        from app.models.review import Review
+        quality = 4 if is_correct else 1  # 正确答案质量较高，错误答案质量较低
+        Review.create_or_update_review(user_id, str(practice_record_id), is_correct, quality)
 
         response_data = {
             'is_correct': is_correct,
