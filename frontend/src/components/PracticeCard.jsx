@@ -2,11 +2,11 @@ import { useState, useEffect } from 'react'
 import MarkdownRenderer from './MarkdownRenderer'
 import { practiceAPI } from '../services/api'
 
-const PracticeCard = ({ 
-  card, 
-  lessonId, 
-  cardIndex, 
-  onComplete 
+const PracticeCard = ({
+  card,
+  lessonId,
+  cardIndex,
+  onComplete
 }) => {
   const [userAnswer, setUserAnswer] = useState('')
   const [isSubmitting, setIsSubmitting] = useState(false)
@@ -15,6 +15,7 @@ const PracticeCard = ({
   const [currentHint, setCurrentHint] = useState('')
   const [hintLevel, setHintLevel] = useState(0)
   const [isCorrect, setIsCorrect] = useState(false)
+  const [syntaxSuggestions, setSyntaxSuggestions] = useState([])
 
   // 重置状态当卡片改变时
   useEffect(() => {
@@ -24,7 +25,64 @@ const PracticeCard = ({
     setCurrentHint('')
     setHintLevel(0)
     setIsCorrect(false)
+    setSyntaxSuggestions([])
   }, [cardIndex])
+
+  // 智能语法检查和建议
+  const checkSyntax = (input) => {
+    const suggestions = []
+
+    // 检查常见的函数名错误
+    const functionChecks = [
+      { pattern: /\bsin\b/g, suggestion: '使用 \\sin 而不是 sin', fix: input => input.replace(/\bsin\b/g, '\\sin') },
+      { pattern: /\bcos\b/g, suggestion: '使用 \\cos 而不是 cos', fix: input => input.replace(/\bcos\b/g, '\\cos') },
+      { pattern: /\btan\b/g, suggestion: '使用 \\tan 而不是 tan', fix: input => input.replace(/\btan\b/g, '\\tan') },
+      { pattern: /\bln\b/g, suggestion: '使用 \\ln 而不是 ln', fix: input => input.replace(/\bln\b/g, '\\ln') },
+      { pattern: /\blog\b/g, suggestion: '使用 \\log 而不是 log', fix: input => input.replace(/\blog\b/g, '\\log') },
+      { pattern: /\bexp\b/g, suggestion: '使用 \\exp 而不是 exp', fix: input => input.replace(/\bexp\b/g, '\\exp') },
+      { pattern: /\bsqrt\b/g, suggestion: '使用 \\sqrt 而不是 sqrt', fix: input => input.replace(/\bsqrt\b/g, '\\sqrt') },
+    ]
+
+    functionChecks.forEach(check => {
+      if (check.pattern.test(input)) {
+        suggestions.push({
+          type: 'function',
+          message: check.suggestion,
+          fix: check.fix(input)
+        })
+      }
+    })
+
+    // 检查空格问题
+    if (/[a-zA-Z]=/.test(input) || /=[a-zA-Z]/.test(input)) {
+      suggestions.push({
+        type: 'spacing',
+        message: '等号两边建议加空格，如 a = b',
+        fix: input.replace(/([a-zA-Z])=/g, '$1 =').replace(/=([a-zA-Z])/g, '= $1')
+      })
+    }
+
+    // 检查美元符号
+    if (!input.startsWith('$') && !input.endsWith('$') && input.includes('\\')) {
+      suggestions.push({
+        type: 'dollar',
+        message: 'LaTeX数学公式需要用 $ 包围',
+        fix: `$${input}$`
+      })
+    }
+
+    return suggestions
+  }
+
+  // 监听用户输入变化，提供实时建议
+  useEffect(() => {
+    if (userAnswer.trim()) {
+      const suggestions = checkSyntax(userAnswer)
+      setSyntaxSuggestions(suggestions)
+    } else {
+      setSyntaxSuggestions([])
+    }
+  }, [userAnswer])
 
   const handleSubmit = async () => {
     if (!userAnswer.trim()) {
@@ -129,11 +187,15 @@ const PracticeCard = ({
                 onChange={(e) => setUserAnswer(e.target.value)}
                 onKeyDown={handleKeyPress}
                 placeholder="例如：$x^2$"
-                className="w-full px-4 py-3 border border-green-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500 font-mono text-base resize-none"
+                className="w-full px-4 py-4 bg-gray-50 rounded-xl focus:bg-white focus:ring-2 focus:ring-blue-500/20 focus:outline-none hover:bg-gray-100 transition-all duration-200 font-mono text-base resize-none border-0"
                 rows="3"
                 disabled={isCorrect}
+                spellCheck={false}
+                autoComplete="off"
+                autoCorrect="off"
+                autoCapitalize="off"
               />
-              <div className="absolute bottom-2 right-2 text-xs text-gray-500">
+              <div className="absolute bottom-3 right-3 text-xs text-gray-400 bg-gray-50 px-2 py-1 rounded-md">
                 <div>Ctrl+Enter 提交</div>
                 {!isCorrect && <div>Tab 获取提示</div>}
               </div>

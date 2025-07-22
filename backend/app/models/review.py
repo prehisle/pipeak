@@ -104,14 +104,15 @@ class Review:
     def get_due_reviews(cls, user_id, date=None):
         """获取用户到期的复习任务"""
         if date is None:
-            date = datetime.utcnow()
-        
+            # 使用今日结束时间，与 get_review_stats 保持一致
+            date = datetime.utcnow().replace(hour=23, minute=59, second=59, microsecond=999999)
+
         db = get_db()
         reviews_data = db.reviews.find({
             'user_id': str(user_id),
             'next_review_date': {'$lte': date}
         }).sort([('next_review_date', 1)])
-        
+
         reviews = []
         for review_data in reviews_data:
             reviews.append(cls.from_dict(review_data))

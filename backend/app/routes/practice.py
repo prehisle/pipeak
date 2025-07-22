@@ -177,19 +177,94 @@ def get_practice_progress(lesson_id):
 
 
 def check_latex_answer(user_answer, target_answer):
-    """检查 LaTeX 答案是否正确"""
-    # 标准化答案格式
+    """检查 LaTeX 答案是否正确 - 支持语义等价性检查"""
+
     def normalize_latex(latex_str):
-        # 移除多余空格
-        latex_str = re.sub(r'\s+', '', latex_str)
-        # 标准化常见变体
-        latex_str = latex_str.replace('\\cdot', '*')
-        return latex_str.lower()
+        """标准化LaTeX字符串，处理常见的等价形式"""
+        if not latex_str:
+            return ""
 
-    user_normalized = normalize_latex(user_answer)
-    target_normalized = normalize_latex(target_answer)
+        try:
+            # 移除首尾空格
+            latex_str = latex_str.strip()
 
-    return user_normalized == target_normalized
+            # 移除美元符号（如果存在）
+            latex_str = re.sub(r'^\$+|\$+$', '', latex_str)
+
+            # 标准化数学函数名 - 使用简单的字符串替换
+            function_mappings = {
+                ' sin ': ' \\sin ',
+                ' cos ': ' \\cos ',
+                ' tan ': ' \\tan ',
+                ' cot ': ' \\cot ',
+                ' sec ': ' \\sec ',
+                ' csc ': ' \\csc ',
+                ' ln ': ' \\ln ',
+                ' log ': ' \\log ',
+                ' exp ': ' \\exp ',
+                ' sqrt ': ' \\sqrt ',
+                # 处理开头和结尾的情况
+                'sin(': '\\sin(',
+                'cos(': '\\cos(',
+                'tan(': '\\tan(',
+                'ln(': '\\ln(',
+                'log(': '\\log(',
+                'exp(': '\\exp(',
+                'sqrt(': '\\sqrt(',
+            }
+
+            # 添加空格以便匹配
+            latex_str = ' ' + latex_str + ' '
+
+            # 应用函数名映射
+            for old, new in function_mappings.items():
+                latex_str = latex_str.replace(old, new)
+
+            # 移除添加的空格
+            latex_str = latex_str.strip()
+
+            # 标准化运算符 - 使用简单替换
+            operator_mappings = {
+                '\\cdot': '*',
+                '\\times': '*',
+                '\\div': '/',
+            }
+
+            for old, new in operator_mappings.items():
+                latex_str = latex_str.replace(old, new)
+
+            # 最终标准化：移除所有空格进行比较
+            latex_str = re.sub(r'\s+', '', latex_str)
+
+            return latex_str.lower()
+
+        except Exception as e:
+            print(f"ERROR in normalize_latex: {e}")
+            # 如果出错，回退到简单处理
+            return latex_str.strip().lower().replace(' ', '')
+
+    try:
+        user_normalized = normalize_latex(user_answer)
+        target_normalized = normalize_latex(target_answer)
+
+        print(f"DEBUG: 用户答案: '{user_answer}' -> 标准化: '{user_normalized}'")
+        print(f"DEBUG: 目标答案: '{target_answer}' -> 标准化: '{target_normalized}'")
+
+        # 直接比较标准化后的结果
+        result = user_normalized == target_normalized
+        print(f"DEBUG: 答案比较结果: {result}")
+
+        return result
+
+    except Exception as e:
+        print(f"ERROR: 答案检查出错: {e}")
+        # 出错时回退到简单比较
+        try:
+            simple_user = user_answer.strip().lower().replace(' ', '')
+            simple_target = target_answer.strip().lower().replace(' ', '')
+            return simple_user == simple_target
+        except:
+            return False
 
 
 def get_feedback(is_correct, user_answer, target_answer):

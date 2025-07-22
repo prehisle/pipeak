@@ -266,11 +266,11 @@ const ReviewPage = () => {
                     onChange={(e) => setUserAnswer(e.target.value)}
                     onKeyDown={handleKeyPress}
                     placeholder="例如：$x^2$"
-                    className="w-full px-4 py-3 border border-yellow-300 rounded-lg focus:ring-2 focus:ring-yellow-500 focus:border-yellow-500 font-mono text-base resize-none"
+                    className="w-full px-4 py-4 bg-gray-50 rounded-xl focus:bg-white focus:ring-2 focus:ring-blue-500/20 focus:outline-none hover:bg-gray-100 transition-all duration-200 font-mono text-base resize-none border-0"
                     rows="3"
                     disabled={feedback?.is_correct}
                   />
-                  <div className="absolute bottom-2 right-2 text-xs text-gray-500">
+                  <div className="absolute bottom-3 right-3 text-xs text-gray-400 bg-gray-50 px-2 py-1 rounded-md">
                     Ctrl+Enter 提交
                   </div>
                 </div>

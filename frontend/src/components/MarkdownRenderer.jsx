@@ -102,9 +102,10 @@ const MarkdownRenderer = ({
       '\\mathbb{R}': '\\mathbb{R}',  // 实数集（通常支持）
       '\\mathbb{C}': '\\mathbb{C}',  // 复数集（通常支持）
 
-      // 高德纳箭头（如果不支持，用替代符号）
-      '\\uparrow\\uparrow\\uparrow': '^{\\uparrow\\uparrow\\uparrow}',
-      '\\uparrow\\uparrow': '^{\\uparrow\\uparrow}',
+      // 高德纳箭头通常KaTeX支持，保持原样
+      // 如果渲染有问题，可以启用下面的替代方案
+      // '\\uparrow\\uparrow\\uparrow': '\\uparrow\\uparrow\\uparrow',
+      // '\\uparrow\\uparrow': '\\uparrow\\uparrow',
     }
 
     // 应用替换

@@ -3,6 +3,7 @@ import { useParams, useNavigate, Link } from 'react-router-dom'
 import { useLessonStore } from '../stores/lessonStore'
 import LoadingSpinner from '../components/LoadingSpinner'
 import MarkdownRenderer from '../components/MarkdownRenderer'
+import api from '../services/api'
 import PracticeCard from '../components/PracticeCard'
 
 const LessonPage = () => {
@@ -10,6 +11,8 @@ const LessonPage = () => {
   const navigate = useNavigate()
   const [currentCardIndex, setCurrentCardIndex] = useState(0)
   const [isTransitioning, setIsTransitioning] = useState(false)
+  const [completionStatus, setCompletionStatus] = useState(null)
+  const [showCompletionModal, setShowCompletionModal] = useState(false)
 
   const {
     currentLesson,
@@ -24,12 +27,30 @@ const LessonPage = () => {
   useEffect(() => {
     if (lessonId) {
       fetchLesson(lessonId)
+      fetchCompletionStatus()
     }
 
     return () => {
       clearCurrentLesson()
     }
   }, [lessonId, fetchLesson, clearCurrentLesson])
+
+  const fetchCompletionStatus = async () => {
+    try {
+      console.log('开始获取完成状态...');
+      const response = await api.get(`/lessons/${lessonId}/completion-status`);
+
+      if (response.data) {
+        setCompletionStatus(response.data);
+        console.log('完成状态获取成功:', response.data);
+      }
+    } catch (error) {
+      console.error('获取完成状态失败:', error);
+      if (error.response?.status === 401) {
+        console.warn('Token可能已过期，请重新登录');
+      }
+    }
+  }
 
   useEffect(() => {
     if (error) {
@@ -123,11 +144,34 @@ const LessonPage = () => {
   }
 
   const handleCompleteLesson = async () => {
-    const result = await completeLesson(lessonId)
-    if (result.success) {
-      // 可以显示成功消息或跳转到下一课程
-      navigate('/dashboard')
-    }
+    console.log('点击完成课程按钮');
+
+    // 先刷新完成状态
+    await fetchCompletionStatus();
+
+    // 等待状态更新后再检查
+    setTimeout(() => {
+      console.log('当前完成状态:', completionStatus);
+
+      if (!completionStatus?.can_complete) {
+        console.log('无法完成课程，显示模态框');
+        setShowCompletionModal(true);
+        return;
+      }
+
+      // 如果可以完成，则提交完成请求
+      completeLesson(lessonId).then(result => {
+        if (result.success) {
+          alert('🎉 恭喜！课程已完成，您已掌握所有知识点！');
+          navigate('/dashboard')
+        } else {
+          alert(result.error || '完成课程失败，请重试');
+        }
+      }).catch(error => {
+        console.error('完成课程时出错:', error);
+        alert('完成课程时出错，请重试');
+      });
+    }, 100); // 给状态更新一点时间
   }
 
   if (isLoading) {
@@ -295,9 +339,17 @@ const LessonPage = () => {
           <button
             onClick={handleCompleteLesson}
             disabled={isTransitioning}
-            className="btn btn-primary disabled:opacity-50 disabled:cursor-not-allowed"
+            className={`btn disabled:opacity-50 disabled:cursor-not-allowed ${
+              completionStatus?.can_complete
+                ? 'btn-primary'
+                : 'bg-orange-500 hover:bg-orange-600 text-white'
+            }`}
           >
-            完成课程 ✓
+            {completionStatus?.can_complete ? (
+              <>完成课程 ✓</>
+            ) : (
+              <>检查完成状态 📋</>
+            )}
           </button>
         ) : (
           <button
@@ -314,6 +366,81 @@ const LessonPage = () => {
       <div className="mt-6 text-center text-base text-gray-500">
         <p>💡 使用键盘快捷键：← → 切换卡片，ESC 返回课程列表</p>
       </div>
+
+      {/* 完成状态模态框 */}
+      {showCompletionModal && completionStatus && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="bg-white rounded-lg p-6 max-w-md w-full mx-4">
+            <div className="text-center">
+              <div className="w-16 h-16 bg-orange-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                <svg className="w-8 h-8 text-orange-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L4.082 16.5c-.77.833.192 2.5 1.732 2.5z" />
+                </svg>
+              </div>
+
+              <h3 className="text-lg font-semibold text-gray-900 mb-2">
+                还需要完成练习题
+              </h3>
+
+              <p className="text-gray-600 mb-4">
+                请先完成所有练习题，确保真正掌握知识点后再完成课程。
+              </p>
+
+              <div className="bg-orange-50 rounded-lg p-4 mb-4">
+                <div className="flex items-center justify-between text-sm">
+                  <span className="text-gray-600">练习进度：</span>
+                  <span className="font-medium text-orange-600">
+                    {completionStatus.completed_practices}/{completionStatus.total_practices} 题
+                  </span>
+                </div>
+                <div className="w-full bg-orange-200 rounded-full h-2 mt-2">
+                  <div
+                    className="bg-orange-600 h-2 rounded-full transition-all duration-300"
+                    style={{ width: `${completionStatus.completion_percentage}%` }}
+                  ></div>
+                </div>
+              </div>
+
+              {completionStatus.pending_practice_details.length > 0 && (
+                <div className="text-left mb-4">
+                  <p className="text-sm font-medium text-gray-700 mb-2">待完成的练习：</p>
+                  <ul className="text-sm text-gray-600 space-y-1">
+                    {completionStatus.pending_practice_details.slice(0, 3).map((practice, index) => (
+                      <li key={index} className="flex items-center">
+                        <span className="w-2 h-2 bg-orange-400 rounded-full mr-2"></span>
+                        第 {practice.index + 1} 题：{practice.title || `练习题 ${practice.index + 1}`}
+                      </li>
+                    ))}
+                    {completionStatus.pending_practice_details.length > 3 && (
+                      <li className="text-gray-500">
+                        还有 {completionStatus.pending_practice_details.length - 3} 题...
+                      </li>
+                    )}
+                  </ul>
+                </div>
+              )}
+
+              <div className="flex space-x-3">
+                <button
+                  onClick={() => setShowCompletionModal(false)}
+                  className="flex-1 px-4 py-2 text-gray-600 bg-gray-100 rounded-lg hover:bg-gray-200 transition-colors"
+                >
+                  继续学习
+                </button>
+                <button
+                  onClick={() => {
+                    setShowCompletionModal(false);
+                    navigate('/dashboard');
+                  }}
+                  className="flex-1 px-4 py-2 text-white bg-blue-600 rounded-lg hover:bg-blue-700 transition-colors"
+                >
+                  返回课程列表
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   )
 }

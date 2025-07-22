@@ -4,6 +4,7 @@ import { useAuthStore } from '../stores/authStore'
 import { useLessonStore } from '../stores/lessonStore'
 import { reviewAPI } from '../services/api'
 import LoadingSpinner from '../components/LoadingSpinner'
+import SmartText from '../components/SmartText'
 
 const DashboardPage = () => {
   const { user } = useAuthStore()
@@ -118,21 +119,23 @@ const DashboardPage = () => {
         {/* 今日复习 */}
         <div className="card">
           <div className="card-body">
-            <div className="flex items-center justify-between">
-              <div>
+            <div className="flex items-start justify-between gap-4">
+              <div className="flex-1 min-w-0">
                 <h3 className="text-lg font-semibold text-gray-900 mb-1">
                   今日复习
                 </h3>
-                <p className="text-gray-600">
+                <p className="text-gray-600 text-sm">
                   {reviewStats?.due_today ? `${reviewStats.due_today} 题待复习` : '暂无复习任务'}
                 </p>
               </div>
-              <Link
-                to="/reviews"
-                className={`btn ${reviewStats?.due_today > 0 ? 'btn-primary' : 'btn-secondary'}`}
-              >
-                {reviewStats?.due_today > 0 ? '开始复习' : '查看统计'}
-              </Link>
+              <div className="flex-shrink-0">
+                <Link
+                  to="/review"
+                  className={`btn ${reviewStats?.due_today > 0 ? 'btn-primary' : 'btn-secondary'}`}
+                >
+                  {reviewStats?.due_today > 0 ? '开始复习' : '查看统计'}
+                </Link>
+              </div>
             </div>
           </div>
         </div>
@@ -140,21 +143,23 @@ const DashboardPage = () => {
         {/* LaTeX练习演示 */}
         <div className="card">
           <div className="card-body">
-            <div className="flex items-center justify-between">
-              <div>
+            <div className="flex items-start justify-between gap-4">
+              <div className="flex-1 min-w-0">
                 <h3 className="text-lg font-semibold text-gray-900 mb-1">
                   LaTeX 练习演示
                 </h3>
-                <p className="text-gray-600">
+                <p className="text-gray-600 text-sm">
                   体验实时预览和练习功能
                 </p>
               </div>
-              <Link
-                to="/practice-demo"
-                className="btn btn-secondary"
-              >
-                体验演示
-              </Link>
+              <div className="flex-shrink-0">
+                <Link
+                  to="/practice-demo"
+                  className="btn btn-secondary"
+                >
+                  体验演示
+                </Link>
+              </div>
             </div>
           </div>
         </div>
@@ -163,21 +168,28 @@ const DashboardPage = () => {
         {nextLesson && (
           <div className="card">
             <div className="card-body">
-              <div className="flex items-center justify-between">
-                <div>
+              <div className="flex items-start justify-between gap-4">
+                <div className="flex-1 min-w-0">
                   <h3 className="text-lg font-semibold text-gray-900 mb-1">
                     继续学习
                   </h3>
-                  <p className="text-gray-600">
-                    下一课：{nextLesson.title}
+                  <p className="text-gray-600 text-sm leading-tight">
+                    <SmartText
+                      text={nextLesson.title}
+                      prefix="下一课："
+                      maxLength={25}
+                      className="block"
+                    />
                   </p>
                 </div>
-                <Link
-                  to={`/lesson/${nextLesson._id}`}
-                  className="btn btn-primary"
-                >
-                  开始学习
-                </Link>
+                <div className="flex-shrink-0">
+                  <Link
+                    to={`/lesson/${nextLesson._id}`}
+                    className="btn btn-primary"
+                  >
+                    开始学习
+                  </Link>
+                </div>
               </div>
             </div>
           </div>
@@ -186,8 +198,24 @@ const DashboardPage = () => {
 
       {/* 课程列表 */}
       <div className="card">
-        <div className="card-header">
-          <h2 className="text-xl font-semibold">课程列表</h2>
+        <div className="card-header flex items-center justify-between">
+          <div>
+            <h2 className="text-xl font-semibold">课程列表</h2>
+            <p className="text-sm text-gray-500 mt-1">
+              已完成 {stats.completedLessons}/{stats.totalLessons} 课程
+            </p>
+          </div>
+          <div className="flex items-center space-x-2">
+            <div className="w-24 bg-gray-200 rounded-full h-2">
+              <div
+                className="bg-blue-600 h-2 rounded-full transition-all duration-300"
+                style={{ width: `${stats.progressPercentage}%` }}
+              ></div>
+            </div>
+            <span className="text-sm font-medium text-gray-700">
+              {stats.progressPercentage}%
+            </span>
+          </div>
         </div>
         <div className="card-body">
           {isLoading ? (
@@ -196,66 +224,92 @@ const DashboardPage = () => {
               <p className="text-gray-500 mt-4">加载课程中...</p>
             </div>
           ) : lessons.length > 0 ? (
-            <div className="space-y-4">
-              <p className="text-sm text-gray-500 mb-4">找到 {lessons.length} 个课程</p>
-              {lessons.map((lesson) => (
-                <div
-                  key={lesson._id}
-                  className={`lesson-item ${
-                    lesson.is_completed ? 'lesson-completed' : 'lesson-pending'
-                  }`}
-                >
-                  <div className="flex items-center space-x-4">
-                    <div className="flex-shrink-0">
-                      <div className={`w-12 h-12 rounded-full flex items-center justify-center font-bold border-2 ${
-                        lesson.is_completed
-                          ? 'bg-green-500 text-white border-green-500'
-                          : 'bg-white text-blue-600 border-blue-300 hover:border-blue-500'
-                      }`}>
-                        {lesson.is_completed ? (
-                          <svg className="w-6 h-6" fill="currentColor" viewBox="0 0 20 20">
-                            <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
-                          </svg>
-                        ) : (
-                          <svg className="w-6 h-6" fill="currentColor" viewBox="0 0 20 20">
-                            <path fillRule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clipRule="evenodd" />
-                          </svg>
-                        )}
-                      </div>
+            <div className="grid gap-4">
+              {lessons.map((lesson, index) => {
+                const isLocked = !lesson.is_completed && index > 0 && !lessons[index - 1]?.is_completed;
+
+                return (
+                  <div
+                    key={lesson._id}
+                    className={`lesson-card ${
+                      lesson.is_completed
+                        ? 'lesson-card-completed'
+                        : isLocked
+                          ? 'lesson-card-locked'
+                          : 'lesson-card-pending'
+                    }`}
+                  >
+                  <div className="lesson-card-content">
+                    <div className="lesson-number">
+                      {lesson.is_completed ? (
+                        <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                          <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+                        </svg>
+                      ) : (
+                        <span className="font-bold">{index + 1}</span>
+                      )}
                     </div>
-                    <div>
-                      <h3 className={`font-medium ${
-                        lesson.is_completed
-                          ? 'text-green-800'
-                          : 'text-gray-900'
-                      }`}>
+
+                    <div className="lesson-info">
+                      <h3 className="lesson-title">
                         {lesson.title}
                       </h3>
-                      <p className={`text-base ${
-                        lesson.is_completed
-                          ? 'text-green-600'
-                          : 'text-gray-600'
-                      }`}>
+                      <p className="lesson-description">
                         {lesson.description}
                       </p>
+
+                      <div className="lesson-meta">
+                        <div className="flex items-center space-x-4 text-xs text-gray-500">
+                          <span>📚 理论 + 实践</span>
+                          <span>⏱️ 约15分钟</span>
+                          {lesson.is_completed && (
+                            <span className="text-green-600">✅ 已掌握</span>
+                          )}
+                        </div>
+                      </div>
+                    </div>
+
+                    <div className="lesson-actions">
+                      <Link
+                        to={`/lesson/${lesson._id}`}
+                        className={`lesson-btn ${
+                          lesson.is_completed ? 'lesson-btn-review' : 'lesson-btn-learn'
+                        }`}
+                      >
+                        {lesson.is_completed ? (
+                          <>
+                            <svg className="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+                            </svg>
+                            复习
+                          </>
+                        ) : (
+                          <>
+                            <svg className="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14.828 14.828a4 4 0 01-5.656 0M9 10h1m4 0h1m-6 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                            </svg>
+                            开始学习
+                          </>
+                        )}
+                      </Link>
                     </div>
                   </div>
-                  <div className="flex items-center space-x-2">
-                    {lesson.is_completed && (
-                      <span className="text-sm bg-green-100 text-green-700 px-2 py-1 rounded-full">
-                        已完成
-                      </span>
-                    )}
 
-                    <Link
-                      to={`/lesson/${lesson._id}`}
-                      className="btn btn-secondary btn-sm"
-                    >
-                      {lesson.is_completed ? '复习' : '学习'}
-                    </Link>
-                  </div>
+                  {isLocked && (
+                    <div className="lesson-lock-overlay">
+                      <div className="lesson-lock-badge">
+                        <svg className="w-4 h-4 text-orange-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+                        </svg>
+                        <span className="text-xs text-orange-600 font-medium ml-1">
+                          完成上一课解锁
+                        </span>
+                      </div>
+                    </div>
+                  )}
                 </div>
-              ))}
+                );
+              })}
             </div>
           ) : (
             <div className="text-center py-8 text-gray-500">

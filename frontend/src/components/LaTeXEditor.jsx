@@ -117,6 +117,10 @@ const LaTeXEditor = ({
               placeholder={placeholder}
               disabled={disabled}
               rows={8}
+              spellCheck={false}
+              autoComplete="off"
+              autoCorrect="off"
+              autoCapitalize="off"
               style={{
                 fontFamily: 'Fira Code, JetBrains Mono, Consolas, monospace',
                 fontSize: '14px'

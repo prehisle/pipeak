@@ -532,7 +532,7 @@ def create_comprehensive_lessons():
                 },
                 {
                     'type': 'knowledge',
-                    'content': '**高德纳箭头与超运算**\n\n• `$a \\uparrow b$` → $a \\uparrow b$ (幂运算，a^b)\n• `$a \\uparrow\\uparrow b$` → $a \\uparrow\\uparrow b$ (幂塔)\n• `$a \\uparrow\\uparrow\\uparrow b$` → $a \\uparrow\\uparrow\\uparrow b$ (三级运算)\n• `${}^n a$` → ${}^n a$ (超幂)\n• `$a^{(n)} b$` → $a^{(n)} b$ (n级运算)\n• `$\\text{Ack}(m,n)$` → $\\text{Ack}(m,n)$ (阿克曼函数)'
+                    'content': '**高德纳箭头与超运算**\n\n• `$a \\uparrow b = a^b$` → $a \\uparrow b = a^b$ (指数运算，三级运算)\n• `$a \\uparrow\\uparrow b$` → $a \\uparrow\\uparrow b$ (幂塔，四级运算)\n• `$a \\uparrow\\uparrow\\uparrow b$` → $a \\uparrow\\uparrow\\uparrow b$ (五级运算)\n• `${}^n a$` → ${}^n a$ (超幂)\n• `$a^{(n)} b$` → $a^{(n)} b$ (n级运算)\n• `$\\text{Ack}(m,n)$` → $\\text{Ack}(m,n)$ (阿克曼函数)'
                 },
                 {
                     'type': 'knowledge',
