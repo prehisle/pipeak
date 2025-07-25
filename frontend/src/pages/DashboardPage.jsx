@@ -141,7 +141,7 @@ const DashboardPage = () => {
               </div>
               <div className="flex-shrink-0">
                 <Link
-                  to="/review"
+                  to="/app/review"
                   className={`btn ${reviewStats?.due_today > 0 ? 'btn-primary' : 'btn-secondary'}`}
                 >
                   {reviewStats?.due_today > 0 ? t('dashboard.startLearning') : t('dashboard.reviewRecord')}
@@ -189,7 +189,7 @@ const DashboardPage = () => {
               </div>
               <div className="flex-shrink-0">
                 <Link
-                  to="/stats"
+                  to="/app/dashboard"
                   className="btn btn-secondary"
                 >
                   {t('dashboard.detailedAnalysis')}
@@ -275,7 +275,7 @@ const DashboardPage = () => {
 
                     <div className="lesson-actions">
                       <Link
-                        to={`/lesson/${lesson._id}`}
+                        to={`/app/lesson/${lesson._id}`}
                         className={`lesson-btn ${
                           lesson.is_completed ? 'lesson-btn-review' : 'lesson-btn-learn'
                         }`}
