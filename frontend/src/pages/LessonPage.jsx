@@ -7,6 +7,7 @@ import { learningAPI } from '../services/api'
 import PracticeCard from '../components/PracticeCard'
 import { useToast } from '../components/Toast'
 import LessonCompleteModal from '../components/LessonCompleteModal'
+import LessonSkeleton from '../components/LessonSkeleton'
 
 const LessonPage = () => {
   const { lessonId } = useParams()
@@ -30,21 +31,10 @@ const LessonPage = () => {
     clearCurrentLesson
   } = useLessonStore()
 
-  useEffect(() => {
-    if (lessonId) {
-      fetchLesson(lessonId)
-      fetchCompletionStatus()
-    }
-
-    return () => {
-      clearCurrentLesson()
-    }
-  }, [lessonId, fetchLesson, clearCurrentLesson])
-
-  const fetchCompletionStatus = async () => {
+  const fetchCompletionStatus = async (currentLessonId) => {
     try {
       console.log('开始获取完成状态...');
-      const response = await learningAPI.getCompletionStatus(lessonId);
+      const response = await learningAPI.getCompletionStatus(currentLessonId);
 
       if (response.data) {
         setCompletionStatus(response.data);
@@ -57,6 +47,17 @@ const LessonPage = () => {
       }
     }
   }
+
+  useEffect(() => {
+    if (lessonId) {
+      fetchLesson(lessonId)
+      fetchCompletionStatus(lessonId)
+    }
+
+    return () => {
+      clearCurrentLesson()
+    }
+  }, [lessonId, fetchLesson, clearCurrentLesson])
 
   useEffect(() => {
     if (error) {
@@ -206,14 +207,7 @@ const LessonPage = () => {
   }
 
   if (isLoading) {
-    return (
-      <div className="max-w-4xl mx-auto">
-        <div className="text-center py-12">
-          <LoadingSpinner size="lg" />
-          <p className="text-gray-500 mt-4">加载课程中...</p>
-        </div>
-      </div>
-    )
+    return <LessonSkeleton />
   }
 
   if (error) {
@@ -246,10 +240,10 @@ const LessonPage = () => {
   const isLastCard = currentCardIndex === currentLesson.cards.length - 1
 
   return (
-    <div className="max-w-4xl mx-auto">
+    <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
       {/* 课程头部 */}
       <div className="mb-8">
-        <div className="flex items-center justify-between mb-4">
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-4 space-y-2 sm:space-y-0">
           <Link
             to="/dashboard"
             className="text-blue-600 hover:text-blue-700 flex items-center"

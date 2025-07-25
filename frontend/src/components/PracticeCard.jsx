@@ -202,7 +202,7 @@ const PracticeCard = ({
           
           {/* 题目描述 */}
           <div className="mb-6">
-            <p className="text-green-800 text-base mb-4">
+            <p id="practice-question" className="text-green-800 text-base mb-4">
               {typeof card.question === 'string' ? card.question : '练习题目'}
             </p>
             
@@ -233,6 +233,8 @@ const PracticeCard = ({
                 autoComplete="off"
                 autoCorrect="off"
                 autoCapitalize="off"
+                aria-label="LaTeX代码输入框"
+                aria-describedby="practice-question"
               />
               <div className="absolute bottom-3 right-3 text-xs text-gray-400 bg-gray-50 px-2 py-1 rounded-md">
                 <div>Ctrl+Enter 提交</div>
