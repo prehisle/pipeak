@@ -211,11 +211,15 @@ def create_comprehensive_lessons(db):
     ]
     
     # 清空现有课程数据
-    db.lessons.delete_many({})
-    
+    deleted_result = db.lessons.delete_many({})
+    print(f"🗑️  删除了 {deleted_result.deleted_count} 个旧课程")
+
     # 插入新课程数据
     result = db.lessons.insert_many(lessons)
     print(f"✅ 成功创建 {len(result.inserted_ids)} 个课程")
+    print(f"📋 课程列表:")
+    for i, lesson in enumerate(lessons, 1):
+        print(f"   {i}. {lesson['title']}")
     
     return lessons
 
