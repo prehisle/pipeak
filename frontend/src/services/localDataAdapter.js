@@ -179,6 +179,7 @@ class LocalDataAdapter {
   }
 
   async getCompletionStatus(lessonId) {
+    await this.initialize()
     await delay()
 
     const lesson = mockLessons.find(l => l._id === lessonId)
