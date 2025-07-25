@@ -94,7 +94,8 @@ const LearningPage = () => {
     for (const lesson of lessons) {
       try {
         const status = await learningAPI.getCompletionStatus(lesson._id)
-        if (!status.data || !status.data.can_complete) {
+        // 检查课程是否已经完成（用户已标记完成）
+        if (!status.data || !status.data.is_already_completed) {
           return lesson
         }
       } catch (err) {
@@ -103,7 +104,7 @@ const LearningPage = () => {
         return lessons[0]
       }
     }
-    
+
     return null // 所有课程都已完成
   }
 
