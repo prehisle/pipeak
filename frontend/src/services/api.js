@@ -110,6 +110,14 @@ export const lessonAPI = {
   // 获取课程列表
   getLessons: async () => {
     const adapter = getApiAdapter()
+    console.log('lessonAPI.getLessons: 使用的适配器:', adapter)
+    console.log('适配器方法:', Object.getOwnPropertyNames(adapter))
+
+    if (!adapter.getLessons) {
+      console.error('适配器没有 getLessons 方法')
+      throw new Error('适配器没有 getLessons 方法')
+    }
+
     return adapter.getLessons()
   },
 

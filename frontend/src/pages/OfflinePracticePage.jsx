@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import MarkdownRenderer from '../components/MarkdownRenderer'
-import { learningAPI } from '../services/api'
+import { learningAPI, lessonAPI } from '../services/api'
 
 const OfflinePracticePage = () => {
   const navigate = useNavigate()
@@ -18,14 +18,19 @@ const OfflinePracticePage = () => {
   useEffect(() => {
     const loadQuestions = async () => {
       try {
+        console.log('开始加载离线练习题...')
         // 获取所有课程
-        const lessonsResponse = await learningAPI.getLessons()
+        const lessonsResponse = await lessonAPI.getLessons()
+        console.log('课程数据:', lessonsResponse)
+
         const allQuestions = []
-        
+
         // 提取所有练习题
         lessonsResponse.lessons.forEach((lesson, lessonIndex) => {
+          console.log(`处理课程 ${lessonIndex + 1}: ${lesson.title}`)
           lesson.cards.forEach((card, cardIndex) => {
             if (card.type === 'practice') {
+              console.log(`找到练习题: ${card.question}`)
               allQuestions.push({
                 id: `${lesson._id}_${cardIndex}`,
                 lessonId: lesson._id,
@@ -38,13 +43,15 @@ const OfflinePracticePage = () => {
             }
           })
         })
-        
+
+        console.log(`总共加载了 ${allQuestions.length} 道练习题`)
         setQuestions(allQuestions)
       } catch (error) {
         console.error('加载练习题失败:', error)
+        console.error('错误详情:', error.stack)
       }
     }
-    
+
     loadQuestions()
   }, [])
 
