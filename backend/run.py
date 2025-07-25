@@ -13,6 +13,35 @@ app = create_app(config_name)
 def health_check():
     return {'status': 'healthy', 'message': 'LaTeX Speed Trainer API is running'}
 
+# 添加环境变量检查端点
+@app.route('/api/debug/env')
+def check_env():
+    """检查关键环境变量是否设置"""
+    import os
+
+    env_vars = {
+        'MONGODB_URI': 'SET' if os.environ.get('MONGODB_URI') else 'NOT SET',
+        'MONGODB_DB': os.environ.get('MONGODB_DB', 'NOT SET'),
+        'JWT_SECRET_KEY': 'SET' if os.environ.get('JWT_SECRET_KEY') else 'NOT SET',
+        'FLASK_ENV': os.environ.get('FLASK_ENV', 'NOT SET'),
+        'ENVIRONMENT': os.environ.get('ENVIRONMENT', 'NOT SET')
+    }
+
+    # 如果MONGODB_URI设置了，显示前缀（不显示完整URI以保护安全）
+    if os.environ.get('MONGODB_URI'):
+        uri = os.environ.get('MONGODB_URI')
+        if uri.startswith('mongodb+srv://'):
+            env_vars['MONGODB_URI_PREFIX'] = 'mongodb+srv://***'
+        elif uri.startswith('mongodb://'):
+            env_vars['MONGODB_URI_PREFIX'] = 'mongodb://***'
+        else:
+            env_vars['MONGODB_URI_PREFIX'] = 'UNKNOWN_FORMAT'
+
+    return {
+        'environment_variables': env_vars,
+        'config_loaded': app.config.get('MONGODB_URI') is not None
+    }
+
 # 添加数据库初始化端点
 @app.route('/api/init-db')
 def init_database():

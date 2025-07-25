@@ -14,8 +14,11 @@ class ProductionConfig:
     JWT_ACCESS_TOKEN_EXPIRES = timedelta(hours=24)
     JWT_REFRESH_TOKEN_EXPIRES = timedelta(days=30)
     
-    # MongoDB配置
-    MONGODB_URI = os.environ.get('MONGODB_URI') or 'mongodb://localhost:27017/pipeak'
+    # MongoDB配置 - 生产环境必须设置MONGODB_URI
+    MONGODB_URI = os.environ.get('MONGODB_URI')
+    if not MONGODB_URI:
+        raise ValueError("MONGODB_URI environment variable is required in production")
+
     MONGODB_DB = os.environ.get('MONGODB_DB') or 'pipeak'
     
     # CORS配置
