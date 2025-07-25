@@ -37,16 +37,6 @@ const Layout = () => {
             {/* 导航菜单 */}
             <nav className="hidden md:flex items-center space-x-6">
               <Link
-                to="/learning"
-                className={`px-3 py-2 rounded-md text-sm font-medium transition-colors ${
-                  isActive('/learning')
-                    ? 'bg-blue-100 dark:bg-blue-900 text-blue-700 dark:text-blue-300'
-                    : 'text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-gray-100 hover:bg-gray-100 dark:hover:bg-gray-700'
-                }`}
-              >
-                {t('nav.learning')}
-              </Link>
-              <Link
                 to="/dashboard"
                 className={`px-3 py-2 rounded-md text-sm font-medium transition-colors ${
                   isActive('/dashboard')
@@ -56,7 +46,7 @@ const Layout = () => {
               >
                 {t('nav.dashboard')}
               </Link>
-              {/* 移除练习中心导航 - 精简为核心学习路径 */}
+              {/* 移除学习中心导航 - 避免与仪表盘功能重复 */}
               <Link
                 to="/review"
                 className={`px-3 py-2 rounded-md text-sm font-medium transition-colors ${

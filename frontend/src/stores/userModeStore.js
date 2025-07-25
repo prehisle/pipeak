@@ -120,8 +120,11 @@ const useUserModeStore = create(
         const reviewData = localStorageManager.getReviewData()
         const stats = localStorageManager.getPracticeStats()
         
+        // 计算真正完成的课程数量（与 lessonStore 保持一致）
+        const completedLessons = Object.values(lessonProgress).filter(progress => progress.isCompleted).length
+
         return {
-          lessonsCompleted: Object.keys(lessonProgress).length,
+          lessonsCompleted: completedLessons,
           practiceAttempts: practiceRecords.length,
           reviewItems: Object.keys(reviewData).length,
           accuracy: stats.accuracy,

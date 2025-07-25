@@ -99,7 +99,7 @@ const GuestWelcome = () => {
         {/* 操作按钮 */}
         <div className="flex flex-col sm:flex-row gap-4 pt-6 border-t border-gray-200 dark:border-gray-700">
           <Button variant="primary" size="lg" className="flex-1" asChild>
-            <Link to="/learning">
+            <Link to="/dashboard">
               {t('guestWelcome.startLearning', '🚀 立即开始学习')}
             </Link>
           </Button>

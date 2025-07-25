@@ -326,6 +326,13 @@ body {
   -webkit-line-clamp: 2;
 }
 
+.line-clamp-2 {
+  overflow: hidden;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+}
+
 .line-clamp-3 {
   overflow: hidden;
   display: -webkit-box;
@@ -398,6 +405,11 @@ body {
   color: #1f2937;
   margin-bottom: 0.25rem;
   line-height: 1.4;
+  /* 文本截断处理 */
+  overflow: hidden;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
 }
 
 .lesson-card-completed .lesson-title {
@@ -409,6 +421,11 @@ body {
   color: #6b7280;
   line-height: 1.4;
   margin-bottom: 0.5rem;
+  /* 文本截断处理 */
+  overflow: hidden;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 3;
 }
 
 .lesson-card-completed .lesson-description {

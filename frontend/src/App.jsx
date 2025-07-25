@@ -70,9 +70,10 @@ function App() {
           path="/"
           element={isAuthenticated() ? <Layout /> : <Navigate to="/login" replace />}
         >
-          <Route index element={<Navigate to="/learning" replace />} />
+          <Route index element={<Navigate to="/dashboard" replace />} />
           <Route path="dashboard" element={<DashboardPage />} />
-          <Route path="learning" element={<LearningPage />} />
+          {/* 将学习中心重定向到仪表盘，避免功能重复 */}
+          <Route path="learning" element={<Navigate to="/dashboard" replace />} />
           <Route path="lesson/:lessonId" element={<LessonPage />} />
           {/* 移除练习中心相关路由 - 精简为核心学习路径 */}
           <Route path="review" element={<ReviewPage />} />
