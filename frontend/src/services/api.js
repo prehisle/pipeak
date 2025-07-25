@@ -1,7 +1,13 @@
 import axios from 'axios'
+import { demoAPI, isDemoMode } from './demoApi'
 
 // 动态获取API基础URL
 const getApiBaseUrl = () => {
+  // 如果是演示模式，返回空字符串（使用demoAPI）
+  if (isDemoMode()) {
+    return ''
+  }
+
   // 如果是开发环境，尝试使用当前主机的IP
   if (import.meta.env.DEV) {
     const currentHost = window.location.hostname
@@ -82,12 +88,18 @@ api.interceptors.response.use(
 export const lessonAPI = {
   // 获取课程列表
   getLessons: async () => {
+    if (isDemoMode()) {
+      return await demoAPI.lessons.getLessons()
+    }
     const response = await api.get('/lessons')
     return response.data
   },
 
   // 获取特定课程详情
   getLesson: async (lessonId) => {
+    if (isDemoMode()) {
+      return await demoAPI.lessons.getLesson(lessonId)
+    }
     const response = await api.get(`/lessons/${lessonId}`)
     return response.data
   },
@@ -109,24 +121,36 @@ export const lessonAPI = {
 export const practiceAPI = {
   // 提交练习答案
   submitAnswer: async (data) => {
+    if (isDemoMode()) {
+      return await demoAPI.practice.submitAnswer(data)
+    }
     const response = await api.post('/practice/submit', data)
     return response.data
   },
 
   // 获取提示
   getHint: async (data) => {
+    if (isDemoMode()) {
+      return { hint: '这是一个演示提示' }
+    }
     const response = await api.post('/practice/hint', data)
     return response.data
   },
 
   // 获取练习进度
   getProgress: async (lessonId) => {
+    if (isDemoMode()) {
+      return { progress: {} }
+    }
     const response = await api.get(`/practice/progress/${lessonId}`)
     return response.data
   },
 
   // 获取练习题列表
   getPracticeList: async (filters = {}) => {
+    if (isDemoMode()) {
+      return await demoAPI.practice.getPracticeList(filters)
+    }
     const params = new URLSearchParams()
     if (filters.course) params.append('course', filters.course)
     if (filters.difficulty) params.append('difficulty', filters.difficulty)
@@ -138,6 +162,9 @@ export const practiceAPI = {
 
   // 获取练习统计
   getStats: async () => {
+    if (isDemoMode()) {
+      return await demoAPI.practice.getStats()
+    }
     const response = await api.get('/practice/stats')
     return response.data
   }

@@ -17,6 +17,7 @@ import StyleTestPage from './pages/StyleTestPage'
 // 布局组件
 import Layout from './components/Layout'
 import LoadingSpinner from './components/LoadingSpinner'
+import DemoNotice from './components/DemoNotice'
 import PracticeDemo from './components/PracticeDemo'
 
 function App() {
@@ -39,6 +40,7 @@ function App() {
 
   return (
     <div className="App">
+      <DemoNotice />
       <Routes>
         {/* 公开路由 */}
         <Route 
