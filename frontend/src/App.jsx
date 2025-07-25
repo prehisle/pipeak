@@ -5,6 +5,7 @@ import { useUserModeStore } from './stores/userModeStore'
 import { useEffect } from 'react'
 
 // 页面组件
+import HomePage from './pages/HomePage'
 import LoginPage from './pages/LoginPage'
 import RegisterPage from './pages/RegisterPage'
 import DashboardPage from './pages/DashboardPage'
@@ -52,6 +53,12 @@ function App() {
     <ErrorBoundary>
       <div className="App">
         <Routes>
+        {/* 首页 - 公开访问 */}
+        <Route path="/" element={<HomePage />} />
+
+        {/* 离线练习 - 公开访问 */}
+        <Route path="/offline-practice" element={<OfflinePracticePage />} />
+
         {/* 公开路由 */}
         <Route
           path="/login"
@@ -68,19 +75,21 @@ function App() {
 
         {/* 受保护的路由 */}
         <Route
-          path="/"
+          path="/app"
           element={isAuthenticated() ? <Layout /> : <Navigate to="/login" replace />}
         >
-          <Route index element={<Navigate to="/dashboard" replace />} />
+          <Route index element={<Navigate to="/app/dashboard" replace />} />
           <Route path="dashboard" element={<DashboardPage />} />
           {/* 将学习中心重定向到仪表盘，避免功能重复 */}
-          <Route path="learning" element={<Navigate to="/dashboard" replace />} />
+          <Route path="learning" element={<Navigate to="/app/dashboard" replace />} />
           <Route path="lesson/:lessonId" element={<LessonPage />} />
-          <Route path="offline-practice" element={<OfflinePracticePage />} />
           {/* 移除练习中心相关路由 - 精简为核心学习路径 */}
           <Route path="review" element={<ReviewPage />} />
           <Route path="style-test" element={<StyleTestPage />} />
         </Route>
+
+        {/* 兼容性重定向 */}
+        <Route path="/dashboard" element={<Navigate to="/app/dashboard" replace />} />
         
         {/* 404 路由 */}
         <Route path="*" element={<Navigate to="/" replace />} />

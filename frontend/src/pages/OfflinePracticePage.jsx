@@ -169,7 +169,7 @@ const OfflinePracticePage = () => {
               重新练习
             </button>
             <button
-              onClick={() => navigate('/dashboard')}
+              onClick={() => navigate('/')}
               className="px-6 py-3 bg-gray-600 text-white rounded-lg hover:bg-gray-700 transition-colors"
             >
               返回首页
@@ -186,7 +186,7 @@ const OfflinePracticePage = () => {
       <div className="mb-6">
         <div className="flex items-center justify-between mb-4">
           <button
-            onClick={() => navigate('/dashboard')}
+            onClick={() => navigate('/')}
             className="text-blue-600 hover:text-blue-700 flex items-center text-sm"
           >
             ← 返回首页

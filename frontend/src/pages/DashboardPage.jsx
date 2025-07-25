@@ -187,7 +187,7 @@ const DashboardPage = () => {
               </div>
               <div className="flex-shrink-0">
                 <Link
-                  to={nextLesson ? `/lesson/${nextLesson._id}` : "/dashboard"}
+                  to={nextLesson ? `/app/lesson/${nextLesson._id}` : "/app/dashboard"}
                   className="btn btn-primary"
                 >
                   {nextLesson ? "开始学习" : "查看课程"}
