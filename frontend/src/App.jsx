@@ -62,11 +62,11 @@ function App() {
         {/* 公开路由 */}
         <Route
           path="/login"
-          element={isAuthenticated() ? <Navigate to="/dashboard" replace /> : <LoginPage />}
+          element={isAuthenticated() ? <Navigate to="/app/dashboard" replace /> : <LoginPage />}
         />
         <Route
           path="/register"
-          element={isAuthenticated() ? <Navigate to="/dashboard" replace /> : <RegisterPage />}
+          element={isAuthenticated() ? <Navigate to="/app/dashboard" replace /> : <RegisterPage />}
         />
 
         {/* 测试路由 */}

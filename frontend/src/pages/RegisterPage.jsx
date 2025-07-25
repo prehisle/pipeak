@@ -85,7 +85,7 @@ const RegisterPage = () => {
       } else {
         // 直接切换到用户模式并跳转
         switchToUserMode()
-        navigate('/dashboard')
+        navigate('/app/dashboard')
       }
     }
   }
@@ -98,20 +98,20 @@ const RegisterPage = () => {
         await dataSyncService.clearLocalData()
         switchToUserMode()
         setShowSyncModal(false)
-        navigate('/dashboard')
+        navigate('/app/dashboard')
       } else {
         console.error('Data sync failed:', result.message)
         // 即使同步失败，也允许用户继续
         switchToUserMode()
         setShowSyncModal(false)
-        navigate('/dashboard')
+        navigate('/app/dashboard')
       }
     } catch (error) {
       console.error('Data sync error:', error)
       // 同步出错，但仍然允许用户继续
       switchToUserMode()
       setShowSyncModal(false)
-      navigate('/dashboard')
+      navigate('/app/dashboard')
     }
   }
 
@@ -119,7 +119,7 @@ const RegisterPage = () => {
     // 跳过同步，直接切换到用户模式
     switchToUserMode()
     setShowSyncModal(false)
-    navigate('/dashboard')
+    navigate('/app/dashboard')
   }
 
   const handleCloseSyncModal = () => {
