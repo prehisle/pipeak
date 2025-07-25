@@ -90,12 +90,17 @@ const LearningPage = () => {
   const findNextLesson = async () => {
     if (!lessons || lessons.length === 0) return null
 
+    console.log('开始查找下一个课程，总课程数:', lessons.length)
+
     // 找到第一个未完成的课程
     for (const lesson of lessons) {
       try {
         const status = await learningAPI.getCompletionStatus(lesson._id)
+        console.log(`课程 ${lesson.title} 状态:`, status.data)
+
         // 检查课程是否已经完成（用户已标记完成）
         if (!status.data || !status.data.is_already_completed) {
+          console.log(`找到下一个课程: ${lesson.title}`)
           return lesson
         }
       } catch (err) {
@@ -105,6 +110,7 @@ const LearningPage = () => {
       }
     }
 
+    console.log('所有课程都已完成')
     return null // 所有课程都已完成
   }
 
