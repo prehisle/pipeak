@@ -8,6 +8,7 @@ import { reviewAPI } from '../services/api'
 import LoadingSpinner from '../components/LoadingSpinner'
 import SmartText from '../components/SmartText'
 import GuestWelcome from '../components/GuestWelcome'
+import { debugProgressConsistency, fixProgressInconsistency } from '../utils/debugProgressConsistency'
 
 const DashboardPage = () => {
   const { user } = useAuthStore()
@@ -20,8 +21,12 @@ const DashboardPage = () => {
     fetchLessons,
     getLessonStats,
     getNextLesson,
-    clearError
+    getDataSummary,
+    clearError,
+    initializeStorageListener
   } = useLessonStore()
+
+  const { getLocalDataSummary } = useUserModeStore()
 
   const [reviewStats, setReviewStats] = useState(null)
 
@@ -34,7 +39,28 @@ const DashboardPage = () => {
 
     fetchLessons()
     loadReviewStats()
-  }, [fetchLessons])
+
+    // 初始化存储监听器
+    const cleanupStorageListener = initializeStorageListener()
+
+    return cleanupStorageListener
+  }, [fetchLessons, initializeStorageListener])
+
+  // 在开发模式下检查进度一致性
+  useEffect(() => {
+    if (process.env.NODE_ENV === 'development' && lessons.length > 0) {
+      // 延迟执行，确保数据已加载
+      setTimeout(() => {
+        debugProgressConsistency(
+          { lessons, getLessonStats, getDataSummary },
+          { getLocalDataSummary }
+        )
+
+        // 自动修复不一致问题
+        fixProgressInconsistency({ lessons })
+      }, 1000)
+    }
+  }, [lessons, getLessonStats, getDataSummary, getLocalDataSummary])
 
 
 

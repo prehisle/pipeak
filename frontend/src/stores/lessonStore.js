@@ -1,5 +1,7 @@
 import { create } from 'zustand'
 import { lessonAPI } from '../services/api'
+import { calculateLessonStats, getNextLesson, isLessonCompleted } from '../utils/progressCalculator'
+import localStorageManager from '../utils/localStorage'
 
 const useLessonStore = create((set, get) => ({
   // 状态
@@ -10,10 +12,27 @@ const useLessonStore = create((set, get) => ({
 
   // 动作
   setLoading: (loading) => set({ isLoading: loading }),
-  
+
   setError: (error) => set({ error }),
-  
+
   clearError: () => set({ error: null }),
+
+  // 初始化存储事件监听
+  initializeStorageListener: () => {
+    const handleStorageChange = () => {
+      // 当 localStorage 发生变化时，重新获取课程数据
+      const { fetchLessons } = get()
+      fetchLessons()
+    }
+
+    // 监听存储变化事件
+    window.addEventListener('storage', handleStorageChange)
+
+    // 返回清理函数
+    return () => {
+      window.removeEventListener('storage', handleStorageChange)
+    }
+  },
 
   // 获取课程列表
   fetchLessons: async () => {
@@ -103,24 +122,50 @@ const useLessonStore = create((set, get) => ({
   // 清除当前课程
   clearCurrentLesson: () => set({ currentLesson: null }),
 
-  // 获取课程统计信息
+  // 获取课程统计信息（使用统一的计算工具）
   getLessonStats: () => {
     const { lessons } = get()
-    const totalLessons = lessons.length
-    const completedLessons = lessons.filter(lesson => lesson.is_completed).length
-    const progressPercentage = totalLessons > 0 ? Math.round((completedLessons / totalLessons) * 100) : 0
-    
-    return {
-      totalLessons,
-      completedLessons,
-      progressPercentage
-    }
+    return calculateLessonStats(lessons)
   },
 
-  // 获取下一个未完成的课程
+  // 获取下一个未完成的课程（使用统一的计算工具）
   getNextLesson: () => {
     const { lessons } = get()
-    return lessons.find(lesson => !lesson.is_completed) || null
+    return getNextLesson(lessons)
+  },
+
+  // 检查课程是否已完成（使用统一的计算工具）
+  isLessonCompleted: (lessonId) => {
+    const { lessons } = get()
+    return isLessonCompleted(lessonId, lessons)
+  },
+
+  // 获取综合数据摘要（统一的数据源）
+  getDataSummary: () => {
+    const { lessons } = get()
+    const practiceRecords = localStorageManager.getPracticeRecords()
+    const reviewData = localStorageManager.getReviewData()
+
+    const lessonStats = calculateLessonStats(lessons)
+    const practiceStats = localStorageManager.getPracticeStats()
+
+    return {
+      // 课程相关
+      lessonsCompleted: lessonStats.completedLessons,
+      totalLessons: lessonStats.totalLessons,
+      progressPercentage: lessonStats.progressPercentage,
+
+      // 练习相关
+      practiceAttempts: practiceRecords.length,
+      correctAttempts: practiceStats.correct,
+      accuracy: practiceStats.accuracy,
+
+      // 复习相关
+      reviewItems: Object.keys(reviewData).length,
+
+      // 数据存在性
+      hasData: lessons.length > 0 || practiceRecords.length > 0 || Object.keys(reviewData).length > 0
+    }
   }
 }))
 

@@ -112,15 +112,19 @@ const useUserModeStore = create(
       },
 
       /**
-       * 获取本地数据摘要
+       * 获取本地数据摘要（已弃用，请使用 lessonStore.getDataSummary）
+       * @deprecated 使用 lessonStore.getDataSummary() 替代
        */
       getLocalDataSummary: () => {
+        console.warn('userModeStore.getLocalDataSummary() 已弃用，请使用 lessonStore.getDataSummary()')
+
+        // 为了向后兼容，暂时保留此方法，但建议使用 lessonStore
         const lessonProgress = localStorageManager.getLessonProgress()
         const practiceRecords = localStorageManager.getPracticeRecords()
         const reviewData = localStorageManager.getReviewData()
         const stats = localStorageManager.getPracticeStats()
-        
-        // 计算真正完成的课程数量（与 lessonStore 保持一致）
+
+        // 注意：这里的计算可能与 lessonStore 不一致，建议迁移到 lessonStore.getDataSummary()
         const completedLessons = Object.values(lessonProgress).filter(progress => progress.isCompleted).length
 
         return {

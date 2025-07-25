@@ -2,24 +2,27 @@ import React from 'react'
 import { Link } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { useUserModeStore } from '../stores/userModeStore'
+import { useLessonStore } from '../stores/lessonStore'
 import { Alert, AlertDescription } from './ui/Alert'
 import Button from './ui/Button'
 
 const GuestModeNotice = () => {
   const { t } = useTranslation()
-  const { 
-    isGuestMode, 
-    showGuestPrompt, 
-    hideGuestPrompt, 
-    getLocalDataSummary 
+  const {
+    isGuestMode,
+    showGuestPrompt,
+    hideGuestPrompt
   } = useUserModeStore()
+
+  // 使用统一的数据源
+  const { getDataSummary } = useLessonStore()
 
   // 如果不是游客模式或已隐藏提示，不显示
   if (!isGuestMode || !showGuestPrompt) {
     return null
   }
 
-  const dataSummary = getLocalDataSummary()
+  const dataSummary = getDataSummary()
 
   return (
     <Alert variant="info" className="mx-4 mt-4 mb-0">

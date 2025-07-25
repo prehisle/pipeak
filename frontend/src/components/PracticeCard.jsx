@@ -206,13 +206,20 @@ const PracticeCard = forwardRef(({
       return
     }
 
-    // Ctrl+Enter 或 Cmd+Enter 提交答案
+    // 普通 Enter 键提交答案（如果答案未正确且有内容）
+    if (e.key === 'Enter' && !isCorrect && userAnswer.trim()) {
+      e.preventDefault()
+      handleSubmit()
+      return
+    }
+
+    // Ctrl+Enter 或 Cmd+Enter 强制提交答案
     if (e.key === 'Enter' && (e.ctrlKey || e.metaKey)) {
       e.preventDefault()
       handleSubmit()
     }
-    // Tab 键获取提示（如果答案错误）
-    else if (e.key === 'Tab' && !isCorrect && !e.shiftKey) {
+    // Tab 键获取提示
+    else if (e.key === 'Tab' && !e.shiftKey) {
       e.preventDefault()
       handleGetHint()
     }
@@ -334,7 +341,12 @@ const PracticeCard = forwardRef(({
             {!isCorrect && (
               <button
                 onClick={handleGetHint}
-                className="px-3 py-2 bg-yellow-500 text-white rounded-lg hover:bg-yellow-600 transition-colors text-sm"
+                disabled={isSubmitting}
+                className={`px-3 py-2 rounded-lg transition-colors text-sm ${
+                  isSubmitting
+                    ? 'bg-gray-400 text-white cursor-not-allowed'
+                    : 'bg-yellow-500 text-white hover:bg-yellow-600'
+                }`}
               >
                 💡 获取提示
               </button>

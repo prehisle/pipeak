@@ -171,10 +171,15 @@ class LocalDataAdapter {
     const updatedProgress = {
       ...progress,
       isCompleted: true,
-      completedAt: new Date().toISOString()
+      completedAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString()
     }
 
     localStorageManager.setLessonProgress(lessonId, updatedProgress)
+
+    // 触发存储事件，通知其他组件数据已更新
+    window.dispatchEvent(new Event('storage'))
+
     return updatedProgress
   }
 
@@ -262,10 +267,28 @@ class LocalDataAdapter {
       lastAttempt: new Date().toISOString()
     }
 
-    localStorageManager.setLessonProgress(lessonId, {
-      ...lessonProgress,
-      practiceProgress
+    // 检查是否所有练习都已完成，如果是则标记课程为完成
+    const practiceCards = lesson.cards.filter(card => card.type === 'practice')
+    const allPracticesCompleted = practiceCards.every((card, index) => {
+      return practiceProgress[`card_${index}`]?.isCompleted
     })
+
+    const updatedProgress = {
+      ...lessonProgress,
+      practiceProgress,
+      isCompleted: allPracticesCompleted,
+      updatedAt: new Date().toISOString()
+    }
+
+    // 如果课程刚刚完成，记录完成时间
+    if (allPracticesCompleted && !lessonProgress.isCompleted) {
+      updatedProgress.completedAt = new Date().toISOString()
+    }
+
+    localStorageManager.setLessonProgress(lessonId, updatedProgress)
+
+    // 触发存储事件，通知其他组件数据已更新
+    window.dispatchEvent(new Event('storage'))
 
     return {
       is_correct: isCorrect,
