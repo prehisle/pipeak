@@ -107,11 +107,43 @@ export const demoAPI = {
   practice: {
     submitAnswer: async (data) => {
       await delay(500)
-      
-      // 简单的答案验证逻辑
-      const isCorrect = data.user_answer.trim().toLowerCase().includes(
-        data.target_formula ? data.target_formula.replace(/[$\\{}]/g, '').toLowerCase() : 'x'
-      )
+
+      // 从课程数据中获取正确答案
+      const lesson = mockLessons.find(l => l._id === data.lesson_id)
+      if (!lesson || !lesson.cards || data.card_index >= lesson.cards.length) {
+        return {
+          is_correct: false,
+          feedback: '练习题不存在',
+          target_answer: '$x^2$'
+        }
+      }
+
+      const card = lesson.cards[data.card_index]
+      if (card.type !== 'practice') {
+        return {
+          is_correct: false,
+          feedback: '该卡片不是练习题',
+          target_answer: '$x^2$'
+        }
+      }
+
+      const targetFormula = card.target_formula
+
+      // 改进的答案验证逻辑
+      const normalizeLatex = (latex) => {
+        return latex
+          .replace(/\s+/g, '') // 移除空格
+          .replace(/\$+/g, '') // 移除美元符号
+          .toLowerCase()
+      }
+
+      const userNormalized = normalizeLatex(data.user_answer)
+      const targetNormalized = normalizeLatex(targetFormula)
+
+      // 检查多种可能的正确形式
+      const isCorrect = userNormalized === targetNormalized ||
+                       userNormalized === targetNormalized.replace(/\{(\w)\}/g, '$1') ||
+                       userNormalized.replace(/\{(\w)\}/g, '$1') === targetNormalized
 
       const record = {
         id: Date.now(),
@@ -127,7 +159,8 @@ export const demoAPI = {
       return {
         is_correct: isCorrect,
         feedback: isCorrect ? '答案正确！' : '答案不正确，请再试一次。',
-        target_answer: data.target_formula || '$x^2$'
+        target_answer: targetFormula,
+        hint: !isCorrect && card.hints && card.hints.length > 0 ? card.hints[0] : undefined
       }
     },
 
