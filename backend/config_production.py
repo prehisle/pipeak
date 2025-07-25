@@ -22,7 +22,6 @@ class ProductionConfig:
     CORS_ORIGINS = [
         'https://pipeak.vercel.app',  # 您的Vercel域名
         'https://*.vercel.app',       # Vercel预览域名
-        'https://*.onrender.com',     # Render域名
         'http://localhost:5173',      # 本地开发
         'http://localhost:3000'       # 备用本地端口
     ]
