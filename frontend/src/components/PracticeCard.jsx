@@ -203,7 +203,7 @@ const PracticeCard = ({
           {/* 题目描述 */}
           <div className="mb-6">
             <p className="text-green-800 text-base mb-4">
-              {card.question}
+              {typeof card.question === 'string' ? card.question : '练习题目'}
             </p>
             
             {/* 目标效果预览 */}
@@ -260,7 +260,7 @@ const PracticeCard = ({
                 ? 'bg-green-100 border border-green-300 text-green-800' 
                 : 'bg-red-100 border border-red-300 text-red-800'
             }`}>
-              <p className="font-medium">{feedback}</p>
+              <p className="font-medium">{typeof feedback === 'string' ? feedback : '反馈信息'}</p>
             </div>
           )}
 
@@ -269,7 +269,7 @@ const PracticeCard = ({
             <div className="mb-4 p-4 bg-yellow-100 border border-yellow-300 rounded-lg">
               <p className="text-yellow-800">
                 <span className="font-medium">💡 提示：</span>
-                {currentHint}
+                {typeof currentHint === 'string' ? currentHint : '提示信息'}
               </p>
             </div>
           )}

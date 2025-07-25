@@ -209,7 +209,7 @@ const LessonPage = () => {
     return (
       <div className="max-w-4xl mx-auto">
         <div className="bg-red-50 border border-red-200 rounded-md p-6 text-center">
-          <p className="text-red-600 mb-4">{error}</p>
+          <p className="text-red-600 mb-4">{typeof error === 'string' ? error : '加载课程失败，请重试'}</p>
           <Link to="/dashboard" className="btn btn-primary">
             返回学习面板
           </Link>
@@ -253,10 +253,10 @@ const LessonPage = () => {
         </div>
 
         <h1 className="text-3xl font-bold text-gray-900 mb-2">
-          {currentLesson.title}
+          {typeof currentLesson.title === 'string' ? currentLesson.title : '课程标题'}
         </h1>
         <p className="text-lg text-gray-600 mb-4">
-          {currentLesson.description}
+          {typeof currentLesson.description === 'string' ? currentLesson.description : '课程描述'}
         </p>
 
         {/* 进度条 */}
@@ -317,7 +317,7 @@ const LessonPage = () => {
                       未知卡片类型
                     </h3>
                     <p className="text-gray-800">
-                      卡片类型：{currentCard.type}
+                      卡片类型：{typeof currentCard.type === 'string' ? currentCard.type : '未知'}
                     </p>
                   </div>
                 </div>

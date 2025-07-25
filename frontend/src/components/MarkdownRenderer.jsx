@@ -12,6 +12,10 @@ const MarkdownRenderer = ({
   useEffect(() => {
     if (!containerRef.current || !content) return
 
+    // 确保content是字符串
+    const contentStr = typeof content === 'string' ? content : String(content || '')
+    if (!contentStr.trim()) return
+
     const container = containerRef.current
     container.innerHTML = ''
 
@@ -21,7 +25,7 @@ const MarkdownRenderer = ({
       mainDiv.className = 'space-y-4'
 
       // 按段落分割内容
-      const paragraphs = content.split('\n\n')
+      const paragraphs = contentStr.split('\n\n')
 
       paragraphs.forEach(paragraph => {
         if (!paragraph.trim()) return
