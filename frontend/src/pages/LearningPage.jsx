@@ -81,7 +81,9 @@ const LearningPage = () => {
       }
     } catch (err) {
       console.error('初始化学习失败:', err)
-      setError('加载学习内容失败，请刷新重试')
+      const errorMessage = typeof err === 'string' ? err :
+                          err?.message || '加载学习内容失败，请刷新重试'
+      setError(errorMessage)
     } finally {
       setIsLoading(false)
     }
@@ -126,7 +128,7 @@ const LearningPage = () => {
     return (
       <div className="container mx-auto px-4 py-8">
         <div className="text-center">
-          <div className="text-red-600 mb-4">❌ {error}</div>
+          <div className="text-red-600 mb-4">❌ {typeof error === 'string' ? error : '加载失败，请重试'}</div>
           <button 
             onClick={initializeLearning}
             className="btn btn-primary"
@@ -173,7 +175,7 @@ const LearningPage = () => {
   return (
     <div className="container mx-auto px-4 py-8">
       {/* 学习任务卡片 */}
-      {currentTask && (
+      {currentTask && typeof currentTask === 'object' && (
         <div className="max-w-2xl mx-auto">
           {/* 任务类型指示 */}
           <div className="text-center mb-6">
@@ -196,15 +198,16 @@ const LearningPage = () => {
             <div className="p-8 text-center">
               <h1 className="text-3xl font-bold text-gray-900 mb-3">
                 {taskType === 'review' ?
-                  (currentTask.lesson_title || currentTask.title) :
-                  currentTask.title
+                  (typeof currentTask.lesson_title === 'string' ? currentTask.lesson_title :
+                   typeof currentTask.title === 'string' ? currentTask.title : '复习课程') :
+                  (typeof currentTask.title === 'string' ? currentTask.title : '学习课程')
                 }
               </h1>
 
               <p className="text-gray-600 text-lg leading-relaxed mb-6">
                 {taskType === 'review' ?
-                  `复习练习：${currentTask.question || '巩固已学知识'}` :
-                  currentTask.description
+                  `复习练习：${typeof currentTask.question === 'string' ? currentTask.question : '巩固已学知识'}` :
+                  (typeof currentTask.description === 'string' ? currentTask.description : '开始学习新课程')
                 }
               </p>
 

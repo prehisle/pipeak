@@ -17,6 +17,7 @@ import StyleTestPage from './pages/StyleTestPage'
 // 布局组件
 import Layout from './components/Layout'
 import LoadingSpinner from './components/LoadingSpinner'
+import ErrorBoundary from './components/ErrorBoundary'
 import DemoNotice from './components/DemoNotice'
 // 移除练习演示组件
 import { isDemoMode } from './services/demoApi'
@@ -44,9 +45,10 @@ function App() {
   }
 
   return (
-    <div className="App">
-      <DemoNotice />
-      <Routes>
+    <ErrorBoundary>
+      <div className="App">
+        <DemoNotice />
+        <Routes>
         {/* 公开路由 */}
         <Route 
           path="/login" 
@@ -78,7 +80,8 @@ function App() {
         {/* 404 路由 */}
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
-    </div>
+      </div>
+    </ErrorBoundary>
   )
 }
 
