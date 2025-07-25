@@ -2,11 +2,14 @@ import { useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { useAuthStore } from '../stores/authStore'
+import { useUserModeStore } from '../stores/userModeStore'
 import LanguageSwitcher from '../components/LanguageSwitcher'
 import ThemeSwitcher from '../components/ThemeSwitcher'
 import Button from '../components/ui/Button'
 import { Input, Label } from '../components/ui/Input'
 import { Alert, AlertDescription } from '../components/ui/Alert'
+import DataSyncModal from '../components/DataSyncModal'
+import dataSyncService from '../services/dataSyncService'
 import { isDemoMode } from '../services/demoApi'
 
 const LoginPage = () => {
@@ -15,8 +18,11 @@ const LoginPage = () => {
     password: ''
   })
   const [errors, setErrors] = useState({})
+  const [showSyncModal, setShowSyncModal] = useState(false)
+  const [loginSuccess, setLoginSuccess] = useState(false)
 
   const { login, isLoading, error } = useAuthStore()
+  const { isGuestMode, hasLocalData, switchToUserMode } = useUserModeStore()
   const { t } = useTranslation()
   const navigate = useNavigate()
 
@@ -55,16 +61,64 @@ const LoginPage = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault()
-    
+
     if (!validateForm()) {
       return
     }
-    
+
     const result = await login(formData.email, formData.password)
-    
+
     if (result.success) {
+      setLoginSuccess(true)
+
+      // 检查是否有本地数据需要同步
+      if (isGuestMode && hasLocalData()) {
+        setShowSyncModal(true)
+      } else {
+        // 直接切换到用户模式并跳转
+        switchToUserMode()
+        navigate('/dashboard')
+      }
+    }
+  }
+
+  const handleSyncData = async () => {
+    try {
+      const result = await dataSyncService.syncAllData()
+      if (result.success) {
+        // 同步成功，清除本地数据并切换模式
+        await dataSyncService.clearLocalData()
+        switchToUserMode()
+        setShowSyncModal(false)
+        navigate('/dashboard')
+      } else {
+        console.error('Data sync failed:', result.message)
+        // 即使同步失败，也允许用户继续
+        switchToUserMode()
+        setShowSyncModal(false)
+        navigate('/dashboard')
+      }
+    } catch (error) {
+      console.error('Data sync error:', error)
+      // 同步出错，但仍然允许用户继续
+      switchToUserMode()
+      setShowSyncModal(false)
       navigate('/dashboard')
     }
+  }
+
+  const handleSkipSync = () => {
+    // 跳过同步，直接切换到用户模式
+    switchToUserMode()
+    setShowSyncModal(false)
+    navigate('/dashboard')
+  }
+
+  const handleCloseSyncModal = () => {
+    setShowSyncModal(false)
+    // 如果用户关闭模态框，仍然切换到用户模式
+    switchToUserMode()
+    navigate('/dashboard')
   }
 
   return (
@@ -194,6 +248,14 @@ const LoginPage = () => {
           </div>
         </form>
       </div>
+
+      {/* 数据同步模态框 */}
+      <DataSyncModal
+        isOpen={showSyncModal}
+        onClose={handleCloseSyncModal}
+        onSync={handleSyncData}
+        onSkip={handleSkipSync}
+      />
     </div>
   )
 }

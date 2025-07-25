@@ -1,5 +1,7 @@
 import axios from 'axios'
 import { demoAPI, isDemoMode } from './demoApi'
+import localDataAdapter from './localDataAdapter'
+import { useUserModeStore } from '../stores/userModeStore'
 
 // 动态获取API基础URL
 const getApiBaseUrl = () => {
@@ -23,6 +25,28 @@ const getApiBaseUrl = () => {
   }
   // 默认使用localhost
   return 'http://localhost:5000/api'
+}
+
+// 检查是否为游客模式
+const isGuestMode = () => {
+  try {
+    const userModeStore = useUserModeStore.getState()
+    return userModeStore.isGuestMode
+  } catch (e) {
+    // 如果store还未初始化，检查localStorage
+    return localStorage.getItem('latex_trainer_guest_mode') !== 'false'
+  }
+}
+
+// 获取合适的API适配器
+const getApiAdapter = () => {
+  if (isGuestMode()) {
+    return localDataAdapter
+  } else if (isDemoMode()) {
+    return demoAPI
+  } else {
+    return api // 真实API
+  }
 }
 
 // 创建axios实例
@@ -93,32 +117,30 @@ api.interceptors.response.use(
 export const lessonAPI = {
   // 获取课程列表
   getLessons: async () => {
-    if (isDemoMode()) {
-      return await demoAPI.lessons.getLessons()
-    }
-    const response = await api.get('/lessons')
-    return response.data
+    const adapter = getApiAdapter()
+    return adapter.getLessons()
   },
 
   // 获取特定课程详情
   getLesson: async (lessonId) => {
-    if (isDemoMode()) {
-      return await demoAPI.lessons.getLesson(lessonId)
-    }
-    const response = await api.get(`/lessons/${lessonId}`)
-    return response.data
+    const adapter = getApiAdapter()
+    return adapter.getLesson(lessonId)
   },
 
   // 完成课程
   completeLesson: async (lessonId) => {
-    const response = await api.post(`/lessons/${lessonId}/complete`)
-    return response.data
+    const adapter = getApiAdapter()
+    return adapter.completeLesson(lessonId)
   },
 
   // 获取课程完成状态
   getCompletionStatus: async (lessonId) => {
-    const response = await api.get(`/lessons/${lessonId}/completion-status`)
-    return response.data
+    const adapter = getApiAdapter()
+    if (adapter.getCompletionStatus) {
+      return adapter.getCompletionStatus(lessonId)
+    }
+    // 对于不支持此方法的适配器，返回默认值
+    return { isCompleted: false }
   }
 }
 
@@ -126,29 +148,44 @@ export const lessonAPI = {
 export const learningAPI = {
   // 提交练习答案（课程内练习）
   submitAnswer: async (data) => {
-    if (isDemoMode()) {
-      return await demoAPI.practice.submitAnswer(data)
-    }
-    const response = await api.post('/practice/submit', data)
-    return response.data
+    const adapter = getApiAdapter()
+    return adapter.submitPractice(data.practice_id, data.answer)
   },
 
   // 获取提示（课程内练习）
   getHint: async (data) => {
-    if (isDemoMode()) {
-      return { hint: '这是一个演示提示' }
-    }
-    const response = await api.post('/practice/hint', data)
-    return response.data
+    // 游客模式和演示模式都返回简单提示
+    return { hint: '这是一个演示提示' }
   },
 
   // 获取课程完成状态
   getCompletionStatus: async (lessonId) => {
-    if (isDemoMode()) {
-      return { data: { completed_practice_details: [] } }
+    const adapter = getApiAdapter()
+    if (adapter.getCompletionStatus) {
+      return { data: adapter.getCompletionStatus(lessonId) }
     }
-    const response = await api.get(`/lessons/${lessonId}/completion-status`)
-    return { data: response.data }
+    return { data: { completed_practice_details: [] } }
+  }
+}
+
+// 练习相关的 API
+export const practiceAPI = {
+  // 获取练习题列表
+  getPractices: async (filters = {}) => {
+    const adapter = getApiAdapter()
+    return adapter.getPractices(filters)
+  },
+
+  // 提交练习答案
+  submitPractice: async (practiceId, answer) => {
+    const adapter = getApiAdapter()
+    return adapter.submitPractice(practiceId, answer)
+  },
+
+  // 获取练习统计
+  getStats: async () => {
+    const adapter = getApiAdapter()
+    return adapter.getPracticeStats()
   }
 }
 
@@ -156,47 +193,41 @@ export const learningAPI = {
 export const reviewAPI = {
   // 获取今日复习任务
   getTodayReviews: async () => {
-    if (isDemoMode()) {
-      return []
-    }
-    const response = await api.get('/reviews/today')
-    return response.data
+    const adapter = getApiAdapter()
+    return adapter.getTodayReviews()
   },
 
   // 提交复习答案（包含遗忘曲线计算）
   submitReview: async (data) => {
-    if (isDemoMode()) {
-      return { success: true }
-    }
-    const response = await api.post('/reviews/submit', data)
-    return response.data
+    const adapter = getApiAdapter()
+    return adapter.submitReview(data.practice_id, data.answer, data.quality || 3)
   },
 
   // 获取复习统计
   getStats: async () => {
-    if (isDemoMode()) {
-      return { totalItems: 0, dueItems: 0, masteredItems: 0 }
+    const adapter = getApiAdapter()
+    if (adapter.getReviewStats) {
+      return adapter.getReviewStats()
     }
-    const response = await api.get('/reviews/stats')
-    return response.data
+    return { totalItems: 0, dueItems: 0, masteredItems: 0 }
   },
 
   // 获取用户的所有复习项目
   getAllReviewItems: async () => {
-    if (isDemoMode()) {
-      return []
+    const adapter = getApiAdapter()
+    if (adapter.getAllReviewItems) {
+      return adapter.getAllReviewItems()
     }
-    const response = await api.get('/reviews/items')
-    return response.data
+    return []
   },
 
   // 更新复习项目数据
   updateReviewItem: async (itemId, reviewData) => {
-    if (isDemoMode()) {
-      return { success: true }
+    const adapter = getApiAdapter()
+    if (adapter.updateReviewItem) {
+      return adapter.updateReviewItem(itemId, reviewData)
     }
-    const response = await api.put(`/reviews/items/${itemId}`, reviewData)
-    return response.data
+    return { success: true }
   }
 }
 

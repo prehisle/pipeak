@@ -3,12 +3,15 @@ import { Link } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { useAuthStore } from '../stores/authStore'
 import { useLessonStore } from '../stores/lessonStore'
+import { useUserModeStore } from '../stores/userModeStore'
 import { reviewAPI } from '../services/api'
 import LoadingSpinner from '../components/LoadingSpinner'
 import SmartText from '../components/SmartText'
+import GuestWelcome from '../components/GuestWelcome'
 
 const DashboardPage = () => {
   const { user } = useAuthStore()
+  const { isGuestMode } = useUserModeStore()
   const { t } = useTranslation()
   const {
     lessons,
@@ -73,6 +76,9 @@ const DashboardPage = () => {
           <p className="text-sm text-red-600">{error}</p>
         </div>
       )}
+
+      {/* 游客模式欢迎 */}
+      {isGuestMode && <GuestWelcome />}
 
       {/* 学习进度概览 */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">

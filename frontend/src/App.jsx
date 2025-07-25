@@ -1,6 +1,7 @@
 import { Routes, Route, Navigate } from 'react-router-dom'
 import { useAuthStore } from './stores/authStore'
 import { useThemeStore } from './stores/themeStore'
+import { useUserModeStore } from './stores/userModeStore'
 import { useEffect } from 'react'
 
 // 页面组件
@@ -24,10 +25,14 @@ import DemoNotice from './components/DemoNotice'
 import { isDemoMode } from './services/demoApi'
 
 function App() {
-  const { user, isLoading, checkAuth, initializeAuth } = useAuthStore()
+  const { user, isLoading, checkAuth, initializeAuth, isAuthenticated } = useAuthStore()
   const { initializeTheme } = useThemeStore()
+  const { initializeUserMode } = useUserModeStore()
 
   useEffect(() => {
+    // 应用启动时初始化用户模式
+    initializeUserMode()
+
     // 应用启动时初始化主题
     initializeTheme()
 
@@ -38,7 +43,7 @@ function App() {
     if (!isDemoMode()) {
       checkAuth()
     }
-  }, [checkAuth, initializeAuth, initializeTheme])
+  }, [checkAuth, initializeAuth, initializeTheme, initializeUserMode])
 
   // 显示加载状态
   if (isLoading) {
@@ -55,13 +60,13 @@ function App() {
         <DemoNotice />
         <Routes>
         {/* 公开路由 */}
-        <Route 
-          path="/login" 
-          element={user ? <Navigate to="/dashboard" replace /> : <LoginPage />} 
+        <Route
+          path="/login"
+          element={isAuthenticated() ? <Navigate to="/dashboard" replace /> : <LoginPage />}
         />
         <Route
           path="/register"
-          element={user ? <Navigate to="/dashboard" replace /> : <RegisterPage />}
+          element={isAuthenticated() ? <Navigate to="/dashboard" replace /> : <RegisterPage />}
         />
 
         {/* 测试路由 */}
@@ -69,9 +74,9 @@ function App() {
         <Route path="/render-test" element={<RenderTestPage />} />
 
         {/* 受保护的路由 */}
-        <Route 
-          path="/" 
-          element={user ? <Layout /> : <Navigate to="/login" replace />}
+        <Route
+          path="/"
+          element={isAuthenticated() ? <Layout /> : <Navigate to="/login" replace />}
         >
           <Route index element={<Navigate to="/learning" replace />} />
           <Route path="dashboard" element={<DashboardPage />} />

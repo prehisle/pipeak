@@ -3,6 +3,7 @@ import { useTranslation } from 'react-i18next'
 import { useAuthStore } from '../stores/authStore'
 import LanguageSwitcher from './LanguageSwitcher'
 import ThemeSwitcher from './ThemeSwitcher'
+import GuestModeNotice from './GuestModeNotice'
 
 const Layout = () => {
   const { user, logout } = useAuthStore()
@@ -83,6 +84,9 @@ const Layout = () => {
           </div>
         </div>
       </header>
+
+      {/* 游客模式提示 */}
+      <GuestModeNotice />
 
       {/* 主内容区域 */}
       <main className="container mx-auto px-4 py-8">
