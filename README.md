@@ -1,14 +1,55 @@
-# LaTeX 速成训练器 (LaTeX Speed Trainer)
+# 🚀 LaTeX 速成训练器 (LaTeX Speed Trainer)
 
-一个专注、高效的在线训练环境，帮助用户通过"学习-练习-反馈-复习"的科学闭环，快速掌握LaTeX数学公式的键盘输入方法。
+<div align="center">
 
-## 🎯 项目目标
+![GitHub stars](https://img.shields.io/github/stars/prehisle/pipeak?style=social)
+![GitHub forks](https://img.shields.io/github/forks/prehisle/pipeak?style=social)
+![GitHub issues](https://img.shields.io/github/issues/prehisle/pipeak)
+![GitHub license](https://img.shields.io/github/license/prehisle/pipeak)
 
-- ✅ 提供结构化的LaTeX学习课程 (10个课程，从基础到高级)
-- ✅ 实时LaTeX预览和练习 (输入即预览)
-- ✅ 智能错误提示系统 (渐进式提示)
-- ✅ 交互式练习环境 (38个实战练习题)
-- ✅ 提升与AI大模型沟通时的数学公式输入效率
+**一个专注、高效的在线训练环境，帮助用户通过"学习-练习-反馈-复习"的科学闭环，快速掌握LaTeX数学公式的键盘输入方法。**
+
+[🎯 在线演示](#) | [📖 使用指南](#-快速开始) | [🤝 贡献指南](#-贡献指南) | [📄 更新日志](#-更新日志)
+
+</div>
+
+---
+
+## 📺 项目演示
+
+> **注意**: 截图正在准备中，请先启动项目体验完整功能
+
+<!--
+### 🏠 主界面
+![主界面](screenshots/dashboard.png)
+
+### 🏋️ 练习中心
+![练习中心](screenshots/practice-center.png)
+
+### 📝 练习执行
+![练习执行](screenshots/practice-exercise.png)
+
+### 📊 学习统计
+![学习统计](screenshots/practice-stats.png)
+-->
+
+## 🎯 项目特色
+
+### 🌟 为什么选择LaTeX速成训练器？
+
+- 🎓 **系统化学习路径**: 10个精心设计的课程，从基础语法到高级应用
+- 🏋️ **实战练习导向**: 38个真实场景练习题，学以致用
+- 🧠 **智能学习系统**: AI驱动的个性化推荐和进度追踪
+- ⚡ **即时反馈机制**: 实时预览 + 智能验证，错误立即纠正
+- 📱 **全平台支持**: 响应式设计，支持桌面、平板、手机
+- 🔄 **科学复习算法**: 基于SM-2算法的智能复习提醒
+
+### 🎯 适用场景
+
+- 📚 **学术写作**: 论文、报告中的数学公式输入
+- 🤖 **AI交互**: 与ChatGPT、Claude等AI模型进行数学讨论
+- 👨‍🏫 **教学辅助**: 教师制作数学课件和习题
+- 📊 **技术文档**: 工程和科研文档中的公式表达
 
 ## ✨ 核心功能
 
@@ -40,10 +81,17 @@
 - **进度追踪**: 记录学习进度和练习成绩
 - **成就反馈**: 完成练习后的即时反馈和鼓励
 
+### 🔄 智能复习系统
+- **SM-2算法**: 科学的间隔重复学习算法
+- **个性化复习**: 根据掌握程度调整复习频率
+- **进度追踪**: 详细的学习数据分析和可视化
+- **成就系统**: 学习里程碑和成就徽章
+
 ### 🌐 多设备支持
 - **响应式设计**: 支持桌面、平板、手机访问
 - **局域网部署**: 支持多设备同时访问
 - **跨平台兼容**: 支持所有现代浏览器
+- **离线缓存**: PWA支持，部分功能可离线使用
 
 ## 🏗️ 技术栈
 
@@ -85,6 +133,55 @@ latex-trainer/
 ├── docs/                   # 文档
 └── README.md
 ```
+
+## 🚀 快速开始
+
+### 📋 环境要求
+
+| 组件 | 版本要求 | 说明 |
+|------|----------|------|
+| Python | 3.8+ | 后端运行环境 |
+| Node.js | 16+ | 前端构建工具 |
+| MongoDB | 4.4+ | 数据库 |
+| 浏览器 | 现代浏览器 | 支持ES6+和WebGL |
+
+### ⚡ 一键启动 (推荐)
+
+```bash
+# 1. 克隆项目
+git clone https://github.com/prehisle/pipeak.git
+cd pipeak
+
+# 2. 启动后端 (新终端窗口)
+cd backend
+pip install -r requirements.txt
+python app.py
+
+# 3. 启动前端 (新终端窗口)
+cd frontend
+npm install
+npm run dev
+
+# 4. 打开浏览器访问
+# 前端: http://localhost:5173
+# 后端API: http://localhost:5000
+```
+
+### 🎯 首次使用指南
+
+1. **注册账户**: 访问 http://localhost:5173 并注册新账户
+2. **开始学习**: 从第1课"数学环境与基础语法"开始
+3. **练习巩固**: 完成课程后到练习中心进行专项训练
+4. **复习提升**: 使用复习系统巩固已学知识
+
+### 🔍 功能导览
+
+| 页面 | 功能 | 快捷键 |
+|------|------|--------|
+| 学习面板 | 课程概览、学习进度 | `Ctrl+1` |
+| 练习中心 | 练习题库、智能推荐 | `Ctrl+2` |
+| 复习页面 | 智能复习、错题重做 | `Ctrl+3` |
+| 课程页面 | 交互式学习、实时预览 | `Ctrl+Enter` 提交 |
 
 ## 🚀 开发阶段
 
@@ -203,12 +300,89 @@ mongodb://user:password@192.168.1.4:27017/?authSource=admin
 
 ## 🤝 贡献指南
 
-1. Fork 项目
-2. 创建功能分支 (`git checkout -b feature/AmazingFeature`)
-3. 提交更改 (`git commit -m 'Add some AmazingFeature'`)
-4. 推送到分支 (`git push origin feature/AmazingFeature`)
-5. 打开 Pull Request
+我们欢迎所有形式的贡献！无论是bug报告、功能建议还是代码贡献。
 
-## 📄 许可证
+### 🐛 报告问题
+
+如果您发现了bug或有功能建议，请：
+
+1. 检查 [Issues](https://github.com/prehisle/pipeak/issues) 确认问题未被报告
+2. 创建新的Issue，详细描述问题或建议
+3. 提供复现步骤、环境信息和截图（如适用）
+
+### 💻 代码贡献
+
+1. **Fork项目** 到您的GitHub账户
+2. **创建分支** `git checkout -b feature/amazing-feature`
+3. **提交更改** `git commit -m 'Add some amazing feature'`
+4. **推送分支** `git push origin feature/amazing-feature`
+5. **创建Pull Request**
+
+### 🎯 贡献方向
+
+- 🐛 修复已知bug
+- ✨ 添加新的LaTeX符号支持
+- 🎨 改进用户界面设计
+- 📱 优化移动端体验
+- 🌍 添加多语言支持
+- 📊 增强数据分析功能
+
+## 📄 更新日志
+
+### v1.2.0 (2024-07-25) - 练习系统完善版
+
+#### ✨ 新功能
+- 🏋️ **练习中心**: 完整的练习题管理和执行环境
+- 🔍 **智能搜索**: 支持按题目内容、课程名称搜索
+- 💡 **个性化推荐**: 基于学习进度的智能练习建议
+- 📊 **统计分析**: 详细的学习数据可视化
+- 🎯 **筛选系统**: 按课程、难度、完成状态筛选
+
+#### 🔧 改进
+- 增强LaTeX答案验证，支持更多等价形式
+- 优化练习完成后的反馈体验
+- 改进统计图表的视觉效果
+- 完善移动端响应式设计
+
+### v1.1.0 (2024-07-24) - 核心功能完善版
+
+#### ✨ 新功能
+- 📚 完整的10个课程体系
+- 🏋️ 38个实战练习题
+- 🔄 SM-2智能复习算法
+- 🎯 渐进式提示系统
+
+### v1.0.0 (2024-07-23) - 首个正式版本
+
+#### ✨ 核心功能
+- � 用户认证系统
+- 📖 交互式课程学习
+- ⚡ 实时LaTeX预览
+- 📊 学习进度追踪
+
+## �📄 许可证
 
 本项目采用 MIT 许可证 - 查看 [LICENSE](LICENSE) 文件了解详情。
+
+## 🙏 致谢
+
+- [KaTeX](https://katex.org/) - 优秀的LaTeX数学公式渲染库
+- [React](https://reactjs.org/) - 强大的前端框架
+- [Flask](https://flask.palletsprojects.com/) - 轻量级的Python Web框架
+- [MongoDB](https://www.mongodb.com/) - 灵活的NoSQL数据库
+- [Tailwind CSS](https://tailwindcss.com/) - 实用优先的CSS框架
+
+## 📞 联系我们
+
+- 💬 Discussions: [GitHub Discussions](https://github.com/prehisle/pipeak/discussions)
+- 🐛 Issues: [GitHub Issues](https://github.com/prehisle/pipeak/issues)
+
+---
+
+<div align="center">
+  <strong>🎯 让LaTeX学习变得简单高效！</strong>
+
+  如果这个项目对您有帮助，请给我们一个 ⭐ Star！
+
+  [⬆ 回到顶部](#-latex-速成训练器-latex-speed-trainer)
+</div>
