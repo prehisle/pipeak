@@ -17,16 +17,55 @@ const PracticeCard = ({
   const [isCorrect, setIsCorrect] = useState(false)
   const [syntaxSuggestions, setSyntaxSuggestions] = useState([])
 
-  // 重置状态当卡片改变时
+  // 检查当前练习是否已完成并加载状态
   useEffect(() => {
-    setUserAnswer('')
-    setFeedback(null)
-    setShowHint(false)
-    setCurrentHint('')
-    setHintLevel(0)
-    setIsCorrect(false)
-    setSyntaxSuggestions([])
-  }, [cardIndex])
+    const checkPracticeStatus = async () => {
+      try {
+        // 获取当前课程的完成状态
+        const response = await practiceAPI.getCompletionStatus(lessonId)
+        if (response.data && response.data.completed_practice_details) {
+          // 查找当前练习题的完成状态
+          const currentPractice = response.data.completed_practice_details.find(
+            practice => practice.index === cardIndex
+          )
+
+          if (currentPractice) {
+            // 如果已完成，设置为完成状态
+            setIsCorrect(true)
+            setUserAnswer(card.target_formula || '')
+            setFeedback({
+              type: 'success',
+              message: '🎉 太棒了！答案完全正确！'
+            })
+          } else {
+            // 如果未完成，重置状态
+            setUserAnswer('')
+            setFeedback(null)
+            setIsCorrect(false)
+          }
+        } else {
+          // 如果没有完成状态，重置状态
+          setUserAnswer('')
+          setFeedback(null)
+          setIsCorrect(false)
+        }
+      } catch (error) {
+        console.error('检查练习状态失败:', error)
+        // 出错时重置状态
+        setUserAnswer('')
+        setFeedback(null)
+        setIsCorrect(false)
+      }
+
+      // 重置其他状态
+      setShowHint(false)
+      setCurrentHint('')
+      setHintLevel(0)
+      setSyntaxSuggestions([])
+    }
+
+    checkPracticeStatus()
+  }, [cardIndex, lessonId, card.target_formula])
 
   // 智能语法检查和建议
   const checkSyntax = (input) => {

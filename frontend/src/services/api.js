@@ -151,6 +151,15 @@ export const practiceAPI = {
     return response.data
   },
 
+  // 获取课程完成状态
+  getCompletionStatus: async (lessonId) => {
+    if (isDemoMode()) {
+      return { data: { completed_practice_details: [] } }
+    }
+    const response = await api.get(`/lessons/${lessonId}/completion-status`)
+    return { data: response.data }
+  },
+
   // 获取练习题列表
   getPracticeList: async (filters = {}) => {
     if (isDemoMode()) {
