@@ -27,7 +27,10 @@ def create_app(config_name=None):
     app = Flask(__name__)
     
     # 加载配置
-    if config_name:
+    if config_name == 'production':
+        from config_production import ProductionConfig
+        app.config.from_object(ProductionConfig)
+    elif config_name:
         from config import config
         app.config.from_object(config[config_name])
     else:

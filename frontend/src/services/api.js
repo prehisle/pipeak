@@ -8,6 +8,11 @@ const getApiBaseUrl = () => {
     return ''
   }
 
+  // 生产环境使用环境变量
+  if (import.meta.env.VITE_API_BASE_URL) {
+    return import.meta.env.VITE_API_BASE_URL
+  }
+
   // 如果是开发环境，尝试使用当前主机的IP
   if (import.meta.env.DEV) {
     const currentHost = window.location.hostname

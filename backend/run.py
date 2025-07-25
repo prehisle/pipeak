@@ -4,8 +4,14 @@ LaTeX 速成训练器 - 应用入口文件
 import os
 from app import create_app
 
-# 创建Flask应用实例
-app = create_app()
+# 根据环境变量选择配置
+config_name = os.environ.get('FLASK_ENV', 'development')
+app = create_app(config_name)
+
+# 添加健康检查端点
+@app.route('/api/health')
+def health_check():
+    return {'status': 'healthy', 'message': 'LaTeX Speed Trainer API is running'}
 
 if __name__ == '__main__':
     # 从环境变量获取配置，默认为开发模式
