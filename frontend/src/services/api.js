@@ -78,6 +78,33 @@ api.interceptors.response.use(
   }
 )
 
+// 课程相关的 API
+export const lessonAPI = {
+  // 获取课程列表
+  getLessons: async () => {
+    const response = await api.get('/lessons')
+    return response.data
+  },
+
+  // 获取特定课程详情
+  getLesson: async (lessonId) => {
+    const response = await api.get(`/lessons/${lessonId}`)
+    return response.data
+  },
+
+  // 完成课程
+  completeLesson: async (lessonId) => {
+    const response = await api.post(`/lessons/${lessonId}/complete`)
+    return response.data
+  },
+
+  // 获取课程完成状态
+  getCompletionStatus: async (lessonId) => {
+    const response = await api.get(`/lessons/${lessonId}/completion-status`)
+    return response.data
+  }
+}
+
 // 练习相关的 API
 export const practiceAPI = {
   // 提交练习答案
@@ -95,6 +122,23 @@ export const practiceAPI = {
   // 获取练习进度
   getProgress: async (lessonId) => {
     const response = await api.get(`/practice/progress/${lessonId}`)
+    return response.data
+  },
+
+  // 获取练习题列表
+  getPracticeList: async (filters = {}) => {
+    const params = new URLSearchParams()
+    if (filters.course) params.append('course', filters.course)
+    if (filters.difficulty) params.append('difficulty', filters.difficulty)
+    if (filters.topic) params.append('topic', filters.topic)
+
+    const response = await api.get(`/practice/list?${params.toString()}`)
+    return response.data
+  },
+
+  // 获取练习统计
+  getStats: async () => {
+    const response = await api.get('/practice/stats')
     return response.data
   }
 }

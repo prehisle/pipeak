@@ -8,6 +8,7 @@ import RegisterPage from './pages/RegisterPage'
 import DashboardPage from './pages/DashboardPage'
 import LessonPage from './pages/LessonPage'
 import PracticePage from './pages/PracticePage'
+import PracticeExercisePage from './pages/PracticeExercisePage'
 import ReviewPage from './pages/ReviewPage'
 import TestPage from './pages/TestPage'
 import RenderTestPage from './pages/RenderTestPage'
@@ -61,7 +62,9 @@ function App() {
           <Route index element={<Navigate to="/dashboard" replace />} />
           <Route path="dashboard" element={<DashboardPage />} />
           <Route path="lesson/:lessonId" element={<LessonPage />} />
+          <Route path="practice" element={<PracticePage />} />
           <Route path="practice/:practiceId" element={<PracticePage />} />
+          <Route path="practice-exercise/:lessonId" element={<PracticeExercisePage />} />
           <Route path="practice-demo" element={<PracticeDemo />} />
           <Route path="review" element={<ReviewPage />} />
           <Route path="style-test" element={<StyleTestPage />} />

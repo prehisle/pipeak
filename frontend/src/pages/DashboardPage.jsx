@@ -140,6 +140,30 @@ const DashboardPage = () => {
           </div>
         </div>
 
+        {/* 练习中心 */}
+        <div className="card">
+          <div className="card-body">
+            <div className="flex items-start justify-between gap-4">
+              <div className="flex-1 min-w-0">
+                <h3 className="text-lg font-semibold text-gray-900 mb-1">
+                  练习中心
+                </h3>
+                <p className="text-gray-600 text-sm">
+                  独立练习模式，巩固LaTeX技能
+                </p>
+              </div>
+              <div className="flex-shrink-0">
+                <Link
+                  to="/practice"
+                  className="btn btn-primary"
+                >
+                  开始练习
+                </Link>
+              </div>
+            </div>
+          </div>
+        </div>
+
         {/* LaTeX练习演示 */}
         <div className="card">
           <div className="card-body">

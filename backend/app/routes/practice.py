@@ -176,11 +176,156 @@ def get_practice_progress(lesson_id):
         return jsonify({'error': f'获取进度时出错: {str(e)}'}), 500
 
 
+@practice_bp.route('/list', methods=['GET'])
+@jwt_required()
+def get_practice_list():
+    """获取所有练习题列表"""
+    try:
+        user_id = get_jwt_identity()
+        from app import get_db
+        db = get_db()
+
+        # 获取查询参数
+        course_filter = request.args.get('course')
+        difficulty_filter = request.args.get('difficulty')
+        topic_filter = request.args.get('topic')
+
+        # 获取所有课程中的练习题
+        lessons = list(db.lessons.find({}).sort('sequence', 1))
+        practice_list = []
+
+        for lesson in lessons:
+            for card_index, card in enumerate(lesson['cards']):
+                if card['type'] == 'practice':
+                    # 获取用户在此练习题的记录
+                    user_record = db.practice_records.find_one({
+                        'user_id': ObjectId(user_id),
+                        'lesson_id': lesson['_id'],
+                        'card_index': card_index
+                    }, sort=[('submitted_at', -1)])
+
+                    practice_item = {
+                        'id': f"{lesson['_id']}_{card_index}",
+                        'lesson_id': str(lesson['_id']),
+                        'lesson_title': lesson['title'],
+                        'card_index': card_index,
+                        'question': card['question'],
+                        'target_formula': card['target_formula'],
+                        'difficulty': card.get('difficulty', 'medium'),
+                        'hints': card.get('hints', []),
+                        'completed': user_record['is_correct'] if user_record else False,
+                        'attempts': len(list(db.practice_records.find({
+                            'user_id': ObjectId(user_id),
+                            'lesson_id': lesson['_id'],
+                            'card_index': card_index
+                        }))),
+                        'last_attempt': user_record['submitted_at'] if user_record else None
+                    }
+
+                    # 应用筛选条件
+                    if course_filter and str(lesson['_id']) != course_filter:
+                        continue
+                    if difficulty_filter and practice_item['difficulty'] != difficulty_filter:
+                        continue
+
+                    practice_list.append(practice_item)
+
+        return jsonify({
+            'practices': practice_list,
+            'total': len(practice_list)
+        }), 200
+
+    except Exception as e:
+        return jsonify({'error': f'获取练习题列表时出错: {str(e)}'}), 500
+
+
+@practice_bp.route('/stats', methods=['GET'])
+@jwt_required()
+def get_practice_stats():
+    """获取用户练习统计"""
+    try:
+        user_id = get_jwt_identity()
+        from app import get_db
+        db = get_db()
+
+        # 获取所有练习记录
+        records = list(db.practice_records.find({
+            'user_id': ObjectId(user_id)
+        }))
+
+        if not records:
+            return jsonify({
+                'total_practices': 0,
+                'correct_count': 0,
+                'accuracy_rate': 0,
+                'total_attempts': 0,
+                'difficulty_stats': {},
+                'recent_activity': []
+            }), 200
+
+        # 统计基本数据
+        total_attempts = len(records)
+        correct_count = sum(1 for r in records if r['is_correct'])
+        accuracy_rate = (correct_count / total_attempts * 100) if total_attempts > 0 else 0
+
+        # 按难度统计
+        difficulty_stats = {}
+        lessons = {str(l['_id']): l for l in db.lessons.find({})}
+
+        for record in records:
+            lesson = lessons.get(str(record['lesson_id']))
+            if lesson and record['card_index'] < len(lesson['cards']):
+                card = lesson['cards'][record['card_index']]
+                difficulty = card.get('difficulty', 'medium')
+
+                if difficulty not in difficulty_stats:
+                    difficulty_stats[difficulty] = {'total': 0, 'correct': 0}
+
+                difficulty_stats[difficulty]['total'] += 1
+                if record['is_correct']:
+                    difficulty_stats[difficulty]['correct'] += 1
+
+        # 计算每个难度的正确率
+        for difficulty in difficulty_stats:
+            stats = difficulty_stats[difficulty]
+            stats['accuracy'] = (stats['correct'] / stats['total'] * 100) if stats['total'] > 0 else 0
+
+        # 获取最近活动
+        recent_records = sorted(records, key=lambda x: x['submitted_at'], reverse=True)[:10]
+        recent_activity = []
+
+        for record in recent_records:
+            lesson = lessons.get(str(record['lesson_id']))
+            if lesson:
+                recent_activity.append({
+                    'lesson_title': lesson['title'],
+                    'is_correct': record['is_correct'],
+                    'submitted_at': record['submitted_at'].isoformat()
+                })
+
+        # 统计独特练习题数量
+        unique_practices = set()
+        for record in records:
+            unique_practices.add(f"{record['lesson_id']}_{record['card_index']}")
+
+        return jsonify({
+            'total_practices': len(unique_practices),
+            'correct_count': correct_count,
+            'accuracy_rate': round(accuracy_rate, 1),
+            'total_attempts': total_attempts,
+            'difficulty_stats': difficulty_stats,
+            'recent_activity': recent_activity
+        }), 200
+
+    except Exception as e:
+        return jsonify({'error': f'获取练习统计时出错: {str(e)}'}), 500
+
+
 def check_latex_answer(user_answer, target_answer):
     """检查 LaTeX 答案是否正确 - 支持语义等价性检查"""
 
     def normalize_latex(latex_str):
-        """标准化LaTeX字符串，处理常见的等价形式"""
+        """增强的LaTeX标准化函数，支持更多等价形式"""
         if not latex_str:
             return ""
 
@@ -191,7 +336,18 @@ def check_latex_answer(user_answer, target_answer):
             # 移除美元符号（如果存在）
             latex_str = re.sub(r'^\$+|\$+$', '', latex_str)
 
-            # 标准化数学函数名 - 使用简单的字符串替换
+            # 标准化上标和下标的花括号
+            # x^2 -> x^{2}, x_1 -> x_{1}
+            latex_str = re.sub(r'\^([a-zA-Z0-9])', r'^{\1}', latex_str)
+            latex_str = re.sub(r'_([a-zA-Z0-9])', r'_{\1}', latex_str)
+
+            # 标准化分数形式
+            latex_str = re.sub(r'\\frac\s*\{\s*([^}]+)\s*\}\s*\{\s*([^}]+)\s*\}', r'\\frac{\1}{\2}', latex_str)
+
+            # 标准化根号形式
+            latex_str = re.sub(r'\\sqrt\s*\{\s*([^}]+)\s*\}', r'\\sqrt{\1}', latex_str)
+
+            # 标准化数学函数名
             function_mappings = {
                 ' sin ': ' \\sin ',
                 ' cos ': ' \\cos ',
@@ -223,17 +379,52 @@ def check_latex_answer(user_answer, target_answer):
             # 移除添加的空格
             latex_str = latex_str.strip()
 
-            # 标准化运算符 - 使用简单替换
+            # 标准化运算符
             operator_mappings = {
                 '\\cdot': '*',
                 '\\times': '*',
                 '\\div': '/',
+                '\\neq': '!=',
+                '\\leq': '<=',
+                '\\geq': '>=',
             }
 
             for old, new in operator_mappings.items():
                 latex_str = latex_str.replace(old, new)
 
-            # 最终标准化：移除所有空格进行比较
+            # 标准化希腊字母和特殊符号的空格
+            latex_str = re.sub(r'\\([a-zA-Z]+)\s+', r'\\\1 ', latex_str)
+
+            # 标准化求和、积分等大型运算符
+            latex_str = re.sub(r'\\sum\s*_\s*\{\s*([^}]+)\s*\}\s*\^\s*\{\s*([^}]+)\s*\}', r'\\sum_{\1}^{\2}', latex_str)
+            latex_str = re.sub(r'\\int\s*_\s*\{\s*([^}]+)\s*\}\s*\^\s*\{\s*([^}]+)\s*\}', r'\\int_{\1}^{\2}', latex_str)
+            latex_str = re.sub(r'\\lim\s*_\s*\{\s*([^}]+)\s*\}', r'\\lim_{\1}', latex_str)
+
+            # 标准化矩阵和方程组环境
+            latex_str = re.sub(r'\\begin\s*\{\s*([^}]+)\s*\}', r'\\begin{\1}', latex_str)
+            latex_str = re.sub(r'\\end\s*\{\s*([^}]+)\s*\}', r'\\end{\1}', latex_str)
+
+            # 处理常见的等价形式
+            equivalence_mappings = {
+                # 分数的不同写法
+                '1/2': '\\frac{1}{2}',
+                '(1)/(2)': '\\frac{1}{2}',
+                # 平方根的不同写法
+                'sqrt(x)': '\\sqrt{x}',
+                'sqrt x': '\\sqrt{x}',
+                # 指数的不同写法
+                'e^x': '\\exp(x)',
+                'exp(x)': '\\exp(x)',
+            }
+
+            for old, new in equivalence_mappings.items():
+                latex_str = latex_str.replace(old, new)
+
+            # 最终标准化：移除多余空格但保留必要结构
+            latex_str = re.sub(r'\s+', ' ', latex_str)
+            latex_str = latex_str.strip()
+
+            # 对于最终比较，移除所有空格
             latex_str = re.sub(r'\s+', '', latex_str)
 
             return latex_str.lower()

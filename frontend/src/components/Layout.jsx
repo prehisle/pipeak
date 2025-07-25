@@ -29,21 +29,31 @@ const Layout = () => {
 
             {/* 导航菜单 */}
             <nav className="hidden md:flex items-center space-x-6">
-              <Link 
-                to="/dashboard" 
+              <Link
+                to="/dashboard"
                 className={`px-3 py-2 rounded-md text-sm font-medium transition-colors ${
-                  isActive('/dashboard') 
-                    ? 'bg-blue-100 text-blue-700' 
+                  isActive('/dashboard')
+                    ? 'bg-blue-100 text-blue-700'
                     : 'text-gray-600 hover:text-gray-900 hover:bg-gray-100'
                 }`}
               >
                 学习面板
               </Link>
-              <Link 
-                to="/review" 
+              <Link
+                to="/practice"
                 className={`px-3 py-2 rounded-md text-sm font-medium transition-colors ${
-                  isActive('/review') 
-                    ? 'bg-blue-100 text-blue-700' 
+                  isActive('/practice')
+                    ? 'bg-blue-100 text-blue-700'
+                    : 'text-gray-600 hover:text-gray-900 hover:bg-gray-100'
+                }`}
+              >
+                练习中心
+              </Link>
+              <Link
+                to="/review"
+                className={`px-3 py-2 rounded-md text-sm font-medium transition-colors ${
+                  isActive('/review')
+                    ? 'bg-blue-100 text-blue-700'
                     : 'text-gray-600 hover:text-gray-900 hover:bg-gray-100'
                 }`}
               >
