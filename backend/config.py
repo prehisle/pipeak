@@ -65,11 +65,14 @@ class ProductionConfig(Config):
         self.MONGODB_URI = MONGODB_URI
 
 
+# 导入生产环境配置
+from config_production import ProductionConfig
+
 # 配置字典
 config = {
     'development': DevelopmentConfig,
     'testing': TestingConfig,
-    # 'production': ProductionConfig,
+    'production': ProductionConfig,
     'default': DevelopmentConfig
 }
 
@@ -77,4 +80,9 @@ config = {
 def get_config():
     """获取当前环境的配置"""
     env = os.environ.get('FLASK_ENV', 'development')
+
+    # 如果设置了ENVIRONMENT环境变量，优先使用
+    if os.environ.get('ENVIRONMENT') == 'production':
+        env = 'production'
+
     return config.get(env, config['default'])
