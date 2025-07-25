@@ -31,7 +31,14 @@ class User:
         """验证密码"""
         if not self.password_hash:
             return False
-        return bcrypt.checkpw(password.encode('utf-8'), self.password_hash)
+
+        # 确保password_hash是bytes类型
+        if isinstance(self.password_hash, str):
+            password_hash_bytes = self.password_hash.encode('utf-8')
+        else:
+            password_hash_bytes = self.password_hash
+
+        return bcrypt.checkpw(password.encode('utf-8'), password_hash_bytes)
     
     def to_dict(self, include_sensitive=False):
         """转换为字典格式"""

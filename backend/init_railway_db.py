@@ -154,6 +154,59 @@ def create_comprehensive_lessons(db):
             ],
             'created_at': datetime.utcnow(),
             'updated_at': datetime.utcnow()
+        },
+
+        # 第4课：函数与三角函数
+        {
+            '_id': ObjectId(),
+            'title': '第4课：函数与三角函数',
+            'sequence': 4,
+            'description': '学习函数表示法、三角函数、对数函数等常用数学函数的LaTeX写法。',
+            'cards': [
+                {
+                    'type': 'knowledge',
+                    'content': '**三角函数**\n\n• `\\sin x` → $\\sin x$\n• `\\cos x` → $\\cos x$\n• `\\tan x` → $\\tan x$\n• `\\log x` → $\\log x$\n• `\\ln x` → $\\ln x$'
+                },
+                {
+                    'type': 'practice',
+                    'question': '请输入 LaTeX 代码来表示：sin x',
+                    'target_formula': '$\\sin x$',
+                    'hints': [
+                        '使用 \\sin 命令',
+                        '完整格式：$\\sin x$'
+                    ],
+                    'difficulty': 'easy'
+                }
+            ],
+            'created_at': datetime.utcnow(),
+            'updated_at': datetime.utcnow()
+        },
+
+        # 第5课：求和与积分
+        {
+            '_id': ObjectId(),
+            'title': '第5课：求和与积分',
+            'sequence': 5,
+            'description': '学习求和符号、积分符号、极限符号等高级数学记号的LaTeX表示方法。',
+            'cards': [
+                {
+                    'type': 'knowledge',
+                    'content': '**求和与积分**\n\n• `\\sum_{i=1}^{n}` → $\\sum_{i=1}^{n}$\n• `\\int_{a}^{b}` → $\\int_{a}^{b}$\n• `\\lim_{x \\to 0}` → $\\lim_{x \\to 0}$'
+                },
+                {
+                    'type': 'practice',
+                    'question': '请输入 LaTeX 代码来表示：从1到n的求和',
+                    'target_formula': '$\\sum_{i=1}^{n}$',
+                    'hints': [
+                        '使用 \\sum 命令',
+                        '下标用 _{i=1}，上标用 ^{n}',
+                        '完整格式：$\\sum_{i=1}^{n}$'
+                    ],
+                    'difficulty': 'medium'
+                }
+            ],
+            'created_at': datetime.utcnow(),
+            'updated_at': datetime.utcnow()
         }
     ]
     
