@@ -5,6 +5,8 @@ import LoadingSpinner from '../components/LoadingSpinner'
 import MarkdownRenderer from '../components/MarkdownRenderer'
 import { learningAPI } from '../services/api'
 import PracticeCard from '../components/PracticeCard'
+import { useToast } from '../components/Toast'
+import LessonCompleteModal from '../components/LessonCompleteModal'
 
 const LessonPage = () => {
   const { lessonId } = useParams()
@@ -13,6 +15,10 @@ const LessonPage = () => {
   const [isTransitioning, setIsTransitioning] = useState(false)
   const [completionStatus, setCompletionStatus] = useState(null)
   const [showCompletionModal, setShowCompletionModal] = useState(false)
+  const [showLessonCompleteModal, setShowLessonCompleteModal] = useState(false)
+
+  // Toast系统
+  const { showSuccess, showError, showWarning, ToastContainer } = useToast()
 
   const {
     currentLesson,
@@ -153,7 +159,7 @@ const LessonPage = () => {
 
       if (!response.data) {
         console.error('获取完成状态失败');
-        alert('获取完成状态失败，请重试');
+        showError('获取完成状态失败，请重试');
         return;
       }
 
@@ -172,26 +178,31 @@ const LessonPage = () => {
       // 如果可以完成，则提交完成请求
       const result = await completeLesson(lessonId);
       if (result.success) {
-        // 显示成功消息并延迟跳转，让用户看到成功状态
-        const successMessage = `🎉 恭喜！《${currentLesson?.title}》已完成！\n\n您已掌握所有知识点，可以继续学习下一课了！`;
-        alert(successMessage);
-
-        // 延迟跳转，让用户有时间看到成功状态
-        setTimeout(() => {
-          navigate('/dashboard');
-        }, 500);
+        // 显示成功完成模态框
+        setShowLessonCompleteModal(true);
       } else {
-        alert(result.error || '完成课程失败，请重试');
+        showError(result.error || '完成课程失败，请重试');
       }
     } catch (error) {
       console.error('完成课程时出错:', error);
       if (error.response?.status === 401) {
-        alert('登录已过期，请重新登录');
+        showError('登录已过期，请重新登录');
         navigate('/login');
       } else {
-        alert('完成课程时出错，请重试');
+        showError('完成课程时出错，请重试');
       }
     }
+  }
+
+  // 处理课程完成模态框
+  const handleLessonCompleteClose = () => {
+    setShowLessonCompleteModal(false)
+    navigate('/dashboard')
+  }
+
+  const handleLessonCompleteContinue = () => {
+    setShowLessonCompleteModal(false)
+    navigate('/learning')
   }
 
   if (isLoading) {
@@ -468,6 +479,17 @@ const LessonPage = () => {
           </div>
         </div>
       )}
+
+      {/* 课程完成模态框 */}
+      <LessonCompleteModal
+        isOpen={showLessonCompleteModal}
+        onClose={handleLessonCompleteClose}
+        lessonTitle={currentLesson?.title}
+        onContinue={handleLessonCompleteContinue}
+      />
+
+      {/* Toast容器 */}
+      <ToastContainer />
     </div>
   )
 }
