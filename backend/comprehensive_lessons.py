@@ -8,15 +8,7 @@ from datetime import datetime
 from bson import ObjectId
 
 def create_comprehensive_lessons():
-    """创建全面的LaTeX数学公式课程体系"""
-    # 连接数据库
-    client = pymongo.MongoClient('mongodb://user:password@192.168.1.4:27017/?authSource=admin')
-    db = client['latex_trainer']
-    
-    # 删除所有现有课程
-    result = db.lessons.delete_many({})
-    print(f'删除了 {result.deleted_count} 个课程')
-    
+    """创建全面的LaTeX数学公式课程体系 - 只返回课程数据，不操作数据库"""
     # 全面的课程体系
     lessons = [
         # 第1课：数学环境与基础语法
