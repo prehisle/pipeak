@@ -1,8 +1,11 @@
 [build]
 builder = "NIXPACKS"
 
+[build.nixpacks]
+providers = ["python"]
+
 [deploy]
-startCommand = "gunicorn app:app --bind 0.0.0.0:$PORT"
+startCommand = "gunicorn run:app --bind 0.0.0.0:$PORT"
 healthcheckPath = "/api/health"
 healthcheckTimeout = 100
 restartPolicyType = "ON_FAILURE"
