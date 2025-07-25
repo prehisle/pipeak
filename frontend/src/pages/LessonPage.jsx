@@ -146,32 +146,52 @@ const LessonPage = () => {
   const handleCompleteLesson = async () => {
     console.log('点击完成课程按钮');
 
-    // 先刷新完成状态
-    await fetchCompletionStatus();
+    try {
+      // 直接获取最新的完成状态，不依赖组件状态
+      console.log('开始获取完成状态...');
+      const response = await api.get(`/lessons/${lessonId}/completion-status`);
 
-    // 等待状态更新后再检查
-    setTimeout(() => {
-      console.log('当前完成状态:', completionStatus);
+      if (!response.data) {
+        console.error('获取完成状态失败');
+        alert('获取完成状态失败，请重试');
+        return;
+      }
 
-      if (!completionStatus?.can_complete) {
+      const latestStatus = response.data;
+      console.log('完成状态获取成功:', latestStatus);
+
+      // 更新组件状态
+      setCompletionStatus(latestStatus);
+
+      if (!latestStatus.can_complete) {
         console.log('无法完成课程，显示模态框');
         setShowCompletionModal(true);
         return;
       }
 
       // 如果可以完成，则提交完成请求
-      completeLesson(lessonId).then(result => {
-        if (result.success) {
-          alert('🎉 恭喜！课程已完成，您已掌握所有知识点！');
-          navigate('/dashboard')
-        } else {
-          alert(result.error || '完成课程失败，请重试');
-        }
-      }).catch(error => {
-        console.error('完成课程时出错:', error);
+      const result = await completeLesson(lessonId);
+      if (result.success) {
+        // 显示成功消息并延迟跳转，让用户看到成功状态
+        const successMessage = `🎉 恭喜！《${currentLesson?.title}》已完成！\n\n您已掌握所有知识点，可以继续学习下一课了！`;
+        alert(successMessage);
+
+        // 延迟跳转，让用户有时间看到成功状态
+        setTimeout(() => {
+          navigate('/dashboard');
+        }, 500);
+      } else {
+        alert(result.error || '完成课程失败，请重试');
+      }
+    } catch (error) {
+      console.error('完成课程时出错:', error);
+      if (error.response?.status === 401) {
+        alert('登录已过期，请重新登录');
+        navigate('/login');
+      } else {
         alert('完成课程时出错，请重试');
-      });
-    }, 100); // 给状态更新一点时间
+      }
+    }
   }
 
   if (isLoading) {
@@ -422,8 +442,15 @@ const LessonPage = () => {
 
               <div className="flex space-x-3">
                 <button
-                  onClick={() => setShowCompletionModal(false)}
-                  className="flex-1 px-4 py-2 text-gray-600 bg-gray-100 rounded-lg hover:bg-gray-200 transition-colors"
+                  onClick={() => {
+                    setShowCompletionModal(false);
+                    // 跳转到第一个未完成的练习题
+                    if (completionStatus.pending_practice_details.length > 0) {
+                      const firstPendingIndex = completionStatus.pending_practice_details[0].index;
+                      setCurrentCardIndex(firstPendingIndex);
+                    }
+                  }}
+                  className="flex-1 px-4 py-2 text-white bg-orange-600 rounded-lg hover:bg-orange-700 transition-colors"
                 >
                   继续学习
                 </button>
@@ -432,7 +459,7 @@ const LessonPage = () => {
                     setShowCompletionModal(false);
                     navigate('/dashboard');
                   }}
-                  className="flex-1 px-4 py-2 text-white bg-blue-600 rounded-lg hover:bg-blue-700 transition-colors"
+                  className="flex-1 px-4 py-2 text-gray-600 bg-gray-100 rounded-lg hover:bg-gray-200 transition-colors"
                 >
                   返回课程列表
                 </button>
