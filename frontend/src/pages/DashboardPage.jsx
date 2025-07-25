@@ -8,7 +8,7 @@ import { reviewAPI } from '../services/api'
 import LoadingSpinner from '../components/LoadingSpinner'
 import SmartText from '../components/SmartText'
 
-import { debugProgressConsistency, fixProgressInconsistency } from '../utils/debugProgressConsistency'
+
 
 const DashboardPage = () => {
   const { user } = useAuthStore()
@@ -26,17 +26,11 @@ const DashboardPage = () => {
     initializeStorageListener
   } = useLessonStore()
 
-  const { getLocalDataSummary } = useUserModeStore()
+
 
   const [reviewStats, setReviewStats] = useState(null)
 
   useEffect(() => {
-    console.log('DEBUG: Dashboard useEffect - 开始加载数据')
-    console.log('DEBUG: 当前用户:', user)
-    console.log('DEBUG: 课程数量:', lessons.length)
-    console.log('DEBUG: 加载状态:', isLoading)
-    console.log('DEBUG: 错误信息:', error)
-
     fetchLessons()
     loadReviewStats()
 
@@ -45,22 +39,6 @@ const DashboardPage = () => {
 
     return cleanupStorageListener
   }, [fetchLessons, initializeStorageListener])
-
-  // 在开发模式下检查进度一致性
-  useEffect(() => {
-    if (process.env.NODE_ENV === 'development' && lessons.length > 0) {
-      // 延迟执行，确保数据已加载
-      setTimeout(() => {
-        debugProgressConsistency(
-          { lessons, getLessonStats, getDataSummary },
-          { getLocalDataSummary }
-        )
-
-        // 自动修复不一致问题
-        fixProgressInconsistency({ lessons })
-      }, 1000)
-    }
-  }, [lessons, getLessonStats, getDataSummary, getLocalDataSummary])
 
 
 

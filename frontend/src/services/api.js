@@ -1,5 +1,6 @@
 import axios from 'axios'
 import localDataAdapter from './localDataAdapter'
+import realApiAdapter from './realApiAdapter'
 import { useUserModeStore } from '../stores/userModeStore'
 
 // 动态获取API基础URL
@@ -24,10 +25,12 @@ const getApiBaseUrl = () => {
 // 检查是否为注册用户
 const isRegisteredUser = () => {
   try {
-    // 检查是否有有效的认证token
-    const authToken = localStorage.getItem('auth_token')
-    const userData = localStorage.getItem('user_data')
-    return !!(authToken && userData)
+    // 检查Zustand persist存储的认证数据
+    const authStorage = localStorage.getItem('auth-storage')
+    if (!authStorage) return false
+
+    const authData = JSON.parse(authStorage)
+    return !!(authData.state?.accessToken && authData.state?.user)
   } catch (e) {
     return false
   }
@@ -36,10 +39,8 @@ const isRegisteredUser = () => {
 // 获取合适的API适配器
 const getApiAdapter = () => {
   if (isRegisteredUser()) {
-    // 注册用户优先使用真实API，但在开发/测试环境中可能需要降级到本地数据
-    // 这里暂时使用本地数据适配器，直到后端API可用
-    return localDataAdapter // 临时使用本地数据（开发/测试）
-    // return api // 真实API（生产环境）
+    // 注册用户使用真实API适配器（后端已启动）
+    return realApiAdapter // 真实API适配器
   } else {
     return localDataAdapter // 本地数据（仅用于离线练习）
   }
@@ -114,14 +115,6 @@ export const lessonAPI = {
   // 获取课程列表
   getLessons: async () => {
     const adapter = getApiAdapter()
-    console.log('lessonAPI.getLessons: 使用的适配器:', adapter)
-    console.log('适配器方法:', Object.getOwnPropertyNames(adapter))
-
-    if (!adapter.getLessons) {
-      console.error('适配器没有 getLessons 方法')
-      throw new Error('适配器没有 getLessons 方法')
-    }
-
     return adapter.getLessons()
   },
 

@@ -926,17 +926,12 @@ class LocalDataAdapter {
       const userNormalized = normalizeLatex(userAnswer)
       const targetNormalized = normalizeLatex(targetAnswer)
 
-      console.log(`DEBUG: 用户答案: '${userAnswer}' -> 标准化: '${userNormalized}'`)
-      console.log(`DEBUG: 目标答案: '${targetAnswer}' -> 标准化: '${targetNormalized}'`)
-
       // 直接比较标准化后的结果
       const result = userNormalized === targetNormalized
-      console.log(`DEBUG: 答案比较结果: ${result}`)
-
       return result
 
     } catch (e) {
-      console.error('ERROR: 答案检查出错:', e)
+      console.error('答案检查出错:', e)
       // 出错时回退到简单比较
       try {
         const simpleUser = userAnswer.trim().toLowerCase().replace(/\s+/g, '')
