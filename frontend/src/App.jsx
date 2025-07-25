@@ -1,5 +1,6 @@
 import { Routes, Route, Navigate } from 'react-router-dom'
 import { useAuthStore } from './stores/authStore'
+import { useThemeStore } from './stores/themeStore'
 import { useEffect } from 'react'
 
 // 页面组件
@@ -24,8 +25,12 @@ import { isDemoMode } from './services/demoApi'
 
 function App() {
   const { user, isLoading, checkAuth, initializeAuth } = useAuthStore()
+  const { initializeTheme } = useThemeStore()
 
   useEffect(() => {
+    // 应用启动时初始化主题
+    initializeTheme()
+
     // 应用启动时初始化认证头和检查用户认证状态
     initializeAuth()
 
@@ -33,7 +38,7 @@ function App() {
     if (!isDemoMode()) {
       checkAuth()
     }
-  }, [checkAuth, initializeAuth])
+  }, [checkAuth, initializeAuth, initializeTheme])
 
   // 显示加载状态
   if (isLoading) {

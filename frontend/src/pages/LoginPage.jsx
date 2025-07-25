@@ -1,7 +1,12 @@
 import { useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
+import { useTranslation } from 'react-i18next'
 import { useAuthStore } from '../stores/authStore'
-import LoadingSpinner from '../components/LoadingSpinner'
+import LanguageSwitcher from '../components/LanguageSwitcher'
+import ThemeSwitcher from '../components/ThemeSwitcher'
+import Button from '../components/ui/Button'
+import { Input, Label } from '../components/ui/Input'
+import { Alert, AlertDescription } from '../components/ui/Alert'
 import { isDemoMode } from '../services/demoApi'
 
 const LoginPage = () => {
@@ -10,8 +15,9 @@ const LoginPage = () => {
     password: ''
   })
   const [errors, setErrors] = useState({})
-  
+
   const { login, isLoading, error } = useAuthStore()
+  const { t } = useTranslation()
   const navigate = useNavigate()
 
   const handleChange = (e) => {
@@ -32,17 +38,17 @@ const LoginPage = () => {
 
   const validateForm = () => {
     const newErrors = {}
-    
+
     if (!formData.email.trim()) {
-      newErrors.email = '请输入邮箱地址'
+      newErrors.email = t('auth.emailRequired')
     } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) {
-      newErrors.email = '请输入有效的邮箱地址'
+      newErrors.email = t('auth.emailInvalid')
     }
-    
+
     if (!formData.password) {
-      newErrors.password = '请输入密码'
+      newErrors.password = t('auth.passwordRequired')
     }
-    
+
     setErrors(newErrors)
     return Object.keys(newErrors).length === 0
   }
@@ -62,18 +68,24 @@ const LoginPage = () => {
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
+    <div className="min-h-screen flex items-center justify-center bg-gray-50 dark:bg-gray-900 py-12 px-4 sm:px-6 lg:px-8 transition-colors">
       <div className="max-w-md w-full space-y-8">
+        {/* 主题和语言切换器 */}
+        <div className="flex justify-end space-x-2">
+          <ThemeSwitcher />
+          <LanguageSwitcher />
+        </div>
+
         {/* 头部 */}
         <div className="text-center">
           <div className="mx-auto w-16 h-16 bg-blue-600 rounded-xl flex items-center justify-center mb-4">
             <span className="text-white font-bold text-2xl">L</span>
           </div>
-          <h2 className="text-3xl font-bold text-gray-900">
-            登录账户
+          <h2 className="text-3xl font-bold text-gray-900 dark:text-gray-100">
+            {t('auth.loginTitle')}
           </h2>
-          <p className="mt-2 text-sm text-gray-600">
-            开始您的 LaTeX 学习之旅
+          <p className="mt-2 text-sm text-gray-600 dark:text-gray-400">
+            {t('auth.loginSubtitle')}
           </p>
         </div>
 
@@ -81,49 +93,49 @@ const LoginPage = () => {
         <form className="mt-8 space-y-6" onSubmit={handleSubmit}>
           {/* 全局错误提示 */}
           {error && (
-            <div className="bg-red-50 border border-red-200 rounded-md p-4">
-              <p className="text-sm text-red-600">{error}</p>
-            </div>
+            <Alert variant="error">
+              <AlertDescription>{error}</AlertDescription>
+            </Alert>
           )}
 
           <div className="space-y-4">
             {/* 邮箱输入 */}
-            <div>
-              <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-1">
-                邮箱地址
-              </label>
-              <input
+            <div className="space-y-2">
+              <Label htmlFor="email">
+                {t('auth.email')}
+              </Label>
+              <Input
                 id="email"
                 name="email"
                 type="email"
                 autoComplete="email"
                 value={formData.email}
                 onChange={handleChange}
-                className={`input ${errors.email ? 'error' : ''}`}
-                placeholder="请输入您的邮箱地址"
+                error={!!errors.email}
+                placeholder={t('auth.email')}
               />
               {errors.email && (
-                <p className="mt-1 text-sm text-red-600">{errors.email}</p>
+                <p className="text-sm text-red-600 dark:text-red-400">{errors.email}</p>
               )}
             </div>
 
             {/* 密码输入 */}
-            <div>
-              <label htmlFor="password" className="block text-sm font-medium text-gray-700 mb-1">
-                密码
-              </label>
-              <input
+            <div className="space-y-2">
+              <Label htmlFor="password">
+                {t('auth.password')}
+              </Label>
+              <Input
                 id="password"
                 name="password"
                 type="password"
                 autoComplete="current-password"
                 value={formData.password}
                 onChange={handleChange}
-                className={`input ${errors.password ? 'error' : ''}`}
-                placeholder="请输入您的密码"
+                error={!!errors.password}
+                placeholder={t('auth.password')}
               />
               {errors.password && (
-                <p className="mt-1 text-sm text-red-600">{errors.password}</p>
+                <p className="text-sm text-red-600 dark:text-red-400">{errors.password}</p>
               )}
             </div>
           </div>
@@ -157,30 +169,26 @@ const LoginPage = () => {
           )}
 
           {/* 登录按钮 */}
-          <button
+          <Button
             type="submit"
+            variant="primary"
+            size="lg"
+            loading={isLoading}
             disabled={isLoading}
-            className="btn btn-primary w-full"
+            className="w-full"
           >
-            {isLoading ? (
-              <div className="flex items-center justify-center">
-                <LoadingSpinner size="sm" className="mr-2" />
-                登录中...
-              </div>
-            ) : (
-              '登录'
-            )}
-          </button>
+            {t('auth.login')}
+          </Button>
 
           {/* 注册链接 */}
           <div className="text-center">
-            <p className="text-sm text-gray-600">
-              还没有账户？{' '}
-              <Link 
-                to="/register" 
-                className="font-medium text-blue-600 hover:text-blue-500 transition-colors"
+            <p className="text-sm text-gray-600 dark:text-gray-400">
+              {t('auth.noAccount')}{' '}
+              <Link
+                to="/register"
+                className="font-medium text-blue-600 dark:text-blue-400 hover:text-blue-500 dark:hover:text-blue-300 transition-colors"
               >
-                立即注册
+                {t('auth.createAccount')}
               </Link>
             </p>
           </div>

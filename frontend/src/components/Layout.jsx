@@ -1,8 +1,12 @@
 import { Outlet, Link, useLocation } from 'react-router-dom'
+import { useTranslation } from 'react-i18next'
 import { useAuthStore } from '../stores/authStore'
+import LanguageSwitcher from './LanguageSwitcher'
+import ThemeSwitcher from './ThemeSwitcher'
 
 const Layout = () => {
   const { user, logout } = useAuthStore()
+  const { t } = useTranslation()
   const location = useLocation()
 
   const handleLogout = () => {
@@ -14,9 +18,9 @@ const Layout = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-gray-50 dark:bg-gray-900 transition-colors">
       {/* 顶部导航栏 */}
-      <header className="bg-white shadow-sm border-b">
+      <header className="bg-white dark:bg-gray-800 shadow-sm border-b border-gray-200 dark:border-gray-700 transition-colors">
         <div className="container mx-auto px-4">
           <div className="flex items-center justify-between h-16">
             {/* Logo */}
@@ -24,7 +28,7 @@ const Layout = () => {
               <div className="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center">
                 <span className="text-white font-bold text-sm">L</span>
               </div>
-              <span className="font-semibold text-lg text-gray-900">LaTeX 训练器</span>
+              <span className="font-semibold text-lg text-gray-900 dark:text-gray-100">LaTeX {t('common.trainer', 'Trainer')}</span>
             </Link>
 
             {/* 导航菜单 */}
@@ -33,45 +37,47 @@ const Layout = () => {
                 to="/learning"
                 className={`px-3 py-2 rounded-md text-sm font-medium transition-colors ${
                   isActive('/learning')
-                    ? 'bg-blue-100 text-blue-700'
-                    : 'text-gray-600 hover:text-gray-900 hover:bg-gray-100'
+                    ? 'bg-blue-100 dark:bg-blue-900 text-blue-700 dark:text-blue-300'
+                    : 'text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-gray-100 hover:bg-gray-100 dark:hover:bg-gray-700'
                 }`}
               >
-                开始学习
+                {t('nav.learning')}
               </Link>
               <Link
                 to="/dashboard"
                 className={`px-3 py-2 rounded-md text-sm font-medium transition-colors ${
                   isActive('/dashboard')
-                    ? 'bg-blue-100 text-blue-700'
-                    : 'text-gray-600 hover:text-gray-900 hover:bg-gray-100'
+                    ? 'bg-blue-100 dark:bg-blue-900 text-blue-700 dark:text-blue-300'
+                    : 'text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-gray-100 hover:bg-gray-100 dark:hover:bg-gray-700'
                 }`}
               >
-                学习统计
+                {t('nav.dashboard')}
               </Link>
               {/* 移除练习中心导航 - 精简为核心学习路径 */}
               <Link
                 to="/review"
                 className={`px-3 py-2 rounded-md text-sm font-medium transition-colors ${
                   isActive('/review')
-                    ? 'bg-blue-100 text-blue-700'
-                    : 'text-gray-600 hover:text-gray-900 hover:bg-gray-100'
+                    ? 'bg-blue-100 dark:bg-blue-900 text-blue-700 dark:text-blue-300'
+                    : 'text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-gray-100 hover:bg-gray-100 dark:hover:bg-gray-700'
                 }`}
               >
-                今日复习
+                {t('nav.review')}
               </Link>
             </nav>
 
             {/* 用户菜单 */}
             <div className="flex items-center space-x-4">
-              <span className="text-sm text-gray-600">
-                欢迎，{user?.email}
+              <ThemeSwitcher />
+              <LanguageSwitcher />
+              <span className="text-sm text-gray-600 dark:text-gray-300">
+                {t('nav.welcome', { email: user?.email })}
               </span>
               <button
                 onClick={handleLogout}
-                className="px-3 py-2 text-sm font-medium text-gray-600 hover:text-gray-900 hover:bg-gray-100 rounded-md transition-colors"
+                className="px-3 py-2 text-sm font-medium text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-gray-100 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-md transition-colors"
               >
-                退出登录
+                {t('nav.logout')}
               </button>
             </div>
           </div>
@@ -84,10 +90,10 @@ const Layout = () => {
       </main>
 
       {/* 底部 */}
-      <footer className="bg-white border-t mt-auto">
+      <footer className="bg-white dark:bg-gray-800 border-t border-gray-200 dark:border-gray-700 mt-auto transition-colors">
         <div className="container mx-auto px-4 py-6">
-          <div className="text-center text-sm text-gray-500">
-            <p>&copy; 2024 LaTeX 速成训练器. 专注提升数学公式输入效率.</p>
+          <div className="text-center text-sm text-gray-500 dark:text-gray-400">
+            <p>&copy; 2024 LaTeX {t('common.trainer', 'Trainer')}. {t('common.slogan', '专注提升数学公式输入效率')}.</p>
           </div>
         </div>
       </footer>
