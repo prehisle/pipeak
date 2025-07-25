@@ -152,12 +152,17 @@ const LessonPage = () => {
     }
   }
 
-  const handlePracticeComplete = (isCorrect) => {
+  const handlePracticeComplete = (isCorrect, immediate = false) => {
     if (isCorrect) {
-      // 练习完成后自动进入下一个卡片
-      setTimeout(() => {
+      if (immediate) {
+        // 立即进入下一个卡片（用户按Enter键触发）
         handleNextCard()
-      }, 2000)
+      } else {
+        // 延迟进入下一个卡片（自动触发）
+        setTimeout(() => {
+          handleNextCard()
+        }, 2000)
+      }
     }
   }
 

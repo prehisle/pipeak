@@ -275,6 +275,25 @@ class LocalDataAdapter {
     }
   }
 
+  async getLessonHint(lessonId, cardIndex, hintLevel = 0) {
+    await delay()
+
+    const lesson = mockLessons.find(l => l._id === lessonId)
+    if (!lesson) throw new Error('课程不存在')
+
+    const card = lesson.cards[cardIndex]
+    if (!card || card.type !== 'practice') throw new Error('练习题不存在')
+
+    const hints = card.hints || ['提示：检查你的语法和格式']
+    const currentHintIndex = Math.min(hintLevel, hints.length - 1)
+
+    return {
+      hint: hints[currentHintIndex],
+      hint_level: currentHintIndex,
+      has_more_hints: currentHintIndex < hints.length - 1
+    }
+  }
+
   // === 练习相关 ===
   
   async getPractices(filters = {}) {

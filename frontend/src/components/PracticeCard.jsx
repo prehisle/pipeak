@@ -164,9 +164,9 @@ const PracticeCard = forwardRef(({
       setFeedback(response.feedback)
       
       if (response.is_correct) {
-        // 答案正确，通知父组件
+        // 答案正确，通知父组件（延迟自动进入下一题）
         setTimeout(() => {
-          onComplete && onComplete(true)
+          onComplete && onComplete(true, false) // false 表示非立即执行
         }, 2000)
       } else if (response.hint) {
         // 答案错误，显示提示
@@ -202,7 +202,7 @@ const PracticeCard = forwardRef(({
     if (e.key === 'Enter' && isCorrect) {
       e.preventDefault()
       // 立即触发完成回调，不等待2秒延迟
-      onComplete && onComplete(true)
+      onComplete && onComplete(true, true) // true 表示立即执行
       return
     }
 

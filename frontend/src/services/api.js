@@ -156,8 +156,18 @@ export const learningAPI = {
 
   // 获取提示（课程内练习）
   getHint: async (data) => {
-    // 返回简单提示
-    return { hint: '这是一个提示' }
+    const adapter = getApiAdapter()
+
+    // 检查是否为课程内练习（有lesson_id和card_index）
+    if (data.lesson_id && data.card_index !== undefined) {
+      // 课程内练习
+      if (adapter.getLessonHint) {
+        return adapter.getLessonHint(data.lesson_id, data.card_index, data.hint_level || 0)
+      }
+    }
+
+    // 独立练习题或降级方案
+    return { hint: '提示：检查你的语法和格式', hint_level: 0 }
   },
 
   // 获取课程完成状态
