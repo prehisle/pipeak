@@ -122,9 +122,9 @@ export const lessonAPI = {
   }
 }
 
-// 练习相关的 API
-export const practiceAPI = {
-  // 提交练习答案
+// 核心学习路径 API - 保留课程完成状态检查
+export const learningAPI = {
+  // 提交练习答案（课程内练习）
   submitAnswer: async (data) => {
     if (isDemoMode()) {
       return await demoAPI.practice.submitAnswer(data)
@@ -133,21 +133,12 @@ export const practiceAPI = {
     return response.data
   },
 
-  // 获取提示
+  // 获取提示（课程内练习）
   getHint: async (data) => {
     if (isDemoMode()) {
       return { hint: '这是一个演示提示' }
     }
     const response = await api.post('/practice/hint', data)
-    return response.data
-  },
-
-  // 获取练习进度
-  getProgress: async (lessonId) => {
-    if (isDemoMode()) {
-      return { progress: {} }
-    }
-    const response = await api.get(`/practice/progress/${lessonId}`)
     return response.data
   },
 
@@ -158,49 +149,53 @@ export const practiceAPI = {
     }
     const response = await api.get(`/lessons/${lessonId}/completion-status`)
     return { data: response.data }
-  },
-
-  // 获取练习题列表
-  getPracticeList: async (filters = {}) => {
-    if (isDemoMode()) {
-      return await demoAPI.practice.getPracticeList(filters)
-    }
-    const params = new URLSearchParams()
-    if (filters.course) params.append('course', filters.course)
-    if (filters.difficulty) params.append('difficulty', filters.difficulty)
-    if (filters.topic) params.append('topic', filters.topic)
-
-    const response = await api.get(`/practice/list?${params.toString()}`)
-    return response.data
-  },
-
-  // 获取练习统计
-  getStats: async () => {
-    if (isDemoMode()) {
-      return await demoAPI.practice.getStats()
-    }
-    const response = await api.get('/practice/stats')
-    return response.data
   }
 }
 
-// 复习相关的 API
+// 复习相关的 API - 基于遗忘曲线
 export const reviewAPI = {
   // 获取今日复习任务
   getTodayReviews: async () => {
+    if (isDemoMode()) {
+      return []
+    }
     const response = await api.get('/reviews/today')
     return response.data
   },
 
-  // 提交复习答案
+  // 提交复习答案（包含遗忘曲线计算）
   submitReview: async (data) => {
+    if (isDemoMode()) {
+      return { success: true }
+    }
     const response = await api.post('/reviews/submit', data)
     return response.data
   },
 
   // 获取复习统计
   getStats: async () => {
+    if (isDemoMode()) {
+      return { totalItems: 0, dueItems: 0, masteredItems: 0 }
+    }
     const response = await api.get('/reviews/stats')
+    return response.data
+  },
+
+  // 获取用户的所有复习项目
+  getAllReviewItems: async () => {
+    if (isDemoMode()) {
+      return []
+    }
+    const response = await api.get('/reviews/items')
+    return response.data
+  },
+
+  // 更新复习项目数据
+  updateReviewItem: async (itemId, reviewData) => {
+    if (isDemoMode()) {
+      return { success: true }
+    }
+    const response = await api.put(`/reviews/items/${itemId}`, reviewData)
     return response.data
   }
 }

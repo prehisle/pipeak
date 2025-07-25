@@ -7,8 +7,8 @@ import LoginPage from './pages/LoginPage'
 import RegisterPage from './pages/RegisterPage'
 import DashboardPage from './pages/DashboardPage'
 import LessonPage from './pages/LessonPage'
-import PracticePage from './pages/PracticePage'
-import PracticeExercisePage from './pages/PracticeExercisePage'
+import LearningPage from './pages/LearningPage'
+// 移除练习中心相关页面 - 精简为核心学习路径
 import ReviewPage from './pages/ReviewPage'
 import TestPage from './pages/TestPage'
 import RenderTestPage from './pages/RenderTestPage'
@@ -18,7 +18,7 @@ import StyleTestPage from './pages/StyleTestPage'
 import Layout from './components/Layout'
 import LoadingSpinner from './components/LoadingSpinner'
 import DemoNotice from './components/DemoNotice'
-import PracticeDemo from './components/PracticeDemo'
+// 移除练习演示组件
 import { isDemoMode } from './services/demoApi'
 
 function App() {
@@ -66,13 +66,11 @@ function App() {
           path="/" 
           element={user ? <Layout /> : <Navigate to="/login" replace />}
         >
-          <Route index element={<Navigate to="/dashboard" replace />} />
+          <Route index element={<Navigate to="/learning" replace />} />
           <Route path="dashboard" element={<DashboardPage />} />
+          <Route path="learning" element={<LearningPage />} />
           <Route path="lesson/:lessonId" element={<LessonPage />} />
-          <Route path="practice" element={<PracticePage />} />
-          <Route path="practice/:practiceId" element={<PracticePage />} />
-          <Route path="practice-exercise/:lessonId" element={<PracticeExercisePage />} />
-          <Route path="practice-demo" element={<PracticeDemo />} />
+          {/* 移除练习中心相关路由 - 精简为核心学习路径 */}
           <Route path="review" element={<ReviewPage />} />
           <Route path="style-test" element={<StyleTestPage />} />
         </Route>

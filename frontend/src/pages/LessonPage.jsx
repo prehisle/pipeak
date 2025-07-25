@@ -3,7 +3,7 @@ import { useParams, useNavigate, Link } from 'react-router-dom'
 import { useLessonStore } from '../stores/lessonStore'
 import LoadingSpinner from '../components/LoadingSpinner'
 import MarkdownRenderer from '../components/MarkdownRenderer'
-import api from '../services/api'
+import { learningAPI } from '../services/api'
 import PracticeCard from '../components/PracticeCard'
 
 const LessonPage = () => {
@@ -38,7 +38,7 @@ const LessonPage = () => {
   const fetchCompletionStatus = async () => {
     try {
       console.log('开始获取完成状态...');
-      const response = await api.get(`/lessons/${lessonId}/completion-status`);
+      const response = await learningAPI.getCompletionStatus(lessonId);
 
       if (response.data) {
         setCompletionStatus(response.data);
@@ -149,7 +149,7 @@ const LessonPage = () => {
     try {
       // 直接获取最新的完成状态，不依赖组件状态
       console.log('开始获取完成状态...');
-      const response = await api.get(`/lessons/${lessonId}/completion-status`);
+      const response = await learningAPI.getCompletionStatus(lessonId);
 
       if (!response.data) {
         console.error('获取完成状态失败');

@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react'
 import MarkdownRenderer from './MarkdownRenderer'
-import { practiceAPI } from '../services/api'
+import { learningAPI } from '../services/api'
 
 const PracticeCard = ({
   card,
@@ -22,7 +22,7 @@ const PracticeCard = ({
     const checkPracticeStatus = async () => {
       try {
         // 获取当前课程的完成状态
-        const response = await practiceAPI.getCompletionStatus(lessonId)
+        const response = await learningAPI.getCompletionStatus(lessonId)
         if (response.data && response.data.completed_practice_details) {
           // 查找当前练习题的完成状态
           const currentPractice = response.data.completed_practice_details.find(
@@ -131,7 +131,7 @@ const PracticeCard = ({
 
     setIsSubmitting(true)
     try {
-      const response = await practiceAPI.submitAnswer({
+      const response = await learningAPI.submitAnswer({
         lesson_id: lessonId,
         card_index: cardIndex,
         user_answer: userAnswer
@@ -160,7 +160,7 @@ const PracticeCard = ({
 
   const handleGetHint = async () => {
     try {
-      const response = await practiceAPI.getHint({
+      const response = await learningAPI.getHint({
         lesson_id: lessonId,
         card_index: cardIndex,
         hint_level: hintLevel

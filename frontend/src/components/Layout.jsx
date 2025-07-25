@@ -30,6 +30,16 @@ const Layout = () => {
             {/* 导航菜单 */}
             <nav className="hidden md:flex items-center space-x-6">
               <Link
+                to="/learning"
+                className={`px-3 py-2 rounded-md text-sm font-medium transition-colors ${
+                  isActive('/learning')
+                    ? 'bg-blue-100 text-blue-700'
+                    : 'text-gray-600 hover:text-gray-900 hover:bg-gray-100'
+                }`}
+              >
+                开始学习
+              </Link>
+              <Link
                 to="/dashboard"
                 className={`px-3 py-2 rounded-md text-sm font-medium transition-colors ${
                   isActive('/dashboard')
@@ -37,18 +47,9 @@ const Layout = () => {
                     : 'text-gray-600 hover:text-gray-900 hover:bg-gray-100'
                 }`}
               >
-                学习面板
+                学习统计
               </Link>
-              <Link
-                to="/practice"
-                className={`px-3 py-2 rounded-md text-sm font-medium transition-colors ${
-                  isActive('/practice')
-                    ? 'bg-blue-100 text-blue-700'
-                    : 'text-gray-600 hover:text-gray-900 hover:bg-gray-100'
-                }`}
-              >
-                练习中心
-              </Link>
+              {/* 移除练习中心导航 - 精简为核心学习路径 */}
               <Link
                 to="/review"
                 className={`px-3 py-2 rounded-md text-sm font-medium transition-colors ${

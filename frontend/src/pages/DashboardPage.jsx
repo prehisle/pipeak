@@ -58,10 +58,10 @@ const DashboardPage = () => {
     <div className="max-w-4xl mx-auto">
       <div className="mb-8">
         <h1 className="text-3xl font-bold text-gray-900 mb-2">
-          学习面板
+          学习统计
         </h1>
         <p className="text-gray-600">
-          欢迎回来，{user?.email}！继续您的 LaTeX 学习之旅。
+          查看您的学习进度和成就
         </p>
       </div>
 
@@ -140,78 +140,24 @@ const DashboardPage = () => {
           </div>
         </div>
 
-        {/* 练习中心 */}
+        {/* 核心学习路径 */}
         <div className="card">
           <div className="card-body">
             <div className="flex items-start justify-between gap-4">
               <div className="flex-1 min-w-0">
                 <h3 className="text-lg font-semibold text-gray-900 mb-1">
-                  练习中心
+                  智能学习路径
                 </h3>
                 <p className="text-gray-600 text-sm">
-                  独立练习模式，巩固LaTeX技能
+                  基于遗忘曲线的科学学习方法，系统自动安排学习和复习
                 </p>
               </div>
               <div className="flex-shrink-0">
                 <Link
-                  to="/practice"
+                  to="/learning"
                   className="btn btn-primary"
                 >
-                  开始练习
-                </Link>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        {/* LaTeX练习演示 */}
-        <div className="card">
-          <div className="card-body">
-            <div className="flex items-start justify-between gap-4">
-              <div className="flex-1 min-w-0">
-                <h3 className="text-lg font-semibold text-gray-900 mb-1">
-                  LaTeX 练习演示
-                </h3>
-                <p className="text-gray-600 text-sm">
-                  体验实时预览和练习功能
-                </p>
-              </div>
-              <div className="flex-shrink-0">
-                <Link
-                  to="/practice-demo"
-                  className="btn btn-secondary"
-                >
-                  体验演示
-                </Link>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        {/* 继续学习 */}
-        {nextLesson && (
-          <div className="card">
-            <div className="card-body">
-              <div className="flex items-start justify-between gap-4">
-                <div className="flex-1 min-w-0">
-                  <h3 className="text-lg font-semibold text-gray-900 mb-1">
-                    继续学习
-                  </h3>
-                  <p className="text-gray-600 text-sm leading-tight">
-                    <SmartText
-                      text={nextLesson.title}
-                      prefix="下一课："
-                      maxLength={25}
-                      className="block"
-                    />
-                  </p>
-                </div>
-                <div className="flex-shrink-0">
-                  <Link
-                    to={`/lesson/${nextLesson._id}`}
-                    className="btn btn-primary"
-                  >
-                    开始学习
+                  开始学习
                   </Link>
                 </div>
               </div>
