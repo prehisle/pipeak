@@ -247,8 +247,8 @@ class LocalDataAdapter {
     const card = lesson.cards[cardIndex]
     if (!card || card.type !== 'practice') throw new Error('练习题不存在')
 
-    // 简单的答案检查
-    const isCorrect = answer.trim().toLowerCase() === card.target_formula.toLowerCase()
+    // 智能答案检查 - 支持多种格式
+    const isCorrect = this.checkLatexAnswer(answer.trim(), card.target_formula)
 
     // 更新课程进度
     const lessonProgress = localStorageManager.getSingleLessonProgress(lessonId) || {}
@@ -328,8 +328,8 @@ class LocalDataAdapter {
     const practice = mockPractices.find(p => p._id === practiceId)
     if (!practice) throw new Error('练习题不存在')
     
-    // 简单的答案检查（实际应用中会更复杂）
-    const isCorrect = answer.trim().toLowerCase() === practice.target_formula.toLowerCase()
+    // 智能答案检查
+    const isCorrect = this.checkLatexAnswer(answer.trim(), practice.target_formula)
     
     // 记录练习结果
     const record = {
@@ -517,6 +517,55 @@ class LocalDataAdapter {
   async clearAllData() {
     await delay()
     return localStorageManager.clearAll()
+  }
+
+  /**
+   * 智能LaTeX答案检查
+   */
+  checkLatexAnswer(userAnswer, targetAnswer) {
+    // 标准化函数：移除空格、统一大小写、处理数学环境符号
+    const normalize = (text) => {
+      return text
+        .toLowerCase()
+        .replace(/\s+/g, '') // 移除所有空格
+        .replace(/^\$+|\$+$/g, '') // 移除开头和结尾的$符号
+        .replace(/^\\?\[|\\?\]$/g, '') // 移除\[和\]
+        .replace(/^\\?\(|\\?\)$/g, '') // 移除\(和\)
+        .trim()
+    }
+
+    const normalizedUser = normalize(userAnswer)
+    const normalizedTarget = normalize(targetAnswer)
+
+    // 直接比较标准化后的结果
+    if (normalizedUser === normalizedTarget) {
+      return true
+    }
+
+    // 额外的等价性检查
+    const equivalentForms = [
+      // 处理上标的不同写法
+      [/\^(\d+)/g, '^{$1}'], // x^2 → x^{2}
+      [/\^{(\d+)}/g, '^$1'], // x^{2} → x^2
+
+      // 处理下标的不同写法
+      [/_(\d+)/g, '_{$1}'], // x_2 → x_{2}
+      [/_{(\d+)}/g, '_$1'], // x_{2} → x_2
+
+      // 处理分数的不同写法
+      [/\\frac\s*{\s*([^}]+)\s*}\s*{\s*([^}]+)\s*}/g, '\\frac{$1}{$2}']
+    ]
+
+    let userVariant = normalizedUser
+    let targetVariant = normalizedTarget
+
+    // 应用等价转换
+    equivalentForms.forEach(([pattern, replacement]) => {
+      userVariant = userVariant.replace(pattern, replacement)
+      targetVariant = targetVariant.replace(pattern, replacement)
+    })
+
+    return userVariant === targetVariant
   }
 }
 
