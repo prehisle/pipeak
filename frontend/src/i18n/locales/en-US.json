@@ -26,6 +26,8 @@
     "review": "Review Center",
     "profile": "Profile",
     "logout": "Logout",
+    "login": "Login",
+    "register": "Register",
     "welcome": "Welcome, {{email}}"
   },
   "auth": {

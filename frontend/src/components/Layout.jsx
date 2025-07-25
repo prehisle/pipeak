@@ -1,12 +1,14 @@
 import { Outlet, Link, useLocation } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { useAuthStore } from '../stores/authStore'
+import { useUserModeStore } from '../stores/userModeStore'
 import LanguageSwitcher from './LanguageSwitcher'
 import ThemeSwitcher from './ThemeSwitcher'
 import GuestModeNotice from './GuestModeNotice'
 
 const Layout = () => {
   const { user, logout } = useAuthStore()
+  const { isGuestMode } = useUserModeStore()
   const { t } = useTranslation()
   const location = useLocation()
 
@@ -71,15 +73,37 @@ const Layout = () => {
             <div className="flex items-center space-x-4">
               <ThemeSwitcher />
               <LanguageSwitcher />
-              <span className="text-sm text-gray-600 dark:text-gray-300">
-                {t('nav.welcome', { email: user?.email })}
-              </span>
-              <button
-                onClick={handleLogout}
-                className="px-3 py-2 text-sm font-medium text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-gray-100 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-md transition-colors"
-              >
-                {t('nav.logout')}
-              </button>
+
+              {isGuestMode ? (
+                // 游客模式：显示登录/注册按钮
+                <div className="flex items-center space-x-2">
+                  <Link
+                    to="/login"
+                    className="px-3 py-2 text-sm font-medium text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-gray-100 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-md transition-colors"
+                  >
+                    {t('nav.login', '登录')}
+                  </Link>
+                  <Link
+                    to="/register"
+                    className="px-3 py-2 text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 rounded-md transition-colors"
+                  >
+                    {t('nav.register', '注册')}
+                  </Link>
+                </div>
+              ) : (
+                // 注册用户模式：显示用户信息和退出按钮
+                <div className="flex items-center space-x-4">
+                  <span className="text-sm text-gray-600 dark:text-gray-300">
+                    {t('nav.welcome', { email: user?.email })}
+                  </span>
+                  <button
+                    onClick={handleLogout}
+                    className="px-3 py-2 text-sm font-medium text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-gray-100 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-md transition-colors"
+                  >
+                    {t('nav.logout')}
+                  </button>
+                </div>
+              )}
             </div>
           </div>
         </div>

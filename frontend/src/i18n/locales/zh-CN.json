@@ -26,6 +26,8 @@
     "review": "复习中心",
     "profile": "个人资料",
     "logout": "退出登录",
+    "login": "登录",
+    "register": "注册",
     "welcome": "欢迎，{{email}}"
   },
   "auth": {
