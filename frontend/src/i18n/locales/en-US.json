@@ -62,7 +62,12 @@
     "continueLesson": "Continue Learning",
     "reviewLessons": "Review Lessons",
     "noNextLesson": "Congratulations! You've completed all lessons",
-    "allCompleted": "All lessons completed"
+    "allCompleted": "All lessons completed",
+    "todayReview": "Today's Review",
+    "reviewRecord": "Review Records",
+    "learningAnalysis": "Learning Analysis",
+    "detailedAnalysis": "Detailed Analysis",
+    "viewProgress": "View your learning progress and quick actions"
   },
   "learning": {
     "title": "Learning Center",

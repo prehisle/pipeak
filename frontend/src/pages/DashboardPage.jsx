@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
+import { useTranslation } from 'react-i18next'
 import { useAuthStore } from '../stores/authStore'
 import { useLessonStore } from '../stores/lessonStore'
 import { reviewAPI } from '../services/api'
@@ -8,6 +9,7 @@ import SmartText from '../components/SmartText'
 
 const DashboardPage = () => {
   const { user } = useAuthStore()
+  const { t } = useTranslation()
   const {
     lessons,
     isLoading,
@@ -58,10 +60,10 @@ const DashboardPage = () => {
     <div className="max-w-4xl mx-auto">
       <div className="mb-8">
         <h1 className="text-3xl font-bold text-gray-900 mb-2">
-          学习统计
+          {t('dashboard.title')}
         </h1>
         <p className="text-gray-600">
-          查看您的学习进度和成就
+          {t('dashboard.viewProgress')}
         </p>
       </div>
 
@@ -122,7 +124,7 @@ const DashboardPage = () => {
             <div className="flex items-start justify-between gap-4">
               <div className="flex-1 min-w-0">
                 <h3 className="text-lg font-semibold text-gray-900 mb-1">
-                  今日复习
+                  {t('dashboard.todayReview')}
                 </h3>
                 <p className="text-gray-600 text-sm">
                   {reviewStats?.due_today ? `${reviewStats.due_today} 题待复习` : '暂无复习任务'}
@@ -133,7 +135,7 @@ const DashboardPage = () => {
                   to="/review"
                   className={`btn ${reviewStats?.due_today > 0 ? 'btn-primary' : 'btn-secondary'}`}
                 >
-                  {reviewStats?.due_today > 0 ? '开始复习' : '查看统计'}
+                  {reviewStats?.due_today > 0 ? t('dashboard.startLearning') : t('dashboard.reviewRecord')}
                 </Link>
               </div>
             </div>
@@ -170,10 +172,10 @@ const DashboardPage = () => {
             <div className="flex items-start justify-between gap-4">
               <div className="flex-1 min-w-0">
                 <h3 className="text-lg font-semibold text-gray-900 mb-1">
-                  学习统计
+                  {t('dashboard.learningAnalysis')}
                 </h3>
                 <p className="text-gray-600 text-sm">
-                  查看详细的学习进度和成就统计
+                  查看详细的学习进度和成就分析
                 </p>
               </div>
               <div className="flex-shrink-0">
@@ -181,7 +183,7 @@ const DashboardPage = () => {
                   to="/stats"
                   className="btn btn-secondary"
                 >
-                  查看统计
+                  {t('dashboard.detailedAnalysis')}
                 </Link>
               </div>
             </div>

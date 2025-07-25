@@ -62,7 +62,12 @@
     "continueLesson": "继续学习",
     "reviewLessons": "复习课程",
     "noNextLesson": "恭喜！您已完成所有课程",
-    "allCompleted": "所有课程已完成"
+    "allCompleted": "所有课程已完成",
+    "todayReview": "今日复习",
+    "reviewRecord": "复习记录",
+    "learningAnalysis": "学习分析",
+    "detailedAnalysis": "详细分析",
+    "viewProgress": "查看您的学习进度和快速操作"
   },
   "learning": {
     "title": "学习中心",
