@@ -310,11 +310,11 @@ const LessonPage = () => {
                         <span className="text-blue-600 font-semibold text-sm">💡</span>
                       </div>
                     </div>
-                    <div className="ml-4 flex-1">
+                    <div className="ml-4 flex-1 min-w-0">
                       <h3 className="text-xl font-semibold text-blue-900 mb-6">
                         知识点 {currentCardIndex + 1}
                       </h3>
-                      <div className="text-blue-800 text-lg leading-relaxed">
+                      <div className="text-blue-800 text-base leading-relaxed overflow-visible">
                         <MarkdownRenderer content={currentCard.content} theme="default" />
                       </div>
                     </div>

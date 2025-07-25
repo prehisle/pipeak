@@ -16,7 +16,7 @@ const mockLessons = [
       {
         type: 'knowledge',
         title: '数学环境',
-        content: '在LaTeX中，数学公式需要在特殊的数学环境中编写。行内公式使用 $...$ 包围，行间公式使用 $$...$$ 或 \\[...\\] 包围。'
+        content: '在LaTeX中，数学公式需要在特殊的数学环境中编写。\n\n**行内公式**使用 `$...$` 包围，例如：$x^2 + y^2 = z^2$\n\n**行间公式**使用 `$$...$$` 或 `\\[...\\]` 包围，例如：\n\n$$\\frac{a}{b} = \\frac{c}{d}$$\n\n这样可以让数学公式在文档中正确显示。'
       },
       {
         type: 'practice',
@@ -58,8 +58,8 @@ const mockLessons = [
     cards: [
       {
         type: 'knowledge',
-        title: '分数表示',
-        content: '使用 \\frac{分子}{分母} 来表示分数。例如：\\frac{1}{2} 表示二分之一。根号使用 \\sqrt{内容} 表示。'
+        title: '分数与根号',
+        content: '在LaTeX中，我们可以使用特殊命令来表示分数和根号。\n\n**分数表示**\n使用 `\\frac{分子}{分母}` 来表示分数：\n- $\\frac{1}{2}$ 表示二分之一\n- $\\frac{a+b}{c-d}$ 表示复杂分数\n\n**根号表示**\n使用 `\\sqrt{内容}` 表示平方根：\n- $\\sqrt{2}$ 表示根号2\n- $\\sqrt{x^2 + y^2}$ 表示复杂根式\n\n使用 `\\sqrt[n]{内容}` 表示n次根号：\n- $\\sqrt[3]{8}$ 表示三次根号8'
       },
       {
         type: 'practice',
