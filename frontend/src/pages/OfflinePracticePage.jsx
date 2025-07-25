@@ -44,8 +44,10 @@ const OfflinePracticePage = () => {
           })
         })
 
-        console.log(`总共加载了 ${allQuestions.length} 道练习题`)
-        setQuestions(allQuestions)
+        // 限制为10道题（快速体验）
+        const limitedQuestions = allQuestions.slice(0, 10)
+        console.log(`总共加载了 ${allQuestions.length} 道练习题，限制为 ${limitedQuestions.length} 道`)
+        setQuestions(limitedQuestions)
       } catch (error) {
         console.error('加载练习题失败:', error)
         console.error('错误详情:', error.stack)

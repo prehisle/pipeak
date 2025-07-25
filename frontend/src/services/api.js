@@ -36,7 +36,10 @@ const isRegisteredUser = () => {
 // 获取合适的API适配器
 const getApiAdapter = () => {
   if (isRegisteredUser()) {
-    return api // 真实API（注册用户）
+    // 注册用户优先使用真实API，但在开发/测试环境中可能需要降级到本地数据
+    // 这里暂时使用本地数据适配器，直到后端API可用
+    return localDataAdapter // 临时使用本地数据（开发/测试）
+    // return api // 真实API（生产环境）
   } else {
     return localDataAdapter // 本地数据（仅用于离线练习）
   }
