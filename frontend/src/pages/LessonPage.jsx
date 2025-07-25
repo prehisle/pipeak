@@ -253,45 +253,45 @@ const LessonPage = () => {
   return (
     <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
       {/* 课程头部 */}
-      <div className="mb-8">
-        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-4 space-y-2 sm:space-y-0">
+      <div className="mb-4">
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-3 space-y-2 sm:space-y-0">
           <Link
             to="/dashboard"
-            className="text-blue-600 hover:text-blue-700 flex items-center"
+            className="text-blue-600 hover:text-blue-700 flex items-center text-sm"
           >
             ← 返回学习面板
           </Link>
           {currentLesson.is_completed && (
-            <span className="text-xs bg-green-100 text-green-700 px-3 py-1 rounded-full">
+            <span className="text-xs bg-green-100 text-green-700 px-2 py-1 rounded-full">
               已完成
             </span>
           )}
         </div>
 
-        <h1 className="text-3xl font-bold text-gray-900 mb-2">
+        <h1 className="text-xl font-bold text-gray-900 mb-2">
           {typeof currentLesson.title === 'string' ? currentLesson.title : '课程标题'}
         </h1>
-        <p className="text-lg text-gray-600 mb-4">
+        <p className="text-sm text-gray-600 mb-3">
           {typeof currentLesson.description === 'string' ? currentLesson.description : '课程描述'}
         </p>
 
         {/* 进度条 */}
-        <div className="w-full bg-gray-200 rounded-full h-2">
+        <div className="w-full bg-gray-200 rounded-full h-1.5">
           <div
-            className="bg-blue-600 h-2 rounded-full transition-all duration-300"
+            className="bg-blue-600 h-1.5 rounded-full transition-all duration-300"
             style={{
               width: `${((currentCardIndex + 1) / currentLesson.cards.length) * 100}%`
             }}
           ></div>
         </div>
-        <p className="text-base text-gray-500 mt-2">
+        <p className="text-sm text-gray-500 mt-1">
           {currentCardIndex + 1} / {currentLesson.cards.length}
         </p>
       </div>
 
       {/* 课程内容卡片 */}
       {currentCard && (
-        <div className={`card mb-8 transition-all duration-300 ${isTransitioning ? 'opacity-50 scale-95' : 'opacity-100 scale-100'}`}>
+        <div className={`card mb-4 transition-all duration-300 ${isTransitioning ? 'opacity-50 scale-95' : 'opacity-100 scale-100'}`}>
           <div className="card-body">
             {currentCard.type === 'knowledge' ? (
               <div className="prose max-w-none">

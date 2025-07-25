@@ -219,27 +219,27 @@ const PracticeCard = forwardRef(({
   }
 
   return (
-    <div className="bg-green-50 border-l-4 border-green-400 p-6 rounded-r-lg">
+    <div className="bg-green-50 border-l-4 border-green-400 p-4 rounded-r-lg">
       <div className="flex items-start">
         <div className="flex-shrink-0">
-          <div className="w-8 h-8 bg-green-100 rounded-full flex items-center justify-center">
-            <span className="text-green-600 font-semibold text-sm">✏️</span>
+          <div className="w-6 h-6 bg-green-100 rounded-full flex items-center justify-center">
+            <span className="text-green-600 font-semibold text-xs">✏️</span>
           </div>
         </div>
-        <div className="ml-4 flex-1">
-          <h3 className="text-lg font-semibold text-green-900 mb-4">
+        <div className="ml-3 flex-1">
+          <h3 className="text-base font-semibold text-green-900 mb-3">
             练习题 {cardIndex + 1}
           </h3>
           
           {/* 题目描述 */}
-          <div className="mb-6">
-            <p id="practice-question" className="text-green-800 text-base mb-4">
+          <div className="mb-4">
+            <p id="practice-question" className="text-green-800 text-sm mb-3">
               {typeof card.question === 'string' ? card.question : '练习题目'}
             </p>
-            
+
             {/* 目标效果预览 */}
-            <div className="bg-white p-4 rounded-lg border border-green-200 mb-4">
-              <p className="text-base text-gray-600 mb-2">目标效果：</p>
+            <div className="bg-white p-3 rounded-lg border border-green-200 mb-3">
+              <p className="text-sm text-gray-600 mb-2">目标效果：</p>
               <div className="text-center">
                 <MarkdownRenderer content={card.target_formula} />
               </div>
@@ -247,8 +247,8 @@ const PracticeCard = forwardRef(({
           </div>
 
           {/* 答案输入区域 */}
-          <div className="mb-4">
-            <label className="block text-base font-medium text-green-800 mb-2">
+          <div className="mb-3">
+            <label className="block text-sm font-medium text-green-800 mb-2">
               请输入 LaTeX 代码：
             </label>
             <div className="relative">
@@ -258,8 +258,8 @@ const PracticeCard = forwardRef(({
                 onChange={(e) => setUserAnswer(e.target.value)}
                 onKeyDown={handleKeyPress}
                 placeholder="例如：$x^2$"
-                className="w-full px-4 py-4 bg-gray-50 rounded-xl focus:bg-white focus:ring-2 focus:ring-blue-500/20 focus:outline-none hover:bg-gray-100 transition-all duration-200 font-mono text-base resize-none border-0"
-                rows="3"
+                className="w-full px-3 py-2 bg-gray-50 rounded-lg focus:bg-white focus:ring-2 focus:ring-blue-500/20 focus:outline-none hover:bg-gray-100 transition-all duration-200 font-mono text-sm resize-none border-0"
+                rows="2"
                 disabled={isCorrect}
                 spellCheck={false}
                 autoComplete="off"
@@ -268,7 +268,7 @@ const PracticeCard = forwardRef(({
                 aria-label="LaTeX代码输入框"
                 aria-describedby="practice-question"
               />
-              <div className="absolute bottom-3 right-3 text-xs text-gray-400 bg-gray-50 px-2 py-1 rounded-md">
+              <div className="absolute bottom-2 right-2 text-xs text-gray-400 bg-gray-50 px-1 py-0.5 rounded text-xs">
                 <div>Ctrl+Enter 提交</div>
                 {!isCorrect && <div>Tab 获取提示</div>}
               </div>
@@ -276,28 +276,30 @@ const PracticeCard = forwardRef(({
           </div>
 
           {/* 实时预览 */}
-          {userAnswer.trim() && (
-            <div className="mb-4">
-              <p className="text-base font-medium text-green-800 mb-2">实时预览：</p>
-              <div className="bg-gray-50 p-4 rounded-lg border border-gray-200">
-                <div className="text-center">
+          <div className="mb-3">
+            <p className="text-sm font-medium text-green-800 mb-2">实时预览：</p>
+            <div className="bg-gray-50 p-3 rounded-lg border border-gray-200 min-h-[50px] flex items-center justify-center">
+              <div className="text-center w-full">
+                {userAnswer.trim() ? (
                   <MarkdownRenderer content={userAnswer} />
-                </div>
+                ) : (
+                  <span className="text-gray-400 text-xs">输入LaTeX代码后将在此显示预览</span>
+                )}
               </div>
             </div>
-          )}
+          </div>
 
           {/* 反馈信息 */}
           {feedback && (
-            <div className={`mb-4 p-4 rounded-lg ${
+            <div className={`mb-3 p-3 rounded-lg ${
               isCorrect
                 ? 'bg-green-100 border border-green-300 text-green-800'
                 : 'bg-red-100 border border-red-300 text-red-800'
             }`}>
-              <p className="font-medium">{typeof feedback === 'string' ? feedback : '反馈信息'}</p>
+              <p className="font-medium text-sm">{typeof feedback === 'string' ? feedback : '反馈信息'}</p>
               {isCorrect && (
-                <p className="text-sm mt-2 text-green-600">
-                  💡 按 <kbd className="px-2 py-1 bg-green-200 rounded text-xs font-mono">Enter</kbd> 键进入下一题
+                <p className="text-xs mt-1 text-green-600">
+                  💡 按 <kbd className="px-1 py-0.5 bg-green-200 rounded text-xs font-mono">Enter</kbd> 键进入下一题
                 </p>
               )}
             </div>
@@ -305,8 +307,8 @@ const PracticeCard = forwardRef(({
 
           {/* 提示信息 */}
           {showHint && currentHint && (
-            <div className="mb-4 p-4 bg-yellow-100 border border-yellow-300 rounded-lg">
-              <p className="text-yellow-800">
+            <div className="mb-3 p-3 bg-yellow-100 border border-yellow-300 rounded-lg">
+              <p className="text-yellow-800 text-sm">
                 <span className="font-medium">💡 提示：</span>
                 {typeof currentHint === 'string' ? currentHint : '提示信息'}
               </p>
@@ -314,11 +316,11 @@ const PracticeCard = forwardRef(({
           )}
 
           {/* 操作按钮 */}
-          <div className="flex gap-3">
+          <div className="flex gap-2">
             <button
               onClick={handleSubmit}
               disabled={isSubmitting || !userAnswer.trim() || isCorrect}
-              className={`px-6 py-2 rounded-lg font-medium transition-colors ${
+              className={`px-4 py-2 rounded-lg font-medium text-sm transition-colors ${
                 isCorrect
                   ? 'bg-green-600 text-white cursor-not-allowed'
                   : isSubmitting
@@ -332,7 +334,7 @@ const PracticeCard = forwardRef(({
             {!isCorrect && (
               <button
                 onClick={handleGetHint}
-                className="px-4 py-2 bg-yellow-500 text-white rounded-lg hover:bg-yellow-600 transition-colors"
+                className="px-3 py-2 bg-yellow-500 text-white rounded-lg hover:bg-yellow-600 transition-colors text-sm"
               >
                 💡 获取提示
               </button>
@@ -340,16 +342,16 @@ const PracticeCard = forwardRef(({
           </div>
 
           {/* 难度标识 */}
-          <div className="mt-4 flex items-center gap-2">
-            <span className="text-base text-gray-600">难度：</span>
+          <div className="mt-3 flex items-center gap-2">
+            <span className="text-sm text-gray-600">难度：</span>
             <span className={`px-2 py-1 rounded text-xs font-medium ${
-              card.difficulty === 'easy' 
+              card.difficulty === 'easy'
                 ? 'bg-green-100 text-green-800'
                 : card.difficulty === 'medium'
                 ? 'bg-yellow-100 text-yellow-800'
                 : 'bg-red-100 text-red-800'
             }`}>
-              {card.difficulty === 'easy' ? '简单' : 
+              {card.difficulty === 'easy' ? '简单' :
                card.difficulty === 'medium' ? '中等' : '困难'}
             </span>
           </div>
