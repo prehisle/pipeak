@@ -24,7 +24,7 @@ import LoadingSpinner from './components/LoadingSpinner'
 import ErrorBoundary from './components/ErrorBoundary'
 
 function App() {
-  const { user, isLoading, checkAuth, initializeAuth, isAuthenticated } = useAuthStore()
+  const { user, isLoading, checkAuth, initializeAuth, isAuthenticated, isAuthenticatedOrGuest } = useAuthStore()
   const { initializeTheme } = useThemeStore()
   const { initializeUserMode } = useUserModeStore()
 
@@ -76,7 +76,7 @@ function App() {
         {/* 受保护的路由 */}
         <Route
           path="/app"
-          element={isAuthenticated() ? <Layout /> : <Navigate to="/login" replace />}
+          element={isAuthenticatedOrGuest() ? <Layout /> : <Navigate to="/login" replace />}
         >
           <Route index element={<Navigate to="/app/dashboard" replace />} />
           <Route path="dashboard" element={<DashboardPage />} />

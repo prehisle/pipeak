@@ -44,8 +44,14 @@ const useAuthStore = create(
         return null
       },
 
-      // 检查是否已认证（包括游客模式）
+      // 检查是否已认证（仅注册用户）
       isAuthenticated: () => {
+        const { user } = get()
+        return !!user
+      },
+
+      // 检查是否已认证（包括游客模式）- 用于受保护路由
+      isAuthenticatedOrGuest: () => {
         const { user } = get()
         if (user) return true
 
