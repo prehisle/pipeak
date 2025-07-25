@@ -231,6 +231,21 @@ export const demoAPI = {
 
 // 检测是否为演示模式
 export const isDemoMode = () => {
-  return window.location.hostname.includes('github.io') || 
-         window.location.hostname === 'localhost' && window.location.search.includes('demo=true')
+  // 明确的演示模式检测
+  if (import.meta.env.VITE_DEMO_MODE === 'true') {
+    return true
+  }
+
+  // GitHub Pages 演示模式
+  if (window.location.hostname.includes('github.io')) {
+    return true
+  }
+
+  // 本地开发时的演示模式
+  if (window.location.hostname === 'localhost' && window.location.search.includes('demo=true')) {
+    return true
+  }
+
+  // Vercel生产环境不使用演示模式
+  return false
 }
