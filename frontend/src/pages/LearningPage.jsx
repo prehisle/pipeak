@@ -28,8 +28,21 @@ const LearningPage = () => {
       // 1. 获取课程列表
       await fetchLessons()
 
-      // 2. 获取所有复习项目
-      const allReviewItems = await reviewAPI.getAllReviewItems()
+      // 2. 获取所有复习项目（如果API不可用，使用空数组）
+      let allReviewItems = []
+      try {
+        const reviewItemsResponse = await reviewAPI.getAllReviewItems()
+        allReviewItems = reviewItemsResponse.items || []
+      } catch (err) {
+        console.warn('复习API不可用，使用降级方案:', err)
+        // 降级方案：从今日复习API获取数据
+        try {
+          const todayReviews = await reviewAPI.getTodayReviews()
+          allReviewItems = todayReviews.reviews || []
+        } catch (err2) {
+          console.warn('今日复习API也不可用，继续使用空数组')
+        }
+      }
       setReviewItems(allReviewItems)
 
       // 3. 使用遗忘曲线算法获取学习建议
@@ -40,8 +53,20 @@ const LearningPage = () => {
       if (learningRec.recommendation === 'review' && learningRec.dueItems > 0) {
         // 有复习任务，优先复习
         const dueItems = allReviewItems.filter(item => needsReview(item.nextReviewDate))
-        setCurrentTask(dueItems[0])
-        setTaskType('review')
+        if (dueItems.length > 0) {
+          setCurrentTask(dueItems[0])
+          setTaskType('review')
+        } else {
+          // 降级到学习新内容
+          const nextLesson = await findNextLesson()
+          if (nextLesson) {
+            setCurrentTask(nextLesson)
+            setTaskType('learn')
+          } else {
+            setCurrentTask(null)
+            setTaskType('completed')
+          }
+        }
       } else {
         // 无复习任务，继续学习新内容
         const nextLesson = await findNextLesson()
@@ -180,10 +205,42 @@ const LearningPage = () => {
             </p>
           </div>
 
-          {/* 这里将显示当前的学习内容 */}
-          <div className="text-center py-8 text-gray-500">
-            学习内容组件将在下一步实现...
-          </div>
+          {/* 学习内容显示 */}
+          {taskType === 'review' ? (
+            <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-6">
+              <h3 className="text-lg font-semibold text-yellow-800 mb-4">
+                复习：{currentTask.question || currentTask.lesson_title}
+              </h3>
+              <div className="text-sm text-yellow-700 mb-4">
+                目标公式：{currentTask.target_formula}
+              </div>
+              <div className="text-center py-4">
+                <button
+                  onClick={() => navigate(`/lesson/${currentTask.lesson_id}`)}
+                  className="btn btn-primary"
+                >
+                  开始复习
+                </button>
+              </div>
+            </div>
+          ) : (
+            <div className="bg-blue-50 border border-blue-200 rounded-lg p-6">
+              <h3 className="text-lg font-semibold text-blue-800 mb-4">
+                新课程：{currentTask.title}
+              </h3>
+              <div className="text-sm text-blue-700 mb-4">
+                {currentTask.description}
+              </div>
+              <div className="text-center py-4">
+                <button
+                  onClick={() => navigate(`/lesson/${currentTask._id}`)}
+                  className="btn btn-primary"
+                >
+                  开始学习
+                </button>
+              </div>
+            </div>
+          )}
 
           {/* 操作按钮 */}
           <div className="flex justify-between mt-6">

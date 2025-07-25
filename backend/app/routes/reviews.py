@@ -134,6 +134,100 @@ def submit_review():
         return jsonify({'error': f'提交复习失败: {str(e)}'}), 500
 
 
+@reviews_bp.route('/items', methods=['GET'])
+@jwt_required()
+def get_review_items():
+    """获取用户的所有复习项目（用于遗忘曲线算法）"""
+    try:
+        user_id = get_jwt_identity()
+
+        # 获取用户的所有复习记录
+        reviews = Review.get_user_reviews(user_id)
+
+        # 构建返回数据，包含详细信息
+        items_data = []
+        from app import get_db
+        db = get_db()
+
+        for review in reviews:
+            # 通过practice记录找到对应的课程和卡片
+            practice_record = db.practice_records.find_one({
+                'user_id': ObjectId(user_id),
+                '_id': ObjectId(review.practice_id)
+            })
+
+            if practice_record:
+                # 获取课程信息
+                lesson = db.lessons.find_one({'_id': practice_record['lesson_id']})
+                if lesson and practice_record['card_index'] < len(lesson['cards']):
+                    card = lesson['cards'][practice_record['card_index']]
+
+                    items_data.append({
+                        'id': str(review._id),
+                        'practice_id': review.practice_id,
+                        'lesson_id': str(lesson['_id']),
+                        'lesson_title': lesson['title'],
+                        'card_index': practice_record['card_index'],
+                        'question': card.get('question', ''),
+                        'target_formula': card.get('target_formula', ''),
+                        'difficulty': card.get('difficulty', 'medium'),
+                        'nextReviewDate': review.next_review_date.isoformat(),
+                        'easeFactor': review.easiness_factor,
+                        'repetitions': review.repetitions,
+                        'interval': review.last_interval_days,
+                        'created_at': review.created_at.isoformat()
+                    })
+
+        return jsonify({
+            'items': items_data,
+            'total': len(items_data)
+        }), 200
+
+    except Exception as e:
+        return jsonify({'error': f'获取复习项目失败: {str(e)}'}), 500
+
+
+@reviews_bp.route('/items/<item_id>', methods=['PUT'])
+@jwt_required()
+def update_review_item(item_id):
+    """更新复习项目数据（用于遗忘曲线算法）"""
+    try:
+        user_id = get_jwt_identity()
+        data = request.get_json()
+
+        # 获取复习记录
+        review = Review.find_by_id(item_id)
+        if not review:
+            return jsonify({'error': '复习记录不存在'}), 404
+
+        if review.user_id != user_id:
+            return jsonify({'error': '无权限访问此复习记录'}), 403
+
+        # 更新复习数据
+        if 'nextReviewDate' in data:
+            review.next_review_date = datetime.fromisoformat(data['nextReviewDate'].replace('Z', '+00:00'))
+        if 'easeFactor' in data:
+            review.easiness_factor = data['easeFactor']
+        if 'repetitions' in data:
+            review.repetitions = data['repetitions']
+        if 'interval' in data:
+            review.last_interval_days = data['interval']
+
+        # 保存更新
+        success = review.save()
+
+        if success:
+            return jsonify({
+                'success': True,
+                'message': '复习项目更新成功'
+            }), 200
+        else:
+            return jsonify({'error': '更新失败'}), 500
+
+    except Exception as e:
+        return jsonify({'error': f'更新复习项目失败: {str(e)}'}), 500
+
+
 @reviews_bp.route('/stats', methods=['GET'])
 @jwt_required()
 def get_review_stats():
