@@ -520,52 +520,147 @@ class LocalDataAdapter {
   }
 
   /**
-   * 智能LaTeX答案检查
+   * LaTeX答案检查 - 与后端完全一致的标准化逻辑
+   * 移植自后端 normalize_latex 函数
    */
   checkLatexAnswer(userAnswer, targetAnswer) {
-    // 标准化函数：移除空格、统一大小写、处理数学环境符号
-    const normalize = (text) => {
-      return text
-        .toLowerCase()
-        .replace(/\s+/g, '') // 移除所有空格
-        .replace(/^\$+|\$+$/g, '') // 移除开头和结尾的$符号
-        .replace(/^\\?\[|\\?\]$/g, '') // 移除\[和\]
-        .replace(/^\\?\(|\\?\)$/g, '') // 移除\(和\)
-        .trim()
+    const normalizeLatex = (latexStr) => {
+      if (!latexStr) return ""
+
+      try {
+        // 移除首尾空格
+        latexStr = latexStr.trim()
+
+        // 移除美元符号（如果存在）
+        latexStr = latexStr.replace(/^\$+|\$+$/g, '')
+
+        // 标准化上标和下标的花括号
+        // x^2 -> x^{2}, x_1 -> x_{1}
+        latexStr = latexStr.replace(/\^([a-zA-Z0-9])/g, '^{$1}')
+        latexStr = latexStr.replace(/_([a-zA-Z0-9])/g, '_{$1}')
+
+        // 标准化分数形式
+        latexStr = latexStr.replace(/\\frac\s*\{\s*([^}]+)\s*\}\s*\{\s*([^}]+)\s*\}/g, '\\frac{$1}{$2}')
+
+        // 标准化根号形式
+        latexStr = latexStr.replace(/\\sqrt\s*\{\s*([^}]+)\s*\}/g, '\\sqrt{$1}')
+
+        // 标准化数学函数名
+        const functionMappings = {
+          ' sin ': ' \\sin ',
+          ' cos ': ' \\cos ',
+          ' tan ': ' \\tan ',
+          ' cot ': ' \\cot ',
+          ' sec ': ' \\sec ',
+          ' csc ': ' \\csc ',
+          ' ln ': ' \\ln ',
+          ' log ': ' \\log ',
+          ' exp ': ' \\exp ',
+          ' sqrt ': ' \\sqrt ',
+          // 处理开头和结尾的情况
+          'sin(': '\\sin(',
+          'cos(': '\\cos(',
+          'tan(': '\\tan(',
+          'ln(': '\\ln(',
+          'log(': '\\log(',
+          'exp(': '\\exp(',
+          'sqrt(': '\\sqrt('
+        }
+
+        // 添加空格以便匹配
+        latexStr = ' ' + latexStr + ' '
+
+        // 应用函数名映射
+        for (const [old, newVal] of Object.entries(functionMappings)) {
+          latexStr = latexStr.replace(new RegExp(old.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'), 'g'), newVal)
+        }
+
+        // 移除添加的空格
+        latexStr = latexStr.trim()
+
+        // 标准化运算符
+        const operatorMappings = {
+          '\\cdot': '*',
+          '\\times': '*',
+          '\\div': '/',
+          '\\neq': '!=',
+          '\\leq': '<=',
+          '\\geq': '>='
+        }
+
+        for (const [old, newVal] of Object.entries(operatorMappings)) {
+          latexStr = latexStr.replace(new RegExp(old.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'), 'g'), newVal)
+        }
+
+        // 标准化希腊字母和特殊符号的空格
+        latexStr = latexStr.replace(/\\([a-zA-Z]+)\s+/g, '\\$1 ')
+
+        // 标准化求和、积分等大型运算符
+        latexStr = latexStr.replace(/\\sum\s*_\s*\{\s*([^}]+)\s*\}\s*\^\s*\{\s*([^}]+)\s*\}/g, '\\sum_{$1}^{$2}')
+        latexStr = latexStr.replace(/\\int\s*_\s*\{\s*([^}]+)\s*\}\s*\^\s*\{\s*([^}]+)\s*\}/g, '\\int_{$1}^{$2}')
+        latexStr = latexStr.replace(/\\lim\s*_\s*\{\s*([^}]+)\s*\}/g, '\\lim_{$1}')
+
+        // 标准化矩阵和方程组环境
+        latexStr = latexStr.replace(/\\begin\s*\{\s*([^}]+)\s*\}/g, '\\begin{$1}')
+        latexStr = latexStr.replace(/\\end\s*\{\s*([^}]+)\s*\}/g, '\\end{$1}')
+
+        // 处理常见的等价形式
+        const equivalenceMappings = {
+          // 分数的不同写法
+          '1/2': '\\frac{1}{2}',
+          '(1)/(2)': '\\frac{1}{2}',
+          // 平方根的不同写法
+          'sqrt(x)': '\\sqrt{x}',
+          'sqrt x': '\\sqrt{x}',
+          // 指数的不同写法
+          'e^x': '\\exp(x)',
+          'exp(x)': '\\exp(x)'
+        }
+
+        for (const [old, newVal] of Object.entries(equivalenceMappings)) {
+          latexStr = latexStr.replace(new RegExp(old.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'), 'g'), newVal)
+        }
+
+        // 最终标准化：移除多余空格但保留必要结构
+        latexStr = latexStr.replace(/\s+/g, ' ')
+        latexStr = latexStr.trim()
+
+        // 对于最终比较，移除所有空格
+        latexStr = latexStr.replace(/\s+/g, '')
+
+        return latexStr.toLowerCase()
+
+      } catch (e) {
+        console.error('ERROR in normalizeLatex:', e)
+        // 如果出错，回退到简单处理
+        return latexStr.trim().toLowerCase().replace(/\s+/g, '')
+      }
     }
 
-    const normalizedUser = normalize(userAnswer)
-    const normalizedTarget = normalize(targetAnswer)
+    try {
+      const userNormalized = normalizeLatex(userAnswer)
+      const targetNormalized = normalizeLatex(targetAnswer)
 
-    // 直接比较标准化后的结果
-    if (normalizedUser === normalizedTarget) {
-      return true
+      console.log(`DEBUG: 用户答案: '${userAnswer}' -> 标准化: '${userNormalized}'`)
+      console.log(`DEBUG: 目标答案: '${targetAnswer}' -> 标准化: '${targetNormalized}'`)
+
+      // 直接比较标准化后的结果
+      const result = userNormalized === targetNormalized
+      console.log(`DEBUG: 答案比较结果: ${result}`)
+
+      return result
+
+    } catch (e) {
+      console.error('ERROR: 答案检查出错:', e)
+      // 出错时回退到简单比较
+      try {
+        const simpleUser = userAnswer.trim().toLowerCase().replace(/\s+/g, '')
+        const simpleTarget = targetAnswer.trim().toLowerCase().replace(/\s+/g, '')
+        return simpleUser === simpleTarget
+      } catch {
+        return false
+      }
     }
-
-    // 额外的等价性检查
-    const equivalentForms = [
-      // 处理上标的不同写法
-      [/\^(\d+)/g, '^{$1}'], // x^2 → x^{2}
-      [/\^{(\d+)}/g, '^$1'], // x^{2} → x^2
-
-      // 处理下标的不同写法
-      [/_(\d+)/g, '_{$1}'], // x_2 → x_{2}
-      [/_{(\d+)}/g, '_$1'], // x_{2} → x_2
-
-      // 处理分数的不同写法
-      [/\\frac\s*{\s*([^}]+)\s*}\s*{\s*([^}]+)\s*}/g, '\\frac{$1}{$2}']
-    ]
-
-    let userVariant = normalizedUser
-    let targetVariant = normalizedTarget
-
-    // 应用等价转换
-    equivalentForms.forEach(([pattern, replacement]) => {
-      userVariant = userVariant.replace(pattern, replacement)
-      targetVariant = targetVariant.replace(pattern, replacement)
-    })
-
-    return userVariant === targetVariant
   }
 }
 
