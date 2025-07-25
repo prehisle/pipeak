@@ -126,9 +126,9 @@ class LocalDataAdapter {
   async getLessons() {
     await this.initialize()
     await delay()
-    
+
     const lessonProgress = localStorageManager.getLessonProgress()
-    
+
     // 合并课程数据和进度
     const lessonsWithProgress = mockLessons.map(lesson => {
       const progress = lessonProgress[lesson._id]
@@ -139,8 +139,9 @@ class LocalDataAdapter {
         practiceProgress: progress?.practiceProgress || {}
       }
     })
-    
-    return lessonsWithProgress
+
+    // 返回与API相同的格式
+    return { lessons: lessonsWithProgress }
   }
 
   async getLesson(lessonId) {
