@@ -1,13 +1,13 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef, useImperativeHandle, forwardRef } from 'react'
 import MarkdownRenderer from './MarkdownRenderer'
 import { learningAPI } from '../services/api'
 
-const PracticeCard = ({
+const PracticeCard = forwardRef(({
   card,
   lessonId,
   cardIndex,
   onComplete
-}) => {
+}, ref) => {
   const [userAnswer, setUserAnswer] = useState('')
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [feedback, setFeedback] = useState(null)
@@ -16,6 +16,29 @@ const PracticeCard = ({
   const [hintLevel, setHintLevel] = useState(0)
   const [isCorrect, setIsCorrect] = useState(false)
   const [syntaxSuggestions, setSyntaxSuggestions] = useState([])
+
+  // 输入框引用
+  const textareaRef = useRef(null)
+
+  // 暴露聚焦方法给父组件
+  useImperativeHandle(ref, () => ({
+    focus: () => {
+      if (textareaRef.current) {
+        textareaRef.current.focus()
+      }
+    }
+  }))
+
+  // 组件挂载时自动聚焦到输入框
+  useEffect(() => {
+    if (textareaRef.current && !isCorrect) {
+      // 延迟聚焦，确保DOM完全渲染
+      const timer = setTimeout(() => {
+        textareaRef.current.focus()
+      }, 100)
+      return () => clearTimeout(timer)
+    }
+  }, [cardIndex]) // 当卡片索引变化时重新聚焦
 
   // 检查当前练习是否已完成并加载状态
   useEffect(() => {
@@ -175,6 +198,14 @@ const PracticeCard = ({
   }
 
   const handleKeyPress = (e) => {
+    // 如果答案正确，按回车键进入下一题
+    if (e.key === 'Enter' && isCorrect) {
+      e.preventDefault()
+      // 立即触发完成回调，不等待2秒延迟
+      onComplete && onComplete(true)
+      return
+    }
+
     // Ctrl+Enter 或 Cmd+Enter 提交答案
     if (e.key === 'Enter' && (e.ctrlKey || e.metaKey)) {
       e.preventDefault()
@@ -222,6 +253,7 @@ const PracticeCard = ({
             </label>
             <div className="relative">
               <textarea
+                ref={textareaRef}
                 value={userAnswer}
                 onChange={(e) => setUserAnswer(e.target.value)}
                 onKeyDown={handleKeyPress}
@@ -258,11 +290,16 @@ const PracticeCard = ({
           {/* 反馈信息 */}
           {feedback && (
             <div className={`mb-4 p-4 rounded-lg ${
-              isCorrect 
-                ? 'bg-green-100 border border-green-300 text-green-800' 
+              isCorrect
+                ? 'bg-green-100 border border-green-300 text-green-800'
                 : 'bg-red-100 border border-red-300 text-red-800'
             }`}>
               <p className="font-medium">{typeof feedback === 'string' ? feedback : '反馈信息'}</p>
+              {isCorrect && (
+                <p className="text-sm mt-2 text-green-600">
+                  💡 按 <kbd className="px-2 py-1 bg-green-200 rounded text-xs font-mono">Enter</kbd> 键进入下一题
+                </p>
+              )}
             </div>
           )}
 
@@ -320,6 +357,9 @@ const PracticeCard = ({
       </div>
     </div>
   )
-}
+})
+
+// 设置displayName以便调试
+PracticeCard.displayName = 'PracticeCard'
 
 export default PracticeCard

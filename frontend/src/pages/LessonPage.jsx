@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useState, useRef } from 'react'
 import { useParams, useNavigate, Link } from 'react-router-dom'
 import { useLessonStore } from '../stores/lessonStore'
 import LoadingSpinner from '../components/LoadingSpinner'
@@ -20,6 +20,9 @@ const LessonPage = () => {
 
   // Toast系统
   const { showSuccess, showError, showWarning, ToastContainer } = useToast()
+
+  // PracticeCard引用，用于自动聚焦
+  const practiceCardRef = useRef(null)
 
   const {
     currentLesson,
@@ -117,6 +120,14 @@ const LessonPage = () => {
       setTimeout(() => {
         setCurrentCardIndex(currentCardIndex + 1)
         setIsTransitioning(false)
+
+        // 如果下一个卡片是练习题，自动聚焦到输入框
+        setTimeout(() => {
+          const nextCard = currentLesson.cards[currentCardIndex + 1]
+          if (nextCard && nextCard.type === 'practice' && practiceCardRef.current) {
+            practiceCardRef.current.focus()
+          }
+        }, 100) // 等待DOM更新完成
       }, 150)
     }
   }
@@ -304,6 +315,7 @@ const LessonPage = () => {
               </div>
             ) : currentCard.type === 'practice' ? (
               <PracticeCard
+                ref={practiceCardRef}
                 card={currentCard}
                 lessonId={lessonId}
                 cardIndex={currentCardIndex}
