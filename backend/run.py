@@ -24,7 +24,7 @@ def init_database():
         import bcrypt
 
         db = get_db()
-        if not db:
+        if db is None:
             return {'error': 'Database connection failed'}, 500
 
         # 检查是否已经初始化过
