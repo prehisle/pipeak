@@ -153,12 +153,15 @@ const LessonPage = () => {
   }
 
   const handlePracticeComplete = (isCorrect, immediate = false) => {
+    console.log('LessonPage收到练习完成回调:', { isCorrect, immediate })
     if (isCorrect) {
       if (immediate) {
         // 立即进入下一个卡片（用户按Enter键触发）
+        console.log('立即进入下一个卡片')
         handleNextCard()
       } else {
         // 延迟进入下一个卡片（自动触发）
+        console.log('2秒后自动进入下一个卡片')
         setTimeout(() => {
           handleNextCard()
         }, 2000)

@@ -198,9 +198,12 @@ const PracticeCard = forwardRef(({
   }
 
   const handleKeyPress = (e) => {
+    console.log('PracticeCard键盘事件:', e.key, '答案是否正确:', isCorrect, '用户答案:', userAnswer.trim())
+
     // 如果答案正确，按回车键进入下一题
     if (e.key === 'Enter' && isCorrect) {
       e.preventDefault()
+      console.log('触发Enter键进入下一题')
       // 立即触发完成回调，不等待2秒延迟
       onComplete && onComplete(true, true) // true 表示立即执行
       return
@@ -209,6 +212,7 @@ const PracticeCard = forwardRef(({
     // 普通 Enter 键提交答案（如果答案未正确且有内容）
     if (e.key === 'Enter' && !isCorrect && userAnswer.trim()) {
       e.preventDefault()
+      console.log('触发Enter键提交答案')
       handleSubmit()
       return
     }
@@ -216,11 +220,13 @@ const PracticeCard = forwardRef(({
     // Ctrl+Enter 或 Cmd+Enter 强制提交答案
     if (e.key === 'Enter' && (e.ctrlKey || e.metaKey)) {
       e.preventDefault()
+      console.log('触发Ctrl+Enter强制提交')
       handleSubmit()
     }
     // Tab 键获取提示
     else if (e.key === 'Tab' && !e.shiftKey) {
       e.preventDefault()
+      console.log('触发Tab键获取提示')
       handleGetHint()
     }
   }
@@ -265,9 +271,13 @@ const PracticeCard = forwardRef(({
                 onChange={(e) => setUserAnswer(e.target.value)}
                 onKeyDown={handleKeyPress}
                 placeholder="例如：$x^2$"
-                className="w-full px-3 py-2 bg-gray-50 rounded-lg focus:bg-white focus:ring-2 focus:ring-blue-500/20 focus:outline-none hover:bg-gray-100 transition-all duration-200 font-mono text-sm resize-none border-0"
+                className={`w-full px-3 py-2 rounded-lg focus:ring-2 focus:ring-blue-500/20 focus:outline-none transition-all duration-200 font-mono text-sm resize-none border-0 ${
+                  isCorrect
+                    ? 'bg-green-50 text-green-800 cursor-default'
+                    : 'bg-gray-50 focus:bg-white hover:bg-gray-100'
+                }`}
                 rows="2"
-                disabled={isCorrect}
+                readOnly={isCorrect}
                 spellCheck={false}
                 autoComplete="off"
                 autoCorrect="off"
@@ -305,9 +315,10 @@ const PracticeCard = forwardRef(({
             }`}>
               <p className="font-medium text-sm">{typeof feedback === 'string' ? feedback : '反馈信息'}</p>
               {isCorrect && (
-                <p className="text-xs mt-1 text-green-600">
-                  💡 按 <kbd className="px-1 py-0.5 bg-green-200 rounded text-xs font-mono">Enter</kbd> 键进入下一题
-                </p>
+                <div className="text-xs mt-2 text-green-600 space-y-1">
+                  <p>🎉 恭喜答对了！</p>
+                  <p>💡 按 <kbd className="px-1 py-0.5 bg-green-200 rounded text-xs font-mono">Enter</kbd> 键或点击 <strong>"下一题"</strong> 按钮继续</p>
+                </div>
               )}
             </div>
           )}
@@ -347,8 +358,19 @@ const PracticeCard = forwardRef(({
                     ? 'bg-gray-400 text-white cursor-not-allowed'
                     : 'bg-yellow-500 text-white hover:bg-yellow-600'
                 }`}
+                title="获取解题提示"
               >
                 💡 获取提示
+              </button>
+            )}
+
+            {isCorrect && (
+              <button
+                onClick={() => onComplete && onComplete(true, true)}
+                className="px-3 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors text-sm"
+                title="进入下一题"
+              >
+                下一题 →
               </button>
             )}
           </div>
