@@ -15,12 +15,7 @@ class ProductionConfig:
     JWT_REFRESH_TOKEN_EXPIRES = timedelta(days=30)
     
     # MongoDB配置 - 生产环境必须设置MONGODB_URI
-    @property
-    def MONGODB_URI(self):
-        uri = os.environ.get('MONGODB_URI')
-        if not uri:
-            raise ValueError("MONGODB_URI environment variable is required in production")
-        return uri
+    MONGODB_URI = os.environ.get('MONGODB_URI')
 
     MONGODB_DB = os.environ.get('MONGODB_DB') or 'pipeak'
     

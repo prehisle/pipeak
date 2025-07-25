@@ -103,18 +103,25 @@ def init_extensions(app):
 def init_database(app):
     """初始化数据库连接"""
     global mongo_client, db
-    
+
     try:
-        mongo_client = MongoClient(app.config['MONGODB_URI'])
+        # 检查MongoDB URI是否存在
+        mongodb_uri = app.config.get('MONGODB_URI')
+        if not mongodb_uri:
+            raise ValueError("MONGODB_URI is not configured")
+
+        app.logger.info(f"Connecting to MongoDB with URI: {mongodb_uri[:20]}...")
+
+        mongo_client = MongoClient(mongodb_uri)
         db = mongo_client[app.config['MONGODB_DB']]
-        
+
         # 测试连接
         mongo_client.admin.command('ping')
         app.logger.info(f"Connected to MongoDB: {app.config['MONGODB_DB']}")
-        
+
         # 创建索引
         create_indexes()
-        
+
     except Exception as e:
         app.logger.error(f"Failed to connect to MongoDB: {e}")
         raise
