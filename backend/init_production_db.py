@@ -30,91 +30,40 @@ def connect_to_database():
         sys.exit(1)
 
 def create_lessons(db):
-    """创建课程数据"""
+    """创建课程数据 - 使用comprehensive_lessons.py中的完整数据"""
     print("📚 创建课程数据...")
-    
-    lessons = [
-        {
-            '_id': ObjectId(),
-            'title': '第1课：数学环境与基础语法',
-            'sequence': 1,
-            'description': '学习LaTeX数学公式的基础语法，掌握数学环境、上标、下标的使用方法。',
-            'cards': [
-                {
-                    'type': 'knowledge',
-                    'content': '**LaTeX数学环境**\n\nLaTeX数学公式需要在特定环境中编写：\n\n• **行内公式**：使用 `$...$` 包围，如 `$x^2$` → $x^2$\n• **独立公式**：使用 `$$...$$` 包围，如 `$$E = mc^2$$` → $$E = mc^2$$'
-                },
-                {
-                    'type': 'knowledge',
-                    'content': '**上标和下标**\n\n• 上标使用 `^` 符号：`$x^2$` → $x^2$\n• 下标使用 `_` 符号：`$x_1$` → $x_1$\n• 同时使用：`$x_1^2$` → $x_1^2$'
-                },
-                {
-                    'type': 'practice',
-                    'question': '请输入 LaTeX 代码来表示：x 的平方',
-                    'target_formula': '$x^2$',
-                    'hints': [
-                        '使用 ^ 符号表示上标',
-                        '上标内容是 2',
-                        '完整格式：$x^2$'
-                    ],
-                    'difficulty': 'easy'
-                },
-                {
-                    'type': 'practice',
-                    'question': '请输入 LaTeX 代码来表示：a 下标 max',
-                    'target_formula': '$a_{max}$',
-                    'hints': [
-                        '使用 _ 符号表示下标',
-                        '多字符下标需要用花括号包围',
-                        '完整格式：$a_{max}$'
-                    ],
-                    'difficulty': 'medium'
-                }
-            ],
-            'created_at': datetime.utcnow(),
-            'updated_at': datetime.utcnow()
-        },
-        {
-            '_id': ObjectId(),
-            'title': '第2课：分数与根号',
-            'sequence': 2,
-            'description': '学习如何在LaTeX中表示分数和根号，掌握复杂数学表达式的写法。',
-            'cards': [
-                {
-                    'type': 'knowledge',
-                    'content': '**分数表示法**\n\n使用 `\\frac{分子}{分母}` 命令：\n\n• `$\\frac{1}{2}$` → $\\frac{1}{2}$\n• `$\\frac{a+b}{c-d}$` → $\\frac{a+b}{c-d}$\n• `$\\frac{x^2}{y^3}$` → $\\frac{x^2}{y^3}$'
-                },
-                {
-                    'type': 'knowledge',
-                    'content': '**根号表示法**\n\n使用 `\\sqrt{}` 命令：\n\n• `$\\sqrt{x}$` → $\\sqrt{x}$ (平方根)\n• `$\\sqrt[3]{x}$` → $\\sqrt[3]{x}$ (三次根)\n• `$\\sqrt{x^2 + y^2}$` → $\\sqrt{x^2 + y^2}$'
-                },
-                {
-                    'type': 'practice',
-                    'question': '请输入 LaTeX 代码来表示分数：二分之一',
-                    'target_formula': '$\\frac{1}{2}$',
-                    'hints': [
-                        '使用 \\frac{分子}{分母} 命令',
-                        '分子是 1，分母是 2',
-                        '完整格式：$\\frac{1}{2}$'
-                    ],
-                    'difficulty': 'easy'
-                },
-                {
-                    'type': 'practice',
-                    'question': '请输入 LaTeX 代码来表示：根号下 x 平方加 y 平方',
-                    'target_formula': '$\\sqrt{x^2 + y^2}$',
-                    'hints': [
-                        '使用 \\sqrt{} 命令表示根号',
-                        '根号内容是 x^2 + y^2',
-                        '完整格式：$\\sqrt{x^2 + y^2}$'
-                    ],
-                    'difficulty': 'medium'
-                }
-            ],
-            'created_at': datetime.utcnow(),
-            'updated_at': datetime.utcnow()
-        }
-    ]
+
+    # 导入完整的课程数据
+    try:
+        from comprehensive_lessons import create_comprehensive_lessons
+        lessons = create_comprehensive_lessons()
+        print(f"✅ 成功导入 {len(lessons)} 个课程数据")
+    except ImportError:
+        print("⚠️  无法导入comprehensive_lessons.py，使用默认课程数据")
+        # 如果无法导入，使用简化的默认数据
+        lessons = [
+            {
+                '_id': ObjectId(),
+                'title': '第1课：数学环境与基础语法',
+                'sequence': 1,
+                'description': '学习LaTeX数学公式的基础语法，掌握数学环境、上标、下标的使用方法。',
+                'cards': [
+                    {
+                        'type': 'knowledge',
+                        'content': '**LaTeX数学环境**\n\nLaTeX数学公式需要在特定环境中编写：\n\n• **行内公式**：使用 `$...$` 包围，如 `$x^2$` → $x^2$\n• **独立公式**：使用 `$$...$$` 包围，如 `$$E = mc^2$$` → $$E = mc^2$$'
+                    },
+                    {
+                        'type': 'practice',
+                        'question': '请输入 LaTeX 代码来表示：x 的平方',
+                        'target_formula': '$x^2$',
+                        'hints': ['使用 ^ 符号表示上标'],
+                        'difficulty': 'easy'
+                    }
+                ],
+                'created_at': datetime.utcnow(),
+                'updated_at': datetime.utcnow()
+            }
+        ]
     
     # 清空现有课程数据
     db.lessons.delete_many({})
