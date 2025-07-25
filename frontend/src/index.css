@@ -64,7 +64,9 @@
   --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.4), 0 2px 4px -2px rgb(0 0 0 / 0.3);
   --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.4), 0 4px 6px -4px rgb(0 0 0 / 0.3);
 }
-  
+
+/* 通用CSS变量 - 继续 */
+:root {
   /* 间距系统 - 基于 4px 网格 */
   --spacing-0: 0;
   --spacing-1: 0.25rem;   /* 4px */
