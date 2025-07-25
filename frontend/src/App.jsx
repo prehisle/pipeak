@@ -12,6 +12,7 @@ import LessonPage from './pages/LessonPage'
 import LearningPage from './pages/LearningPage'
 // 移除练习中心相关页面 - 精简为核心学习路径
 import ReviewPage from './pages/ReviewPage'
+import OfflinePracticePage from './pages/OfflinePracticePage'
 import TestPage from './pages/TestPage'
 import RenderTestPage from './pages/RenderTestPage'
 import StyleTestPage from './pages/StyleTestPage'
@@ -75,6 +76,7 @@ function App() {
           {/* 将学习中心重定向到仪表盘，避免功能重复 */}
           <Route path="learning" element={<Navigate to="/dashboard" replace />} />
           <Route path="lesson/:lessonId" element={<LessonPage />} />
+          <Route path="offline-practice" element={<OfflinePracticePage />} />
           {/* 移除练习中心相关路由 - 精简为核心学习路径 */}
           <Route path="review" element={<ReviewPage />} />
           <Route path="style-test" element={<StyleTestPage />} />

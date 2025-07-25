@@ -21,8 +21,32 @@ const mockLessons = [
       {
         type: 'practice',
         question: '请输入 x 的平方',
-        target_formula: 'x^2',
+        target_formula: '$x^2$',
         hints: ['使用上标符号 ^', '记住使用花括号 {}']
+      },
+      {
+        type: 'practice',
+        question: '请输入 y 的三次方',
+        target_formula: '$y^3$',
+        hints: ['使用上标符号 ^', '数字可以直接写在^后面']
+      },
+      {
+        type: 'practice',
+        question: '请输入 a 的 n 次方',
+        target_formula: '$a^n$',
+        hints: ['使用上标符号 ^', '字母可以直接作为指数']
+      },
+      {
+        type: 'practice',
+        question: '请输入 x 的下标 1',
+        target_formula: '$x_1$',
+        hints: ['使用下标符号 _', '数字可以直接写在_后面']
+      },
+      {
+        type: 'practice',
+        question: '请输入 x 的 2n+1 次方',
+        target_formula: '$x^{2n+1}$',
+        hints: ['复杂的上标需要用花括号包围', '使用 x^{2n+1} 的格式']
       }
     ]
   },
@@ -35,13 +59,37 @@ const mockLessons = [
       {
         type: 'knowledge',
         title: '分数表示',
-        content: '使用 \\frac{分子}{分母} 来表示分数。例如：\\frac{1}{2} 表示二分之一。'
+        content: '使用 \\frac{分子}{分母} 来表示分数。例如：\\frac{1}{2} 表示二分之一。根号使用 \\sqrt{内容} 表示。'
       },
       {
         type: 'practice',
         question: '请输入二分之一',
-        target_formula: '\\frac{1}{2}',
+        target_formula: '$\\frac{1}{2}$',
         hints: ['使用 \\frac 命令', '分子和分母都要用花括号包围']
+      },
+      {
+        type: 'practice',
+        question: '请输入三分之二',
+        target_formula: '$\\frac{2}{3}$',
+        hints: ['使用 \\frac{2}{3} 的格式', '分子是2，分母是3']
+      },
+      {
+        type: 'practice',
+        question: '请输入根号2',
+        target_formula: '$\\sqrt{2}$',
+        hints: ['使用 \\sqrt 命令', '被开方数用花括号包围']
+      },
+      {
+        type: 'practice',
+        question: '请输入三次根号8',
+        target_formula: '$\\sqrt[3]{8}$',
+        hints: ['使用 \\sqrt[n]{x} 表示n次根号', '方括号内是根号的次数']
+      },
+      {
+        type: 'practice',
+        question: '请输入复杂分数：x加1分之x减1',
+        target_formula: '$\\frac{x-1}{x+1}$',
+        hints: ['分子是 x-1，分母是 x+1', '使用 \\frac{x-1}{x+1} 的格式']
       }
     ]
   }

@@ -46,6 +46,16 @@ const Layout = () => {
               >
                 {t('nav.dashboard')}
               </Link>
+
+              {/* 离线练习按钮 */}
+              <Link
+                to="/offline-practice"
+                className="px-4 py-2 bg-green-600 hover:bg-green-700 text-white text-sm font-medium rounded-md transition-colors flex items-center space-x-1"
+              >
+                <span>⚡</span>
+                <span>离线练习</span>
+              </Link>
+
               {/* 移除学习中心导航 - 避免与仪表盘功能重复 */}
               <Link
                 to="/review"

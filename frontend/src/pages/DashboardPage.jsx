@@ -7,7 +7,7 @@ import { useUserModeStore } from '../stores/userModeStore'
 import { reviewAPI } from '../services/api'
 import LoadingSpinner from '../components/LoadingSpinner'
 import SmartText from '../components/SmartText'
-import GuestWelcome from '../components/GuestWelcome'
+
 import { debugProgressConsistency, fixProgressInconsistency } from '../utils/debugProgressConsistency'
 
 const DashboardPage = () => {
@@ -103,8 +103,7 @@ const DashboardPage = () => {
         </div>
       )}
 
-      {/* 游客模式欢迎 */}
-      {isGuestMode && <GuestWelcome />}
+
 
       {/* 学习进度概览 */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">

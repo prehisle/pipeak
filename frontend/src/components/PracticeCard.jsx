@@ -259,6 +259,20 @@ const PracticeCard = forwardRef(({
             </div>
           </div>
 
+          {/* 实时预览 */}
+          <div className="mb-3">
+            <p className="text-sm font-medium text-green-800 mb-2">实时预览：</p>
+            <div className="bg-gray-50 p-3 rounded-lg border border-gray-200 min-h-[50px] flex items-center justify-center">
+              <div className="text-center w-full">
+                {userAnswer.trim() ? (
+                  <MarkdownRenderer content={userAnswer} />
+                ) : (
+                  <span className="text-gray-400 text-xs">请输入LaTeX代码后将在此显示预览</span>
+                )}
+              </div>
+            </div>
+          </div>
+
           {/* 答案输入区域 */}
           <div className="mb-3">
             <label className="block text-sm font-medium text-green-800 mb-2">
@@ -288,20 +302,6 @@ const PracticeCard = forwardRef(({
               <div className="absolute bottom-2 right-2 text-xs text-gray-400 bg-gray-50 px-1 py-0.5 rounded text-xs">
                 <div>Ctrl+Enter 提交</div>
                 {!isCorrect && <div>Tab 获取提示</div>}
-              </div>
-            </div>
-          </div>
-
-          {/* 实时预览 */}
-          <div className="mb-3">
-            <p className="text-sm font-medium text-green-800 mb-2">实时预览：</p>
-            <div className="bg-gray-50 p-3 rounded-lg border border-gray-200 min-h-[50px] flex items-center justify-center">
-              <div className="text-center w-full">
-                {userAnswer.trim() ? (
-                  <MarkdownRenderer content={userAnswer} />
-                ) : (
-                  <span className="text-gray-400 text-xs">输入LaTeX代码后将在此显示预览</span>
-                )}
               </div>
             </div>
           </div>
