@@ -1,15 +1,9 @@
 import axios from 'axios'
-import { demoAPI, isDemoMode } from './demoApi'
 import localDataAdapter from './localDataAdapter'
 import { useUserModeStore } from '../stores/userModeStore'
 
 // 动态获取API基础URL
 const getApiBaseUrl = () => {
-  // 如果是演示模式，返回空字符串（使用demoAPI）
-  if (isDemoMode()) {
-    return ''
-  }
-
   // 生产环境使用环境变量
   if (import.meta.env.VITE_API_BASE_URL) {
     return import.meta.env.VITE_API_BASE_URL
@@ -42,8 +36,6 @@ const isGuestMode = () => {
 const getApiAdapter = () => {
   if (isGuestMode()) {
     return localDataAdapter
-  } else if (isDemoMode()) {
-    return demoAPI
   } else {
     return api // 真实API
   }
@@ -154,8 +146,8 @@ export const learningAPI = {
 
   // 获取提示（课程内练习）
   getHint: async (data) => {
-    // 游客模式和演示模式都返回简单提示
-    return { hint: '这是一个演示提示' }
+    // 返回简单提示
+    return { hint: '这是一个提示' }
   },
 
   // 获取课程完成状态

@@ -20,9 +20,6 @@ import StyleTestPage from './pages/StyleTestPage'
 import Layout from './components/Layout'
 import LoadingSpinner from './components/LoadingSpinner'
 import ErrorBoundary from './components/ErrorBoundary'
-import DemoNotice from './components/DemoNotice'
-// 移除练习演示组件
-import { isDemoMode } from './services/demoApi'
 
 function App() {
   const { user, isLoading, checkAuth, initializeAuth, isAuthenticated } = useAuthStore()
@@ -38,11 +35,7 @@ function App() {
 
     // 应用启动时初始化认证头和检查用户认证状态
     initializeAuth()
-
-    // 在演示模式下，跳过认证检查
-    if (!isDemoMode()) {
-      checkAuth()
-    }
+    checkAuth()
   }, [checkAuth, initializeAuth, initializeTheme, initializeUserMode])
 
   // 显示加载状态
@@ -57,7 +50,6 @@ function App() {
   return (
     <ErrorBoundary>
       <div className="App">
-        <DemoNotice />
         <Routes>
         {/* 公开路由 */}
         <Route

@@ -4,7 +4,76 @@
  */
 
 import localStorageManager from '../utils/localStorage'
-import { mockLessons, mockPractices } from './demoApi'
+
+// 本地模拟课程数据
+const mockLessons = [
+  {
+    _id: '1',
+    title: '数学环境与基础语法',
+    description: '学习LaTeX数学环境的基础语法，包括上标、下标等',
+    sequence: 1,
+    cards: [
+      {
+        type: 'knowledge',
+        title: '数学环境',
+        content: '在LaTeX中，数学公式需要在特殊的数学环境中编写。行内公式使用 $...$ 包围，行间公式使用 $$...$$ 或 \\[...\\] 包围。'
+      },
+      {
+        type: 'practice',
+        question: '请输入 x 的平方',
+        target_formula: 'x^2',
+        hints: ['使用上标符号 ^', '记住使用花括号 {}']
+      }
+    ]
+  },
+  {
+    _id: '2',
+    title: '分数与根号',
+    description: '学习如何输入分数和根号表达式',
+    sequence: 2,
+    cards: [
+      {
+        type: 'knowledge',
+        title: '分数表示',
+        content: '使用 \\frac{分子}{分母} 来表示分数。例如：\\frac{1}{2} 表示二分之一。'
+      },
+      {
+        type: 'practice',
+        question: '请输入二分之一',
+        target_formula: '\\frac{1}{2}',
+        hints: ['使用 \\frac 命令', '分子和分母都要用花括号包围']
+      }
+    ]
+  }
+]
+
+// 本地模拟练习数据
+const mockPractices = [
+  {
+    _id: 'practice_1',
+    lesson_id: '1',
+    question: '请输入 x 的平方',
+    target_formula: 'x^2',
+    difficulty: 'easy',
+    explanation: '上标使用 ^ 符号'
+  },
+  {
+    _id: 'practice_2',
+    lesson_id: '1',
+    question: '请输入 y 的三次方',
+    target_formula: 'y^3',
+    difficulty: 'easy',
+    explanation: '上标使用 ^ 符号'
+  },
+  {
+    _id: 'practice_3',
+    lesson_id: '2',
+    question: '请输入二分之一',
+    target_formula: '\\frac{1}{2}',
+    difficulty: 'medium',
+    explanation: '分数使用 \\frac{分子}{分母} 格式'
+  }
+]
 
 // 模拟网络延迟
 const delay = (ms = 100) => new Promise(resolve => setTimeout(resolve, ms))

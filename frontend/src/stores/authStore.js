@@ -1,7 +1,6 @@
 import { create } from 'zustand'
 import { persist } from 'zustand/middleware'
 import api from '../services/api'
-import { demoAPI, isDemoMode } from '../services/demoApi'
 import { useUserModeStore } from './userModeStore'
 import localStorageManager from '../utils/localStorage'
 
@@ -72,18 +71,9 @@ const useAuthStore = create(
         set({ isLoading: true, error: null })
 
         try {
-          let response
-
-          if (isDemoMode()) {
-            // 演示模式：使用demoAPI
-            response = await demoAPI.auth.login({ email, password })
-          } else {
-            // 正常模式：使用真实API
-            const apiResponse = await api.post('/auth/login', { email, password })
-            response = apiResponse.data
-          }
-
-          const { user, access_token, refresh_token } = response
+          // 使用真实API进行登录
+          const apiResponse = await api.post('/auth/login', { email, password })
+          const { user, access_token, refresh_token } = apiResponse.data
 
           set({
             user,
@@ -93,10 +83,8 @@ const useAuthStore = create(
             error: null
           })
 
-          // 设置API默认认证头（仅在非演示模式下）
-          if (!isDemoMode()) {
-            api.defaults.headers.common['Authorization'] = `Bearer ${access_token}`
-          }
+          // 设置API默认认证头
+          api.defaults.headers.common['Authorization'] = `Bearer ${access_token}`
 
           return { success: true }
         } catch (error) {
@@ -117,18 +105,9 @@ const useAuthStore = create(
         set({ isLoading: true, error: null })
 
         try {
-          let response
-
-          if (isDemoMode()) {
-            // 演示模式：使用demoAPI
-            response = await demoAPI.auth.register({ email, password })
-          } else {
-            // 正常模式：使用真实API
-            const apiResponse = await api.post('/auth/register', { email, password })
-            response = apiResponse.data
-          }
-
-          const { user, access_token, refresh_token } = response
+          // 使用真实API进行注册
+          const apiResponse = await api.post('/auth/register', { email, password })
+          const { user, access_token, refresh_token } = apiResponse.data
 
           set({
             user,
@@ -138,10 +117,8 @@ const useAuthStore = create(
             error: null
           })
 
-          // 设置API默认认证头（仅在非演示模式下）
-          if (!isDemoMode()) {
-            api.defaults.headers.common['Authorization'] = `Bearer ${access_token}`
-          }
+          // 设置API默认认证头
+          api.defaults.headers.common['Authorization'] = `Bearer ${access_token}`
 
           return { success: true }
         } catch (error) {
@@ -172,12 +149,6 @@ const useAuthStore = create(
 
       // 检查认证状态
       checkAuth: async () => {
-        // 演示模式下跳过认证检查
-        if (isDemoMode()) {
-          set({ isLoading: false })
-          return
-        }
-
         const { accessToken } = get()
 
         if (!accessToken) {
