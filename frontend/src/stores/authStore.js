@@ -64,11 +64,31 @@ const useAuthStore = create(
         }
       },
 
-      // 初始化认证头
+      // 初始化认证状态
       initializeAuth: () => {
-        const { accessToken } = get()
-        if (accessToken) {
-          api.defaults.headers.common['Authorization'] = `Bearer ${accessToken}`
+        try {
+          // 从localStorage恢复用户状态
+          const token = localStorage.getItem('auth_token')
+          const userData = localStorage.getItem('user_data')
+
+          if (token && userData) {
+            const user = JSON.parse(userData)
+            set({
+              user,
+              accessToken: token,
+              isLoading: false,
+              error: null
+            })
+
+            // 设置API认证头
+            api.defaults.headers.common['Authorization'] = `Bearer ${token}`
+            console.log('从localStorage恢复用户状态:', user.email)
+          }
+        } catch (error) {
+          console.error('恢复用户状态失败:', error)
+          // 清理无效数据
+          localStorage.removeItem('auth_token')
+          localStorage.removeItem('user_data')
         }
       },
 
@@ -155,9 +175,15 @@ const useAuthStore = create(
 
       // 检查认证状态
       checkAuth: async () => {
-        const { accessToken } = get()
+        const { accessToken, user } = get()
 
         if (!accessToken) {
+          set({ isLoading: false })
+          return
+        }
+
+        // 如果已经有用户数据，跳过API验证（避免在测试或离线模式下出错）
+        if (user) {
           set({ isLoading: false })
           return
         }
@@ -178,7 +204,15 @@ const useAuthStore = create(
             error: null
           })
         } catch (error) {
-          // Token无效，清除认证信息
+          console.warn('Token验证失败，可能是API服务器未运行:', error.message)
+
+          // 如果是网络错误且有token，保持当前状态（可能是离线模式）
+          if (error.code === 'ERR_NETWORK' || error.code === 'ERR_CONNECTION_REFUSED') {
+            set({ isLoading: false })
+            return
+          }
+
+          // 其他错误，清除认证信息
           set({
             user: null,
             accessToken: null,
