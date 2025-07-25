@@ -20,10 +20,13 @@ class ProductionConfig:
     
     # CORS配置
     CORS_ORIGINS = [
-        'https://pipeak.vercel.app',  # 您的Vercel域名
-        'https://*.vercel.app',       # Vercel预览域名
-        'http://localhost:5173',      # 本地开发
-        'http://localhost:3000'       # 备用本地端口
+        'https://pipeak.vercel.app',          # 主要Vercel域名
+        'https://pipeak-git-main-prehisle.vercel.app',  # Git分支域名
+        'https://pipeak-prehisle.vercel.app', # 用户域名
+        'http://localhost:5173',              # 本地开发
+        'http://localhost:3000',              # 备用本地端口
+        'http://127.0.0.1:5173',             # 本地IP
+        'http://127.0.0.1:3000'              # 备用本地IP
     ]
     
     # 其他配置

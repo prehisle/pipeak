@@ -67,14 +67,13 @@ def init_extensions(app):
             }
         })
     else:
-        # 生产环境：限制特定来源
+        # 生产环境：使用配置文件中的CORS_ORIGINS
+        cors_origins = app.config.get('CORS_ORIGINS', [
+            "http://localhost:5173", "http://127.0.0.1:5173"
+        ])
         CORS(app, resources={
             r"/api/*": {
-                "origins": [
-                    "http://localhost:5173", "http://127.0.0.1:5173",
-                    "http://localhost:5174", "http://127.0.0.1:5174",
-                    "http://192.168.1.251:5173", "http://192.168.1.251:5174"
-                ],
+                "origins": cors_origins,
                 "methods": ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
                 "allow_headers": ["Content-Type", "Authorization"],
                 "supports_credentials": True
