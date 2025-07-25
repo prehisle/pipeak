@@ -147,18 +147,21 @@ class LocalDataAdapter {
   async getLesson(lessonId) {
     await this.initialize()
     await delay()
-    
+
     const lesson = mockLessons.find(l => l._id === lessonId)
     if (!lesson) throw new Error('课程不存在')
-    
+
     const progress = localStorageManager.getSingleLessonProgress(lessonId)
-    
-    return {
+
+    const lessonWithProgress = {
       ...lesson,
       isCompleted: progress?.isCompleted || false,
       completedAt: progress?.completedAt,
       practiceProgress: progress?.practiceProgress || {}
     }
+
+    // 返回与API相同的格式
+    return { lesson: lessonWithProgress }
   }
 
   async completeLesson(lessonId) {
