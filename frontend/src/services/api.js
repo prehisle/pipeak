@@ -141,6 +141,16 @@ export const learningAPI = {
   // 提交练习答案（课程内练习）
   submitAnswer: async (data) => {
     const adapter = getApiAdapter()
+
+    // 检查是否为课程内练习（有lesson_id和card_index）
+    if (data.lesson_id && data.card_index !== undefined) {
+      // 课程内练习
+      if (adapter.submitLessonPractice) {
+        return adapter.submitLessonPractice(data.lesson_id, data.card_index, data.user_answer)
+      }
+    }
+
+    // 独立练习题（向后兼容）
     return adapter.submitPractice(data.practice_id, data.answer)
   },
 
@@ -154,9 +164,10 @@ export const learningAPI = {
   getCompletionStatus: async (lessonId) => {
     const adapter = getApiAdapter()
     if (adapter.getCompletionStatus) {
-      return { data: adapter.getCompletionStatus(lessonId) }
+      const result = await adapter.getCompletionStatus(lessonId)
+      return { data: result }
     }
-    return { data: { completed_practice_details: [] } }
+    return { data: { completed_practice_details: [], pending_practice_details: [] } }
   }
 }
 

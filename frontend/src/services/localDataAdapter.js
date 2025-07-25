@@ -166,16 +166,112 @@ class LocalDataAdapter {
 
   async completeLesson(lessonId) {
     await delay()
-    
+
     const progress = localStorageManager.getSingleLessonProgress(lessonId) || {}
     const updatedProgress = {
       ...progress,
       isCompleted: true,
       completedAt: new Date().toISOString()
     }
-    
+
     localStorageManager.setLessonProgress(lessonId, updatedProgress)
     return updatedProgress
+  }
+
+  async getCompletionStatus(lessonId) {
+    await delay()
+
+    const lesson = mockLessons.find(l => l._id === lessonId)
+    if (!lesson) throw new Error('课程不存在')
+
+    const progress = localStorageManager.getSingleLessonProgress(lessonId) || {}
+    const practiceRecords = localStorageManager.getPracticeRecords()
+
+    // 获取课程中的所有练习题
+    const practiceCards = []
+    lesson.cards.forEach((card, index) => {
+      if (card.type === 'practice') {
+        practiceCards.push({
+          index,
+          title: card.title || `练习题 ${index + 1}`,
+          target_formula: card.target_formula || '',
+          question: card.question || ''
+        })
+      }
+    })
+
+    // 检查每个练习题的完成状态
+    const completedPractices = []
+    const pendingPractices = []
+
+    practiceCards.forEach(practice => {
+      // 检查课程进度中的练习完成状态
+      const practiceKey = `card_${practice.index}`
+      const practiceProgress = progress.practiceProgress || {}
+      const isCompleted = practiceProgress[practiceKey]?.isCompleted || false
+
+      if (isCompleted) {
+        completedPractices.push({
+          ...practice,
+          completed_at: practiceProgress[practiceKey]?.lastAttempt || new Date().toISOString()
+        })
+      } else {
+        pendingPractices.push(practice)
+      }
+    })
+
+    const totalPractices = practiceCards.length
+    const completedCount = completedPractices.length
+    const canComplete = completedCount === totalPractices && totalPractices > 0
+    const isAlreadyCompleted = progress.isCompleted || false
+
+    return {
+      lesson_id: lessonId,
+      lesson_title: lesson.title,
+      total_practices: totalPractices,
+      completed_practices: completedCount,
+      can_complete: canComplete,
+      is_already_completed: isAlreadyCompleted,
+      completion_percentage: totalPractices > 0 ? Math.round((completedCount / totalPractices) * 100) : 100,
+      completed_practice_details: completedPractices,
+      pending_practice_details: pendingPractices
+    }
+  }
+
+  async submitLessonPractice(lessonId, cardIndex, answer) {
+    await delay()
+
+    const lesson = mockLessons.find(l => l._id === lessonId)
+    if (!lesson) throw new Error('课程不存在')
+
+    const card = lesson.cards[cardIndex]
+    if (!card || card.type !== 'practice') throw new Error('练习题不存在')
+
+    // 简单的答案检查
+    const isCorrect = answer.trim().toLowerCase() === card.target_formula.toLowerCase()
+
+    // 更新课程进度
+    const lessonProgress = localStorageManager.getSingleLessonProgress(lessonId) || {}
+    const practiceProgress = lessonProgress.practiceProgress || {}
+
+    const practiceKey = `card_${cardIndex}`
+    practiceProgress[practiceKey] = {
+      isCompleted: isCorrect,
+      attempts: (practiceProgress[practiceKey]?.attempts || 0) + 1,
+      lastAttempt: new Date().toISOString()
+    }
+
+    localStorageManager.setLessonProgress(lessonId, {
+      ...lessonProgress,
+      practiceProgress
+    })
+
+    return {
+      is_correct: isCorrect,
+      feedback: isCorrect ? '🎉 太棒了！答案完全正确！' : '答案不正确，请重试',
+      target_answer: card.target_formula,
+      hint: !isCorrect ? (card.hints?.[0] || '提示：检查你的语法和格式') : undefined
+    }
   }
 
   // === 练习相关 ===
