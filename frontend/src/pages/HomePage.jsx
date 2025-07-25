@@ -170,7 +170,7 @@ const HomePage = () => {
                   <span className="text-lg">∛8</span>
                 </div>
                 <div className="flex items-center justify-between">
-                  <code className="bg-gray-100 px-2 py-1 rounded text-sm">\\sum_{i=1}^n</code>
+                  <code className="bg-gray-100 px-2 py-1 rounded text-sm">{'\\sum_{i=1}^n'}</code>
                   <span className="text-gray-400">→</span>
                   <span className="text-lg">Σᵢ₌₁ⁿ</span>
                 </div>
