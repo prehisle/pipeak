@@ -92,6 +92,200 @@ const mockLessons = [
         hints: ['分子是 x-1，分母是 x+1', '使用 \\frac{x-1}{x+1} 的格式']
       }
     ]
+  },
+  {
+    _id: '3',
+    title: '求和与积分符号',
+    description: '学习求和、积分等数学符号的输入方法',
+    sequence: 3,
+    cards: [
+      {
+        type: 'knowledge',
+        title: '求和与积分',
+        content: '**求和符号**：\\sum 表示求和\n\n**积分符号**：\\int 表示积分\n\n**带上下限的求和**：\\sum_{i=1}^{n}\n\n**带上下限的积分**：\\int_{a}^{b}'
+      },
+      {
+        type: 'practice',
+        question: '请输入求和符号',
+        target_formula: '$\\sum$',
+        hints: ['使用 \\sum 命令']
+      },
+      {
+        type: 'practice',
+        question: '请输入从1到n的求和',
+        target_formula: '$\\sum_{i=1}^{n}$',
+        hints: ['使用 \\sum_{下限}^{上限} 格式']
+      }
+    ]
+  },
+  {
+    _id: '4',
+    title: '希腊字母',
+    description: '学习常用希腊字母的LaTeX输入方法',
+    sequence: 4,
+    cards: [
+      {
+        type: 'knowledge',
+        title: '希腊字母',
+        content: '**小写希腊字母**：\\alpha, \\beta, \\gamma, \\delta\n\n**大写希腊字母**：\\Alpha, \\Beta, \\Gamma, \\Delta\n\n**常用字母**：\\pi, \\theta, \\lambda, \\mu'
+      },
+      {
+        type: 'practice',
+        question: '请输入希腊字母 α (alpha)',
+        target_formula: '$\\alpha$',
+        hints: ['使用 \\alpha 命令']
+      },
+      {
+        type: 'practice',
+        question: '请输入希腊字母 π (pi)',
+        target_formula: '$\\pi$',
+        hints: ['使用 \\pi 命令']
+      }
+    ]
+  },
+  {
+    _id: '5',
+    title: '矩阵与向量',
+    description: '学习矩阵和向量的表示方法',
+    sequence: 5,
+    cards: [
+      {
+        type: 'knowledge',
+        title: '矩阵与向量',
+        content: '**矩阵**：使用 \\begin{matrix}...\\end{matrix}\n\n**带括号的矩阵**：\\begin{pmatrix}...\\end{pmatrix}\n\n**向量**：\\vec{v} 或 \\mathbf{v}'
+      },
+      {
+        type: 'practice',
+        question: '请输入向量 v',
+        target_formula: '$\\vec{v}$',
+        hints: ['使用 \\vec{} 命令']
+      }
+    ]
+  },
+  {
+    _id: '6',
+    title: '三角函数',
+    description: '学习三角函数的LaTeX表示',
+    sequence: 6,
+    cards: [
+      {
+        type: 'knowledge',
+        title: '三角函数',
+        content: '**基本三角函数**：\\sin, \\cos, \\tan\n\n**反三角函数**：\\arcsin, \\arccos, \\arctan\n\n**双曲函数**：\\sinh, \\cosh, \\tanh'
+      },
+      {
+        type: 'practice',
+        question: '请输入 sin(x)',
+        target_formula: '$\\sin(x)$',
+        hints: ['使用 \\sin 命令']
+      },
+      {
+        type: 'practice',
+        question: '请输入 cos(θ)',
+        target_formula: '$\\cos(\\theta)$',
+        hints: ['使用 \\cos 和 \\theta 命令']
+      }
+    ]
+  },
+  {
+    _id: '7',
+    title: '极限与导数',
+    description: '学习极限和导数符号的输入',
+    sequence: 7,
+    cards: [
+      {
+        type: 'knowledge',
+        title: '极限与导数',
+        content: '**极限**：\\lim_{x \\to a}\n\n**导数**：\\frac{d}{dx} 或 f\'(x)\n\n**偏导数**：\\frac{\\partial}{\\partial x}'
+      },
+      {
+        type: 'practice',
+        question: '请输入 x 趋向于 0 的极限',
+        target_formula: '$\\lim_{x \\to 0}$',
+        hints: ['使用 \\lim_{x \\to 0} 格式']
+      },
+      {
+        type: 'practice',
+        question: '请输入 f 对 x 的导数',
+        target_formula: '$\\frac{df}{dx}$',
+        hints: ['使用 \\frac{df}{dx} 格式']
+      }
+    ]
+  },
+  {
+    _id: '8',
+    title: '集合与逻辑',
+    description: '学习集合论和逻辑符号',
+    sequence: 8,
+    cards: [
+      {
+        type: 'knowledge',
+        title: '集合与逻辑',
+        content: '**集合符号**：\\in, \\notin, \\subset, \\supset\n\n**逻辑符号**：\\land, \\lor, \\neg, \\implies\n\n**量词**：\\forall, \\exists'
+      },
+      {
+        type: 'practice',
+        question: '请输入 x 属于 A',
+        target_formula: '$x \\in A$',
+        hints: ['使用 \\in 命令表示属于']
+      },
+      {
+        type: 'practice',
+        question: '请输入全称量词',
+        target_formula: '$\\forall$',
+        hints: ['使用 \\forall 命令']
+      }
+    ]
+  },
+  {
+    _id: '9',
+    title: '复数与指数',
+    description: '学习复数和指数函数的表示',
+    sequence: 9,
+    cards: [
+      {
+        type: 'knowledge',
+        title: '复数与指数',
+        content: '**复数单位**：i 或 \\imath\n\n**指数函数**：e^x 或 \\exp(x)\n\n**自然对数**：\\ln(x) 或 \\log(x)'
+      },
+      {
+        type: 'practice',
+        question: '请输入 e 的 x 次方',
+        target_formula: '$e^x$',
+        hints: ['直接使用 e^x 格式']
+      },
+      {
+        type: 'practice',
+        question: '请输入自然对数 ln(x)',
+        target_formula: '$\\ln(x)$',
+        hints: ['使用 \\ln 命令']
+      }
+    ]
+  },
+  {
+    _id: '10',
+    title: '高级数学符号',
+    description: '学习更复杂的数学符号和公式',
+    sequence: 10,
+    cards: [
+      {
+        type: 'knowledge',
+        title: '高级符号',
+        content: '**无穷大**：\\infty\n\n**约等于**：\\approx\n\n**不等号**：\\leq, \\geq, \\neq\n\n**省略号**：\\ldots, \\cdots'
+      },
+      {
+        type: 'practice',
+        question: '请输入无穷大符号',
+        target_formula: '$\\infty$',
+        hints: ['使用 \\infty 命令']
+      },
+      {
+        type: 'practice',
+        question: '请输入 x 约等于 y',
+        target_formula: '$x \\approx y$',
+        hints: ['使用 \\approx 命令表示约等于']
+      }
+    ]
   }
 ]
 

@@ -4,29 +4,27 @@ import localStorageManager from '../utils/localStorage'
 
 /**
  * 用户模式状态管理
- * 管理游客模式和注册用户模式的切换
+ * 管理注册用户的状态（移除游客模式）
  */
 const useUserModeStore = create(
   persist(
     (set, get) => ({
       // 状态
-      isGuestMode: true,
+      isGuestMode: false, // 移除游客模式
       guestProfile: null,
-      showGuestPrompt: true,
+      showGuestPrompt: false,
       
       // 动作
       
       /**
-       * 初始化用户模式
+       * 初始化用户模式（移除游客模式）
        */
       initializeUserMode: () => {
-        const isGuest = localStorageManager.isGuestMode()
-        const guestProfile = isGuest ? localStorageManager.getGuestProfile() : null
-        
+        // 不再支持游客模式，始终设置为注册用户模式
         set({
-          isGuestMode: isGuest,
-          guestProfile,
-          showGuestPrompt: isGuest
+          isGuestMode: false,
+          guestProfile: null,
+          showGuestPrompt: false
         })
       },
 

@@ -73,10 +73,10 @@ function App() {
         <Route path="/test" element={<TestPage />} />
         <Route path="/render-test" element={<RenderTestPage />} />
 
-        {/* 受保护的路由 */}
+        {/* 受保护的路由 - 仅限注册用户 */}
         <Route
           path="/app"
-          element={isAuthenticatedOrGuest() ? <Layout /> : <Navigate to="/login" replace />}
+          element={isAuthenticated() ? <Layout /> : <Navigate to="/login" replace />}
         >
           <Route index element={<Navigate to="/app/dashboard" replace />} />
           <Route path="dashboard" element={<DashboardPage />} />

@@ -21,27 +21,10 @@ const useAuthStore = create(
 
       clearError: () => set({ error: null }),
 
-      // 获取当前用户（包括游客用户）
+      // 获取当前用户（仅注册用户）
       getCurrentUser: () => {
         const { user } = get()
-
-        // 如果有注册用户，返回注册用户
-        if (user) return user
-
-        // 检查是否为游客模式
-        try {
-          const userModeStore = useUserModeStore.getState()
-          if (userModeStore.isGuestMode) {
-            return userModeStore.guestProfile || localStorageManager.getGuestProfile()
-          }
-        } catch (e) {
-          // 如果userModeStore未初始化，直接检查localStorage
-          if (localStorageManager.isGuestMode()) {
-            return localStorageManager.getGuestProfile()
-          }
-        }
-
-        return null
+        return user || null
       },
 
       // 检查是否已认证（仅注册用户）
@@ -50,18 +33,10 @@ const useAuthStore = create(
         return !!user
       },
 
-      // 检查是否已认证（包括游客模式）- 用于受保护路由
+      // 检查是否已认证（移除游客模式支持）
       isAuthenticatedOrGuest: () => {
         const { user } = get()
-        if (user) return true
-
-        // 游客模式也算已认证
-        try {
-          const userModeStore = useUserModeStore.getState()
-          return userModeStore.isGuestMode
-        } catch (e) {
-          return localStorageManager.isGuestMode()
-        }
+        return !!user
       },
 
       // 初始化认证状态

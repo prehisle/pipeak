@@ -21,23 +21,24 @@ const getApiBaseUrl = () => {
   return 'http://localhost:5000/api'
 }
 
-// 检查是否为游客模式
-const isGuestMode = () => {
+// 检查是否为注册用户
+const isRegisteredUser = () => {
   try {
-    const userModeStore = useUserModeStore.getState()
-    return userModeStore.isGuestMode
+    // 检查是否有有效的认证token
+    const authToken = localStorage.getItem('auth_token')
+    const userData = localStorage.getItem('user_data')
+    return !!(authToken && userData)
   } catch (e) {
-    // 如果store还未初始化，检查localStorage
-    return localStorage.getItem('latex_trainer_guest_mode') !== 'false'
+    return false
   }
 }
 
 // 获取合适的API适配器
 const getApiAdapter = () => {
-  if (isGuestMode()) {
-    return localDataAdapter
+  if (isRegisteredUser()) {
+    return api // 真实API（注册用户）
   } else {
-    return api // 真实API
+    return localDataAdapter // 本地数据（仅用于离线练习）
   }
 }
 
