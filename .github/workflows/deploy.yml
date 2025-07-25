@@ -38,7 +38,7 @@ jobs:
       - name: Build
         run: |
           cd frontend
-          npm run build
+          NODE_ENV=production npm run build
 
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
