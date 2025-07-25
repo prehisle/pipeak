@@ -19,6 +19,7 @@ import Layout from './components/Layout'
 import LoadingSpinner from './components/LoadingSpinner'
 import DemoNotice from './components/DemoNotice'
 import PracticeDemo from './components/PracticeDemo'
+import { isDemoMode } from './services/demoApi'
 
 function App() {
   const { user, isLoading, checkAuth, initializeAuth } = useAuthStore()
@@ -26,7 +27,11 @@ function App() {
   useEffect(() => {
     // 应用启动时初始化认证头和检查用户认证状态
     initializeAuth()
-    checkAuth()
+
+    // 在演示模式下，跳过认证检查
+    if (!isDemoMode()) {
+      checkAuth()
+    }
   }, [checkAuth, initializeAuth])
 
   // 显示加载状态

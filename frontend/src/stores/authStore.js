@@ -31,11 +31,21 @@ const useAuthStore = create(
       // 登录
       login: async (email, password) => {
         set({ isLoading: true, error: null })
-        
+
         try {
-          const response = await api.post('/auth/login', { email, password })
-          const { user, access_token, refresh_token } = response.data
-          
+          let response
+
+          if (isDemoMode()) {
+            // 演示模式：使用demoAPI
+            response = await demoAPI.auth.login({ email, password })
+          } else {
+            // 正常模式：使用真实API
+            const apiResponse = await api.post('/auth/login', { email, password })
+            response = apiResponse.data
+          }
+
+          const { user, access_token, refresh_token } = response
+
           set({
             user,
             accessToken: access_token,
@@ -43,15 +53,17 @@ const useAuthStore = create(
             isLoading: false,
             error: null
           })
-          
-          // 设置API默认认证头
-          api.defaults.headers.common['Authorization'] = `Bearer ${access_token}`
-          
+
+          // 设置API默认认证头（仅在非演示模式下）
+          if (!isDemoMode()) {
+            api.defaults.headers.common['Authorization'] = `Bearer ${access_token}`
+          }
+
           return { success: true }
         } catch (error) {
-          const errorMessage = error.response?.data?.message || '登录失败'
-          set({ 
-            isLoading: false, 
+          const errorMessage = error.response?.data?.message || error.message || '登录失败'
+          set({
+            isLoading: false,
             error: errorMessage,
             user: null,
             accessToken: null,
@@ -64,11 +76,21 @@ const useAuthStore = create(
       // 注册
       register: async (email, password) => {
         set({ isLoading: true, error: null })
-        
+
         try {
-          const response = await api.post('/auth/register', { email, password })
-          const { user, access_token, refresh_token } = response.data
-          
+          let response
+
+          if (isDemoMode()) {
+            // 演示模式：使用demoAPI
+            response = await demoAPI.auth.register({ email, password })
+          } else {
+            // 正常模式：使用真实API
+            const apiResponse = await api.post('/auth/register', { email, password })
+            response = apiResponse.data
+          }
+
+          const { user, access_token, refresh_token } = response
+
           set({
             user,
             accessToken: access_token,
@@ -76,15 +98,17 @@ const useAuthStore = create(
             isLoading: false,
             error: null
           })
-          
-          // 设置API默认认证头
-          api.defaults.headers.common['Authorization'] = `Bearer ${access_token}`
-          
+
+          // 设置API默认认证头（仅在非演示模式下）
+          if (!isDemoMode()) {
+            api.defaults.headers.common['Authorization'] = `Bearer ${access_token}`
+          }
+
           return { success: true }
         } catch (error) {
-          const errorMessage = error.response?.data?.message || '注册失败'
-          set({ 
-            isLoading: false, 
+          const errorMessage = error.response?.data?.message || error.message || '注册失败'
+          set({
+            isLoading: false,
             error: errorMessage,
             user: null,
             accessToken: null,
@@ -109,23 +133,29 @@ const useAuthStore = create(
 
       // 检查认证状态
       checkAuth: async () => {
+        // 演示模式下跳过认证检查
+        if (isDemoMode()) {
+          set({ isLoading: false })
+          return
+        }
+
         const { accessToken } = get()
-        
+
         if (!accessToken) {
           set({ isLoading: false })
           return
         }
-        
+
         set({ isLoading: true })
-        
+
         try {
           // 设置认证头
           api.defaults.headers.common['Authorization'] = `Bearer ${accessToken}`
-          
+
           // 验证token并获取用户信息
           const response = await api.get('/auth/me')
           const { user } = response.data
-          
+
           set({
             user,
             isLoading: false,
@@ -140,7 +170,7 @@ const useAuthStore = create(
             isLoading: false,
             error: null
           })
-          
+
           delete api.defaults.headers.common['Authorization']
         }
       },
