@@ -39,6 +39,8 @@ jobs:
         run: |
           cd frontend
           NODE_ENV=production npm run build
+        env:
+          VITE_DEPLOY_TARGET: github-pages
 
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
