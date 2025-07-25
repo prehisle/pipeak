@@ -100,32 +100,32 @@ const PracticeStats = () => {
 
       {/* 总体统计 */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
-        <div className="text-center">
-          <div className="text-2xl font-bold text-blue-600 mb-1">
+        <div className="text-center p-4 bg-blue-50 rounded-lg">
+          <div className="text-3xl font-bold text-blue-600 mb-1">
             {stats.total_practices}
           </div>
-          <div className="text-sm text-gray-600">练习题数</div>
+          <div className="text-sm text-gray-600 font-medium">练习题数</div>
         </div>
         
-        <div className="text-center">
-          <div className="text-2xl font-bold text-green-600 mb-1">
+        <div className="text-center p-4 bg-green-50 rounded-lg">
+          <div className="text-3xl font-bold text-green-600 mb-1">
             {stats.correct_count}
           </div>
-          <div className="text-sm text-gray-600">正确次数</div>
+          <div className="text-sm text-gray-600 font-medium">正确次数</div>
         </div>
-        
-        <div className="text-center">
-          <div className="text-2xl font-bold text-purple-600 mb-1">
+
+        <div className="text-center p-4 bg-purple-50 rounded-lg">
+          <div className="text-3xl font-bold text-purple-600 mb-1">
             {stats.accuracy_rate}%
           </div>
-          <div className="text-sm text-gray-600">正确率</div>
+          <div className="text-sm text-gray-600 font-medium">正确率</div>
         </div>
-        
-        <div className="text-center">
-          <div className="text-2xl font-bold text-orange-600 mb-1">
+
+        <div className="text-center p-4 bg-orange-50 rounded-lg">
+          <div className="text-3xl font-bold text-orange-600 mb-1">
             {stats.total_attempts}
           </div>
-          <div className="text-sm text-gray-600">总尝试次数</div>
+          <div className="text-sm text-gray-600 font-medium">总尝试次数</div>
         </div>
       </div>
 

@@ -4,6 +4,7 @@ import { practiceAPI } from '../services/api'
 import PracticeFilter from '../components/PracticeFilter'
 import PracticeItemCard from '../components/PracticeItemCard'
 import PracticeStats from '../components/PracticeStats'
+import PracticeRecommendations from '../components/PracticeRecommendations'
 import LoadingSpinner from '../components/LoadingSpinner'
 
 const PracticePage = () => {
@@ -17,7 +18,8 @@ const PracticePage = () => {
   const [filters, setFilters] = useState({
     course: '',
     difficulty: '',
-    status: ''
+    status: '',
+    search: ''
   })
   const [viewMode, setViewMode] = useState('list') // 'list' or 'stats'
 
@@ -69,6 +71,16 @@ const PracticePage = () => {
           filtered = filtered.filter(p => p.attempts > 0 && !p.completed)
           break
       }
+    }
+
+    // 按搜索词筛选
+    if (filters.search) {
+      const searchLower = filters.search.toLowerCase()
+      filtered = filtered.filter(p =>
+        p.question.toLowerCase().includes(searchLower) ||
+        p.lesson_title.toLowerCase().includes(searchLower) ||
+        p.target_formula.toLowerCase().includes(searchLower)
+      )
     }
 
     setFilteredPractices(filtered)
@@ -190,6 +202,9 @@ const PracticePage = () => {
         <PracticeStats />
       ) : (
         <>
+          {/* 练习建议 */}
+          <PracticeRecommendations practices={practices} />
+
           {/* 筛选器 */}
           <PracticeFilter
             onFilterChange={handleFilterChange}

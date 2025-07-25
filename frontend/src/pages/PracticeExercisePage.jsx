@@ -73,6 +73,14 @@ const PracticeExercisePage = () => {
         targetAnswer: response.target_answer
       })
 
+      // 如果答对了，显示成就反馈
+      if (response.is_correct) {
+        // 可以在这里添加成就动画或音效
+        setTimeout(() => {
+          // 3秒后自动清除成功反馈，让用户可以继续练习
+        }, 3000)
+      }
+
       if (!response.is_correct && response.hint) {
         setShowHint(true)
       }
