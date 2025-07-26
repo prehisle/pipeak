@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef, useImperativeHandle, forwardRef } from 'react'
+import { useTranslation } from 'react-i18next'
 import MarkdownRenderer from './MarkdownRenderer'
 import { learningAPI } from '../services/api'
 
@@ -10,6 +11,8 @@ const PracticeCard = forwardRef(({
   cardIndex,
   onComplete
 }, ref) => {
+  const { t } = useTranslation()
+
   // 数据适配器：支持新旧两种数据格式
   const practiceData = exercise || card
   const targetFormula = practiceData?.answer || practiceData?.target_formula || ''

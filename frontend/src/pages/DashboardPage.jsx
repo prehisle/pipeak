@@ -173,23 +173,19 @@ const DashboardPage = () => {
         {/* 核心学习路径 */}
         <div className="card">
           <div className="card-body">
-            <div className="flex items-start justify-between gap-4">
-              <div className="flex-1 min-w-0">
-                <h3 className="text-lg font-semibold text-gray-900 mb-1">
-                  {t('dashboard.smartLearningPath')}
-                </h3>
-                <p className="text-gray-600 text-sm">
-                  {t('dashboard.smartLearningDesc')}
-                </p>
-              </div>
-              <div className="flex-shrink-0">
-                <Link
-                  to={nextLesson ? `/app/lesson/${nextLesson.id}` : "/app/dashboard"}
-                  className="btn btn-primary"
-                >
-                  {nextLesson ? t('dashboard.startLearning') : t('dashboard.viewCourses')}
-                </Link>
-              </div>
+            <div className="text-center">
+              <h3 className="text-lg font-semibold text-gray-900 mb-2">
+                {t('dashboard.smartLearningPath')}
+              </h3>
+              <p className="text-gray-600 text-sm mb-4">
+                {t('dashboard.smartLearningDesc')}
+              </p>
+              <Link
+                to={nextLesson ? `/app/lesson/${nextLesson.id}` : "/app/dashboard"}
+                className="btn btn-primary"
+              >
+                {nextLesson ? t('dashboard.startLearning') : t('dashboard.viewCourses')}
+              </Link>
             </div>
           </div>
         </div>
