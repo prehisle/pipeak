@@ -123,7 +123,8 @@ const useFrontendLessonStore = create(
       // 获取下一个未完成的课程
       getNextLesson: () => {
         const { lessons, progress } = get()
-        return lessons.find(lesson => !progress.completedLessons.includes(lesson.id))
+        if (!lessons || lessons.length === 0) return null
+        return lessons.find(lesson => !progress.completedLessons.includes(lesson.id)) || null
       },
 
       // 检查课程是否已完成

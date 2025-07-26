@@ -18,7 +18,8 @@
     "open": "打开",
     "settings": "设置",
     "trainer": "训练器",
-    "slogan": "专注提升数学公式输入效率"
+    "slogan": "专注提升数学公式输入效率",
+    "courseNotFound": "课程不存在"
   },
   "nav": {
     "dashboard": "仪表盘",

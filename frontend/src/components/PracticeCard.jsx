@@ -4,10 +4,19 @@ import { learningAPI } from '../services/api'
 
 const PracticeCard = forwardRef(({
   card,
+  exercise,
   lessonId,
+  knowledgePointId,
   cardIndex,
   onComplete
 }, ref) => {
+  // 数据适配器：支持新旧两种数据格式
+  const practiceData = exercise || card
+  const targetFormula = practiceData?.answer || practiceData?.target_formula || ''
+  const questionText = practiceData?.question || ''
+  const hintText = practiceData?.hint || practiceData?.hints?.[0] || ''
+  const difficulty = practiceData?.difficulty || 'easy'
+
   const [userAnswer, setUserAnswer] = useState('')
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [feedback, setFeedback] = useState(null)
@@ -55,7 +64,7 @@ const PracticeCard = forwardRef(({
           if (currentPractice) {
             // 如果已完成，设置为完成状态
             setIsCorrect(true)
-            setUserAnswer(card.target_formula || '')
+            setUserAnswer(targetFormula)
             setFeedback({
               type: 'success',
               message: '🎉 太棒了！答案完全正确！'
@@ -88,7 +97,7 @@ const PracticeCard = forwardRef(({
     }
 
     checkPracticeStatus()
-  }, [cardIndex, lessonId, card.target_formula])
+  }, [cardIndex, lessonId, targetFormula])
 
   // 智能语法检查和建议
   const checkSyntax = (input) => {
@@ -153,47 +162,43 @@ const PracticeCard = forwardRef(({
     }
 
     setIsSubmitting(true)
-    try {
-      const response = await learningAPI.submitAnswer({
-        lesson_id: lessonId,
-        card_index: cardIndex,
-        user_answer: userAnswer
-      })
 
-      setIsCorrect(response.is_correct)
-      setFeedback(response.feedback)
-      
-      if (response.is_correct) {
-        // 答案正确，通知父组件（延迟自动进入下一题）
+    // 简单的答案比较（去除空格）
+    const normalizedUserAnswer = userAnswer.trim()
+    const normalizedTargetAnswer = targetFormula.trim()
+
+    const isAnswerCorrect = normalizedUserAnswer === normalizedTargetAnswer
+
+    if (isAnswerCorrect) {
+      setIsCorrect(true)
+      setFeedback('🎉 太棒了！答案完全正确！')
+
+      // 调用父组件的完成回调
+      if (onComplete) {
         setTimeout(() => {
-          onComplete && onComplete(true, false) // false 表示非立即执行
+          onComplete(true, false) // false 表示非立即执行
         }, 2000)
-      } else if (response.hint) {
-        // 答案错误，显示提示
-        setCurrentHint(response.hint)
+      }
+    } else {
+      setFeedback('答案不正确，请再试一次。提示：检查语法和格式是否正确。')
+
+      // 显示提示
+      if (hintText) {
+        setCurrentHint(hintText)
         setShowHint(true)
       }
-    } catch (error) {
-      setFeedback('提交答案时出错，请重试')
-      console.error('提交练习答案失败:', error)
-    } finally {
-      setIsSubmitting(false)
     }
+
+    setIsSubmitting(false)
   }
 
-  const handleGetHint = async () => {
-    try {
-      const response = await learningAPI.getHint({
-        lesson_id: lessonId,
-        card_index: cardIndex,
-        hint_level: hintLevel
-      })
-
-      setCurrentHint(response.hint)
+  const handleGetHint = () => {
+    if (hintText) {
+      setCurrentHint(hintText)
       setShowHint(true)
-      setHintLevel(response.hint_level + 1)
-    } catch (error) {
-      console.error('获取提示失败:', error)
+    } else {
+      setCurrentHint('暂无提示信息')
+      setShowHint(true)
     }
   }
 
@@ -247,14 +252,14 @@ const PracticeCard = forwardRef(({
           {/* 题目描述 */}
           <div className="mb-4">
             <p id="practice-question" className="text-green-800 text-sm mb-3">
-              {typeof card.question === 'string' ? card.question : '练习题目'}
+              {questionText || '练习题目'}
             </p>
 
             {/* 目标效果预览 */}
             <div className="bg-white p-3 rounded-lg border border-green-200 mb-3">
               <p className="text-sm text-gray-600 mb-2">目标效果：</p>
               <div className="text-center">
-                <MarkdownRenderer content={card.target_formula} />
+                <MarkdownRenderer content={targetFormula} />
               </div>
             </div>
           </div>
@@ -379,14 +384,14 @@ const PracticeCard = forwardRef(({
           <div className="mt-3 flex items-center gap-2">
             <span className="text-sm text-gray-600">难度：</span>
             <span className={`px-2 py-1 rounded text-xs font-medium ${
-              card.difficulty === 'easy'
+              difficulty === 'easy'
                 ? 'bg-green-100 text-green-800'
-                : card.difficulty === 'medium'
+                : difficulty === 'medium'
                 ? 'bg-yellow-100 text-yellow-800'
                 : 'bg-red-100 text-red-800'
             }`}>
-              {card.difficulty === 'easy' ? '简单' :
-               card.difficulty === 'medium' ? '中等' : '困难'}
+              {difficulty === 'easy' ? '简单' :
+               difficulty === 'medium' ? '中等' : '困难'}
             </span>
           </div>
         </div>

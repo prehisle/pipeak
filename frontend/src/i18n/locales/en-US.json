@@ -18,7 +18,8 @@
     "open": "Open",
     "settings": "Settings",
     "trainer": "Trainer",
-    "slogan": "Focus on improving mathematical formula input efficiency"
+    "slogan": "Focus on improving mathematical formula input efficiency",
+    "courseNotFound": "Course not found"
   },
   "nav": {
     "dashboard": "Dashboard",
