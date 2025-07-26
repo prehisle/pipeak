@@ -1,6 +1,6 @@
 import { create } from 'zustand'
 import { persist } from 'zustand/middleware'
-import { getLessons, getLessonById, getLessonCount } from '../data/lessons'
+import { comprehensiveLessonsData } from '../data/comprehensiveLessons'
 
 // 前端课程存储 - 管理课程数据和学习进度
 const useFrontendLessonStore = create(
@@ -22,16 +22,17 @@ const useFrontendLessonStore = create(
       // 动作
       // 设置语言并重新加载课程数据
       setLanguage: (language) => {
+        const lessons = comprehensiveLessonsData[language] || comprehensiveLessonsData['zh-CN']
         set((state) => ({
           currentLanguage: language,
-          lessons: getLessons(language),
-          currentLesson: state.currentLesson ? getLessonById(state.currentLesson.id, language) : null
+          lessons: lessons,
+          currentLesson: state.currentLesson ? lessons.find(l => l.id === state.currentLesson.id) : null
         }))
       },
 
       // 初始化课程数据
       initializeLessons: (language = 'zh-CN') => {
-        const lessons = getLessons(language)
+        const lessons = comprehensiveLessonsData[language] || comprehensiveLessonsData['zh-CN']
         set({
           currentLanguage: language,
           lessons: lessons
@@ -40,8 +41,8 @@ const useFrontendLessonStore = create(
 
       // 设置当前课程
       setCurrentLesson: (lessonId) => {
-        const { currentLanguage } = get()
-        const lesson = getLessonById(lessonId, currentLanguage)
+        const { lessons } = get()
+        const lesson = lessons ? lessons.find(l => l.id === lessonId) : null
         set({
           currentLesson: lesson,
           currentKnowledgePointIndex: 0
@@ -108,8 +109,8 @@ const useFrontendLessonStore = create(
 
       // 获取学习统计
       getStats: () => {
-        const { lessons, progress, currentLanguage } = get()
-        const totalLessons = getLessonCount(currentLanguage)
+        const { lessons, progress } = get()
+        const totalLessons = lessons ? lessons.length : 0
         const completedLessons = progress.completedLessons.length
         const progressPercentage = totalLessons > 0 ? Math.round((completedLessons / totalLessons) * 100) : 0
 
@@ -141,8 +142,8 @@ const useFrontendLessonStore = create(
 
       // 获取课程的知识点完成情况
       getLessonProgress: (lessonId) => {
-        const { progress, currentLanguage } = get()
-        const lesson = getLessonById(lessonId, currentLanguage)
+        const { progress, lessons } = get()
+        const lesson = lessons ? lessons.find(l => l.id === lessonId) : null
         if (!lesson) return { completed: 0, total: 0, percentage: 0 }
 
         const total = lesson.knowledgePoints.length
