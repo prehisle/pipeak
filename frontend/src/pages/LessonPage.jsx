@@ -245,17 +245,28 @@ const LessonPage = () => {
             {/* 练习题部分 - 直接显示练习内容，无蓝色卡片包装 */}
             {currentKnowledgePoint.exercises && currentKnowledgePoint.exercises.length > 0 && (
               <div className="space-y-4">
-                {currentKnowledgePoint.exercises.map((exercise, index) => (
-                  <PracticeCard
-                    key={index}
-                    ref={practiceCardRef}
-                    exercise={exercise}
-                    lessonId={currentLesson.id}
-                    knowledgePointId={currentKnowledgePoint.id}
-                    cardIndex={index}
-                    onComplete={handlePracticeComplete}
-                  />
-                ))}
+                {currentKnowledgePoint.exercises.map((exercise, index) => {
+                  // 计算当前练习题在整个课程中的序号
+                  let practiceIndex = 1;
+                  for (let i = 0; i < currentKnowledgePointIndex; i++) {
+                    if (currentLesson.knowledgePoints[i].exercises && currentLesson.knowledgePoints[i].exercises.length > 0) {
+                      practiceIndex += currentLesson.knowledgePoints[i].exercises.length;
+                    }
+                  }
+                  practiceIndex += index;
+
+                  return (
+                    <PracticeCard
+                      key={index}
+                      ref={practiceCardRef}
+                      exercise={exercise}
+                      lessonId={currentLesson.id}
+                      knowledgePointId={currentKnowledgePoint.id}
+                      cardIndex={practiceIndex}
+                      onComplete={handlePracticeComplete}
+                    />
+                  );
+                })}
               </div>
             )}
           </div>
