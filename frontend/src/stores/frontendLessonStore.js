@@ -1,6 +1,7 @@
 import { create } from 'zustand'
 import { persist } from 'zustand/middleware'
 import { comprehensiveLessonsData } from '../data/comprehensiveLessons'
+import { lessonsDataEN } from '../data/lessons-en'
 
 // 前端课程存储 - 管理课程数据和学习进度
 const useFrontendLessonStore = create(
@@ -20,9 +21,18 @@ const useFrontendLessonStore = create(
       },
 
       // 动作
+      // 获取课程数据的辅助函数
+      getLessonsData: (language) => {
+        if (language === 'en-US') {
+          return lessonsDataEN
+        }
+        return comprehensiveLessonsData[language] || comprehensiveLessonsData['zh-CN']
+      },
+
       // 设置语言并重新加载课程数据
       setLanguage: (language) => {
-        const lessons = comprehensiveLessonsData[language] || comprehensiveLessonsData['zh-CN']
+        const { getLessonsData } = get()
+        const lessons = getLessonsData(language)
         set((state) => ({
           currentLanguage: language,
           lessons: lessons,
@@ -32,7 +42,8 @@ const useFrontendLessonStore = create(
 
       // 初始化课程数据
       initializeLessons: (language = 'zh-CN') => {
-        const lessons = comprehensiveLessonsData[language] || comprehensiveLessonsData['zh-CN']
+        const { getLessonsData } = get()
+        const lessons = getLessonsData(language)
         set({
           currentLanguage: language,
           lessons: lessons

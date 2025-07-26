@@ -2,13 +2,15 @@ import React, { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import MarkdownRenderer from '../components/MarkdownRenderer'
-import { learningAPI, lessonAPI } from '../services/api'
+import { learningAPI } from '../services/api'
 import ThemeSwitcher from '../components/ThemeSwitcher'
 import LanguageSwitcher from '../components/LanguageSwitcher'
+import useFrontendLessonStore from '../stores/frontendLessonStore'
 
 const OfflinePracticePage = () => {
   const navigate = useNavigate()
-  const { t } = useTranslation()
+  const { t, i18n } = useTranslation()
+  const { initializeLessons, lessons } = useFrontendLessonStore()
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0)
   const [userAnswer, setUserAnswer] = useState('')
   const [feedback, setFeedback] = useState(null)
@@ -23,29 +25,36 @@ const OfflinePracticePage = () => {
 
   // 从本地课程数据中提取所有练习题
   useEffect(() => {
-    const loadQuestions = async () => {
+    // 初始化课程数据
+    initializeLessons(i18n.language)
+  }, [i18n.language, initializeLessons])
+
+  useEffect(() => {
+    if (!lessons || lessons.length === 0) return
+
+    const loadQuestions = () => {
       try {
         console.log('开始加载离线练习题...')
-        // 获取所有课程
-        const lessonsResponse = await lessonAPI.getLessons()
-        console.log('课程数据:', lessonsResponse)
+        console.log('课程数据:', { lessons })
 
         const allQuestions = []
 
         // 提取所有练习题
-        lessonsResponse.lessons.forEach((lesson, lessonIndex) => {
+        lessons.forEach((lesson, lessonIndex) => {
           console.log(`处理课程 ${lessonIndex + 1}: ${lesson.title}`)
-          lesson.cards.forEach((card, cardIndex) => {
-            if (card.type === 'practice') {
-              console.log(`找到练习题: ${card.question}`)
-              allQuestions.push({
-                id: `${lesson._id}_${cardIndex}`,
-                lessonId: lesson._id,
-                cardIndex,
-                question: card.question,
-                target_formula: card.target_formula,
-                hints: card.hints || [],
-                lessonTitle: lesson.title
+          lesson.knowledgePoints.forEach((kp) => {
+            if (kp.exercises) {
+              kp.exercises.forEach((exercise, exerciseIndex) => {
+                console.log(`找到练习题: ${exercise.question}`)
+                allQuestions.push({
+                  id: `${lesson.id}_${kp.id}_${exerciseIndex}`,
+                  lessonId: lesson.id,
+                  cardIndex: exerciseIndex,
+                  question: exercise.question,
+                  target_formula: exercise.target,
+                  hints: exercise.hints || [],
+                  lessonTitle: lesson.title
+                })
               })
             }
           })
@@ -62,7 +71,7 @@ const OfflinePracticePage = () => {
     }
 
     loadQuestions()
-  }, [])
+  }, [lessons])
 
   const currentQuestion = questions[currentQuestionIndex]
 
