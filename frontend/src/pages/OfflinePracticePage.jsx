@@ -220,7 +220,7 @@ const OfflinePracticePage = () => {
         <div className="flex items-center justify-between mb-4">
           <button
             onClick={() => navigate('/')}
-            className="text-blue-600 hover:text-blue-700 flex items-center text-sm"
+            className="text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 flex items-center text-sm"
           >
             {t('offlinePractice.backToHome')}
           </button>
@@ -231,33 +231,33 @@ const OfflinePracticePage = () => {
             <LanguageSwitcher />
           </div>
 
-          <div className="text-sm text-gray-600">
+          <div className="text-sm text-gray-600 dark:text-gray-400">
             {t('offlinePractice.questionProgress', { current: currentQuestionIndex + 1, total: questions.length })}
           </div>
         </div>
         
-        <div className="w-full bg-gray-200 rounded-full h-2 mb-4">
+        <div className="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2 mb-4">
           <div
             className="bg-blue-600 h-2 rounded-full transition-all duration-300"
             style={{ width: `${((currentQuestionIndex + 1) / questions.length) * 100}%` }}
           ></div>
         </div>
-        
-        <h1 className="text-2xl font-bold text-gray-900">{t('offlinePractice.title')}</h1>
-        <p className="text-gray-600">{t('offlinePractice.currentAccuracy', { accuracy: answeredQuestions > 0 ? Math.round((score / answeredQuestions) * 100) : 0 })}</p>
+
+        <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100">{t('offlinePractice.title')}</h1>
+        <p className="text-gray-600 dark:text-gray-400">{t('offlinePractice.currentAccuracy', { accuracy: answeredQuestions > 0 ? Math.round((score / answeredQuestions) * 100) : 0 })}</p>
       </div>
 
       {/* 练习题卡片 */}
       {currentQuestion && (
-        <div className="bg-white rounded-lg shadow-lg p-6">
+        <div className="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-6">
           <div className="mb-4">
-            <div className="text-sm text-blue-600 mb-2">{t('offlinePractice.fromLesson', { lesson: currentQuestion.lessonTitle })}</div>
-            <h2 className="text-lg font-semibold text-gray-900 mb-4">{currentQuestion.question}</h2>
+            <div className="text-sm text-blue-600 dark:text-blue-400 mb-2">{t('offlinePractice.fromLesson', { lesson: currentQuestion.lessonTitle })}</div>
+            <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4">{currentQuestion.question}</h2>
 
             {/* 目标效果预览 */}
-            <div className="bg-blue-50 p-4 rounded-lg border border-blue-200 mb-4">
-              <p className="text-sm text-blue-800 mb-2">{t('offlinePractice.targetEffect')}</p>
-              <div className="text-center bg-white p-3 rounded border">
+            <div className="bg-blue-50 dark:bg-blue-900/20 p-4 rounded-lg border border-blue-200 dark:border-blue-700 mb-4">
+              <p className="text-sm text-blue-800 dark:text-blue-300 mb-2">{t('offlinePractice.targetEffect')}</p>
+              <div className="text-center bg-white dark:bg-gray-700 p-3 rounded border dark:border-gray-600">
                 <MarkdownRenderer content={currentQuestion.target_formula} />
               </div>
             </div>
@@ -265,13 +265,13 @@ const OfflinePracticePage = () => {
 
           {/* 实时预览 */}
           <div className="mb-4">
-            <p className="text-sm font-medium text-gray-700 mb-2">{t('offlinePractice.realTimePreview')}</p>
-            <div className="bg-gray-50 p-4 rounded-lg border border-gray-200 min-h-[60px] flex items-center justify-center">
+            <p className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">{t('offlinePractice.realTimePreview')}</p>
+            <div className="bg-gray-50 dark:bg-gray-700 p-4 rounded-lg border border-gray-200 dark:border-gray-600 min-h-[60px] flex items-center justify-center">
               <div className="text-center w-full">
                 {userAnswer.trim() ? (
                   <MarkdownRenderer content={userAnswer} />
                 ) : (
-                  <span className="text-gray-400 text-sm">{t('offlinePractice.previewPlaceholder')}</span>
+                  <span className="text-gray-400 dark:text-gray-500 text-sm">{t('offlinePractice.previewPlaceholder')}</span>
                 )}
               </div>
             </div>
@@ -279,7 +279,7 @@ const OfflinePracticePage = () => {
 
           {/* 答案输入 */}
           <div className="mb-4">
-            <label className="block text-sm font-medium text-gray-700 mb-2">
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
               {t('offlinePractice.inputPrompt')}
             </label>
             <div className="relative">
@@ -290,13 +290,13 @@ const OfflinePracticePage = () => {
                 placeholder={t('offlinePractice.inputPlaceholder')}
                 className={`w-full px-3 py-2 rounded-lg focus:ring-2 focus:ring-blue-500/20 focus:outline-none transition-all duration-200 font-mono text-sm resize-none border ${
                   isCorrect
-                    ? 'bg-green-50 text-green-800 border-green-300'
-                    : 'bg-white border-gray-300 focus:border-blue-500'
+                    ? 'bg-green-50 dark:bg-green-900/20 text-green-800 dark:text-green-300 border-green-300 dark:border-green-600'
+                    : 'bg-white dark:bg-gray-700 border-gray-300 dark:border-gray-600 focus:border-blue-500 dark:text-gray-100'
                 }`}
                 rows="2"
                 readOnly={isCorrect}
               />
-              <div className="absolute bottom-2 right-2 text-xs text-gray-400 bg-gray-50 px-1 py-0.5 rounded text-xs">
+              <div className="absolute bottom-2 right-2 text-xs text-gray-400 dark:text-gray-500 bg-gray-50 dark:bg-gray-600 px-1 py-0.5 rounded text-xs">
                 <div>{t('practice.enterSubmit')}</div>
                 {!isCorrect && <div>{t('practice.tabHint')}</div>}
               </div>
@@ -307,8 +307,8 @@ const OfflinePracticePage = () => {
           {feedback && (
             <div className={`mb-4 p-3 rounded-lg ${
               isCorrect
-                ? 'bg-green-100 border border-green-300 text-green-800'
-                : 'bg-red-100 border border-red-300 text-red-800'
+                ? 'bg-green-100 dark:bg-green-900/20 border border-green-300 dark:border-green-600 text-green-800 dark:text-green-300'
+                : 'bg-red-100 dark:bg-red-900/20 border border-red-300 dark:border-red-600 text-red-800 dark:text-red-300'
             }`}>
               <p className="font-medium text-sm">{feedback}</p>
               {isCorrect && (
