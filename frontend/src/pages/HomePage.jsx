@@ -4,6 +4,7 @@ import { useTranslation } from 'react-i18next'
 import { useAuthStore } from '../stores/authStore'
 import ThemeSwitcher from '../components/ThemeSwitcher'
 import LanguageSwitcher from '../components/LanguageSwitcher'
+import LaTeXPreview from '../components/LaTeXPreview'
 
 const HomePage = () => {
   const { user } = useAuthStore()
@@ -151,17 +152,23 @@ const HomePage = () => {
                 <div className="flex items-center justify-between">
                   <code className="bg-gray-100 px-2 py-1 rounded text-sm">x^2</code>
                   <span className="text-gray-400">→</span>
-                  <span className="text-lg">x²</span>
+                  <div className="text-lg">
+                    <LaTeXPreview latex="$x^2$" displayMode={false} />
+                  </div>
                 </div>
                 <div className="flex items-center justify-between">
                   <code className="bg-gray-100 px-2 py-1 rounded text-sm">x_1</code>
                   <span className="text-gray-400">→</span>
-                  <span className="text-lg">x₁</span>
+                  <div className="text-lg">
+                    <LaTeXPreview latex="$x_1$" displayMode={false} />
+                  </div>
                 </div>
                 <div className="flex items-center justify-between">
                   <code className="bg-gray-100 px-2 py-1 rounded text-sm">\\frac{1}{2}</code>
                   <span className="text-gray-400">→</span>
-                  <span className="text-lg">½</span>
+                  <div className="text-lg">
+                    <LaTeXPreview latex={`$\\frac{1}{2}$`} displayMode={false} />
+                  </div>
                 </div>
               </div>
             </div>
@@ -172,17 +179,23 @@ const HomePage = () => {
                 <div className="flex items-center justify-between">
                   <code className="bg-gray-100 px-2 py-1 rounded text-sm">\\sqrt{2}</code>
                   <span className="text-gray-400">→</span>
-                  <span className="text-lg">√2</span>
+                  <div className="text-lg">
+                    <LaTeXPreview latex={`$\\sqrt{2}$`} displayMode={false} />
+                  </div>
                 </div>
                 <div className="flex items-center justify-between">
                   <code className="bg-gray-100 px-2 py-1 rounded text-sm">\\sqrt[3]{8}</code>
                   <span className="text-gray-400">→</span>
-                  <span className="text-lg">∛8</span>
+                  <div className="text-lg">
+                    <LaTeXPreview latex={`$\\sqrt[3]{8}$`} displayMode={false} />
+                  </div>
                 </div>
                 <div className="flex items-center justify-between">
                   <code className="bg-gray-100 px-2 py-1 rounded text-sm">{'\\sum_{i=1}^n'}</code>
                   <span className="text-gray-400">→</span>
-                  <span className="text-lg">Σᵢ₌₁ⁿ</span>
+                  <div className="text-lg">
+                    <LaTeXPreview latex={`$\\sum_{i=1}^n$`} displayMode={false} />
+                  </div>
                 </div>
               </div>
             </div>
