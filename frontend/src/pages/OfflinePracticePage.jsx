@@ -50,7 +50,7 @@ const OfflinePracticePage = () => {
                   lessonId: lesson.id,
                   cardIndex: exerciseIndex,
                   question: exercise.question,
-                  target_formula: exercise.target,
+                  target_formula: exercise.target_formula || exercise.target || exercise.answer,
                   hints: exercise.hints || [],
                   lessonTitle: lesson.title
                 })
@@ -83,6 +83,13 @@ const OfflinePracticePage = () => {
     setIsSubmitting(true)
     try {
       // 离线练习模式：本地验证答案
+      if (!currentQuestion.target_formula) {
+        console.error('练习题缺少target_formula字段:', currentQuestion)
+        setFeedback('练习题数据错误，请刷新页面重试')
+        setIsSubmitting(false)
+        return
+      }
+
       const isAnswerCorrect = userAnswer.trim() === currentQuestion.target_formula.trim()
 
       setIsCorrect(isAnswerCorrect)
