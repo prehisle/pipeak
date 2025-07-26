@@ -90,9 +90,9 @@ const DashboardPage = () => {
             <div className="text-3xl font-bold text-blue-600 mb-2">
               {stats.completedLessons}
             </div>
-            <div className="text-base text-gray-600">已完成课程</div>
+            <div className="text-base text-gray-600">{t('dashboard.completedCourses')}</div>
             <div className="text-sm text-gray-400 mt-1">
-              共 {stats.totalLessons} 课
+              {t('dashboard.totalCourses', { total: stats.totalLessons })}
             </div>
           </div>
         </div>
@@ -102,7 +102,7 @@ const DashboardPage = () => {
             <div className="text-3xl font-bold text-green-600 mb-2">
               {stats.progressPercentage}%
             </div>
-            <div className="text-base text-gray-600">学习进度</div>
+            <div className="text-base text-gray-600">{t('dashboard.learningProgress')}</div>
             <div className="w-full bg-gray-200 rounded-full h-2 mt-2">
               <div
                 className="bg-green-600 h-2 rounded-full transition-all duration-300"
@@ -117,9 +117,9 @@ const DashboardPage = () => {
             <div className="text-3xl font-bold text-orange-600 mb-2">
               {reviewStats?.due_today || 0}
             </div>
-            <div className="text-base text-gray-600">待复习题目</div>
+            <div className="text-base text-gray-600">{t('dashboard.reviewTasks')}</div>
             <div className="text-sm text-gray-400 mt-1">
-              {reviewStats?.due_tomorrow ? `明日 ${reviewStats.due_tomorrow} 题` : '基于遗忘曲线'}
+              {reviewStats?.due_tomorrow ? t('dashboard.tomorrowTasks', { count: reviewStats.due_tomorrow }) : t('dashboard.basedOnForgettingCurve')}
             </div>
           </div>
         </div>
@@ -136,7 +136,7 @@ const DashboardPage = () => {
                   {t('dashboard.todayReview')}
                 </h3>
                 <p className="text-gray-600 text-sm">
-                  {reviewStats?.due_today ? `${reviewStats.due_today} 题待复习` : '暂无复习任务'}
+                  {reviewStats?.due_today ? t('dashboard.reviewTasksCount', { count: reviewStats.due_today }) : t('dashboard.noReviewTasks')}
                 </p>
               </div>
               <div className="flex-shrink-0">
@@ -157,10 +157,10 @@ const DashboardPage = () => {
             <div className="flex items-start justify-between gap-4">
               <div className="flex-1 min-w-0">
                 <h3 className="text-lg font-semibold text-gray-900 mb-1">
-                  智能学习路径
+                  {t('dashboard.smartLearningPath')}
                 </h3>
                 <p className="text-gray-600 text-sm">
-                  基于遗忘曲线的科学学习方法，系统自动安排学习和复习
+                  {t('dashboard.smartLearningDesc')}
                 </p>
               </div>
               <div className="flex-shrink-0">
@@ -168,7 +168,7 @@ const DashboardPage = () => {
                   to={nextLesson ? `/app/lesson/${nextLesson._id}` : "/app/dashboard"}
                   className="btn btn-primary"
                 >
-                  {nextLesson ? "开始学习" : "查看课程"}
+                  {nextLesson ? t('dashboard.startLearning') : t('dashboard.viewCourses')}
                 </Link>
               </div>
             </div>
@@ -182,9 +182,9 @@ const DashboardPage = () => {
       <div className="card">
         <div className="card-header flex items-center justify-between">
           <div>
-            <h2 className="text-xl font-semibold">课程列表</h2>
+            <h2 className="text-xl font-semibold">{t('dashboard.courseList')}</h2>
             <p className="text-sm text-gray-500 mt-1">
-              已完成 {stats.completedLessons}/{stats.totalLessons} 课程
+              {t('dashboard.courseProgress', { completed: stats.completedLessons, total: stats.totalLessons })}
             </p>
           </div>
           <div className="flex items-center space-x-2">
@@ -242,10 +242,10 @@ const DashboardPage = () => {
 
                       <div className="lesson-meta">
                         <div className="flex items-center space-x-4 text-xs text-gray-500">
-                          <span>📚 理论 + 实践</span>
-                          <span>⏱️ 约15分钟</span>
+                          <span>{t('dashboard.theoryPractice')}</span>
+                          <span>{t('dashboard.duration', { minutes: 15 })}</span>
                           {lesson.is_completed && (
-                            <span className="text-green-600">✅ 已掌握</span>
+                            <span className="text-green-600">{t('dashboard.mastered')}</span>
                           )}
                         </div>
                       </div>
@@ -284,7 +284,7 @@ const DashboardPage = () => {
                           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
                         </svg>
                         <span className="text-xs text-orange-600 font-medium ml-1">
-                          完成上一课解锁
+                          {t('dashboard.unlockPrevious')}
                         </span>
                       </div>
                     </div>
