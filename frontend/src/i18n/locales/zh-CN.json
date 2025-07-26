@@ -258,7 +258,7 @@
     "backToHomePage": "返回首页",
     "loading": "加载练习题中..."
   },
-  "lesson": {
+  "lessonPage": {
     "backToDashboard": "← 返回学习面板",
     "knowledgePoint": "知识点 {{index}}",
     "progress": "{{current}} / {{total}}",

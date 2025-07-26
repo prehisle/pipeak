@@ -128,7 +128,7 @@ const LessonPage = () => {
       if (currentKnowledgePoint) {
         // 标记知识点为已完成
         completeKnowledgePoint(currentLesson.id, currentKnowledgePoint.id)
-        showSuccess(t('lesson.knowledgePointCompleted'))
+        showSuccess(t('lessonPage.knowledgePointCompleted'))
       }
 
       if (immediate) {
@@ -163,7 +163,7 @@ const LessonPage = () => {
         <div className="text-center py-12">
           <p className="text-gray-500 text-lg">{t('common.courseNotFound')}</p>
           <Link to="/app/dashboard" className="btn btn-primary mt-4">
-            {t('lesson.backToDashboard')}
+            {t('lessonPage.backToDashboard')}
           </Link>
         </div>
       </div>
@@ -182,7 +182,7 @@ const LessonPage = () => {
             to="/app/dashboard"
             className="text-blue-600 hover:text-blue-700 flex items-center text-sm"
           >
-            {t('lesson.backToDashboard')}
+            {t('lessonPage.backToDashboard')}
           </Link>
           {isLessonCompleted(currentLesson.id) && (
             <span className="text-xs bg-green-100 text-green-700 px-2 py-1 rounded-full">
@@ -208,7 +208,7 @@ const LessonPage = () => {
           ></div>
         </div>
         <p className="text-sm text-gray-500 mt-1">
-          {t('lesson.progress', { current: currentKnowledgePointIndex + 1, total: currentLesson.knowledgePoints.length })}
+          {t('lessonPage.progress', { current: currentKnowledgePointIndex + 1, total: currentLesson.knowledgePoints.length })}
         </p>
       </div>
 
@@ -226,7 +226,7 @@ const LessonPage = () => {
                   </div>
                   <div className="ml-4 flex-1 min-w-0">
                     <h3 className="text-xl font-semibold text-blue-900 mb-6">
-                      {t('lesson.knowledgePoint', { index: currentKnowledgePointIndex + 1 })}
+                      {t('lessonPage.knowledgePoint', { index: currentKnowledgePointIndex + 1 })}
                     </h3>
                     <h4 className="text-lg font-medium text-blue-800 mb-4">
                       {currentKnowledgePoint.title}
@@ -282,7 +282,7 @@ const LessonPage = () => {
                     ? 'bg-green-400 hover:bg-green-500'
                     : 'bg-gray-300 hover:bg-gray-400'
               }`}
-              title={t('lesson.knowledgePoint', { index: index + 1 })}
+              title={t('lessonPage.knowledgePoint', { index: index + 1 })}
             />
           ))}
         </div>
@@ -291,13 +291,13 @@ const LessonPage = () => {
           <button
             onClick={() => {
               completeLesson(currentLesson.id)
-              showSuccess(t('lesson.lessonCompleted'))
+              showSuccess(t('lessonPage.lessonCompleted'))
               setShowLessonCompleteModal(true)
             }}
             disabled={isTransitioning}
             className="btn btn-primary disabled:opacity-50 disabled:cursor-not-allowed"
           >
-            {t('lesson.lessonCompleted')} ✓
+            {t('lessonPage.lessonCompleted')} ✓
           </button>
         ) : (
           <button
@@ -305,7 +305,7 @@ const LessonPage = () => {
             disabled={currentKnowledgePointIndex === currentLesson.knowledgePoints.length - 1 || isTransitioning}
             className="btn btn-primary disabled:opacity-50 disabled:cursor-not-allowed"
           >
-            {t('lesson.nextKnowledgePoint')}
+            {t('lessonPage.nextKnowledgePoint')}
           </button>
         )}
       </div>

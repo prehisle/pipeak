@@ -258,7 +258,7 @@
     "backToHomePage": "Back to Home",
     "loading": "Loading practice questions..."
   },
-  "lesson": {
+  "lessonPage": {
     "backToDashboard": "← Back to Dashboard",
     "knowledgePoint": "Knowledge Point {{index}}",
     "progress": "{{current}} / {{total}}",
