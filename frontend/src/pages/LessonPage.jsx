@@ -266,7 +266,7 @@ const LessonPage = () => {
           disabled={currentKnowledgePointIndex === 0 || isTransitioning}
           className="btn btn-secondary disabled:opacity-50 disabled:cursor-not-allowed"
         >
-          {t('lesson.prevKnowledgePoint')}
+          {t('lessonPage.prevKnowledgePoint')}
         </button>
 
         <div className="flex space-x-3">
