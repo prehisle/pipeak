@@ -249,7 +249,7 @@ const PracticeCard = forwardRef(({
         </div>
         <div className="ml-3 flex-1">
           <h3 className="text-lg font-semibold text-green-900 mb-3">
-            {t('practice.practiceTitle')} {cardIndex + 1}
+            {t('practice.practiceTitle')} {cardIndex}
           </h3>
 
           {/* 题目描述 */}

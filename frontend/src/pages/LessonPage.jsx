@@ -247,13 +247,13 @@ const LessonPage = () => {
               <div className="space-y-4">
                 {currentKnowledgePoint.exercises.map((exercise, index) => {
                   // 计算当前练习题在整个课程中的序号
-                  let practiceIndex = 1;
+                  let practiceIndex = 0;
                   for (let i = 0; i < currentKnowledgePointIndex; i++) {
                     if (currentLesson.knowledgePoints[i].exercises && currentLesson.knowledgePoints[i].exercises.length > 0) {
                       practiceIndex += currentLesson.knowledgePoints[i].exercises.length;
                     }
                   }
-                  practiceIndex += index;
+                  practiceIndex += index + 1; // +1 因为练习题编号从1开始
 
                   return (
                     <PracticeCard
