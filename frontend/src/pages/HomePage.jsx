@@ -149,24 +149,24 @@ const HomePage = () => {
             <div className="bg-white rounded-xl p-6 shadow-sm border border-gray-100">
               <h3 className="text-lg font-semibold text-gray-900 mb-4">{t('home.basicSyntax')}</h3>
               <div className="space-y-3 text-left">
-                <div className="flex items-center justify-between">
-                  <code className="bg-gray-100 px-2 py-1 rounded text-sm">x^2</code>
-                  <span className="text-gray-400">→</span>
-                  <div className="text-lg">
+                <div className="grid grid-cols-3 items-center gap-4">
+                  <code className="bg-gray-100 px-2 py-1 rounded text-sm justify-self-start">x^2</code>
+                  <span className="text-gray-400 justify-self-center">→</span>
+                  <div className="text-lg justify-self-end">
                     <LaTeXPreview latex="$x^2$" displayMode={false} />
                   </div>
                 </div>
-                <div className="flex items-center justify-between">
-                  <code className="bg-gray-100 px-2 py-1 rounded text-sm">x_1</code>
-                  <span className="text-gray-400">→</span>
-                  <div className="text-lg">
+                <div className="grid grid-cols-3 items-center gap-4">
+                  <code className="bg-gray-100 px-2 py-1 rounded text-sm justify-self-start">x_1</code>
+                  <span className="text-gray-400 justify-self-center">→</span>
+                  <div className="text-lg justify-self-end">
                     <LaTeXPreview latex="$x_1$" displayMode={false} />
                   </div>
                 </div>
-                <div className="flex items-center justify-between">
-                  <code className="bg-gray-100 px-2 py-1 rounded text-sm">\frac{1}{2}</code>
-                  <span className="text-gray-400">→</span>
-                  <div className="text-lg">
+                <div className="grid grid-cols-3 items-center gap-4">
+                  <code className="bg-gray-100 px-2 py-1 rounded text-sm justify-self-start">\frac{1}{2}</code>
+                  <span className="text-gray-400 justify-self-center">→</span>
+                  <div className="text-lg justify-self-end">
                     <LaTeXPreview latex={`$\\frac{1}{2}$`} displayMode={false} />
                   </div>
                 </div>
@@ -176,24 +176,24 @@ const HomePage = () => {
             <div className="bg-white rounded-xl p-6 shadow-sm border border-gray-100">
               <h3 className="text-lg font-semibold text-gray-900 mb-4">{t('home.advancedFormulas')}</h3>
               <div className="space-y-3 text-left">
-                <div className="flex items-center justify-between">
-                  <code className="bg-gray-100 px-2 py-1 rounded text-sm">\sqrt{2}</code>
-                  <span className="text-gray-400">→</span>
-                  <div className="text-lg">
+                <div className="grid grid-cols-3 items-center gap-4">
+                  <code className="bg-gray-100 px-2 py-1 rounded text-sm justify-self-start">\sqrt{2}</code>
+                  <span className="text-gray-400 justify-self-center">→</span>
+                  <div className="text-lg justify-self-end">
                     <LaTeXPreview latex={`$\\sqrt{2}$`} displayMode={false} />
                   </div>
                 </div>
-                <div className="flex items-center justify-between">
-                  <code className="bg-gray-100 px-2 py-1 rounded text-sm">\sqrt[3]{8}</code>
-                  <span className="text-gray-400">→</span>
-                  <div className="text-lg">
+                <div className="grid grid-cols-3 items-center gap-4">
+                  <code className="bg-gray-100 px-2 py-1 rounded text-sm justify-self-start">\sqrt[3]{8}</code>
+                  <span className="text-gray-400 justify-self-center">→</span>
+                  <div className="text-lg justify-self-end">
                     <LaTeXPreview latex={`$\\sqrt[3]{8}$`} displayMode={false} />
                   </div>
                 </div>
-                <div className="flex items-center justify-between">
-                  <code className="bg-gray-100 px-2 py-1 rounded text-sm">{'\\sum_{i=1}^n'}</code>
-                  <span className="text-gray-400">→</span>
-                  <div className="text-lg">
+                <div className="grid grid-cols-3 items-center gap-4">
+                  <code className="bg-gray-100 px-2 py-1 rounded text-sm justify-self-start">{'\\sum_{i=1}^n'}</code>
+                  <span className="text-gray-400 justify-self-center">→</span>
+                  <div className="text-lg justify-self-end">
                     <LaTeXPreview latex={`$\\sum_{i=1}^n$`} displayMode={false} />
                   </div>
                 </div>
