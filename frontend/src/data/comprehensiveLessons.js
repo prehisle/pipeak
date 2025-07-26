@@ -13,7 +13,7 @@ function convertBackendToFrontend(backendLessons) {
         // 知识点卡片：转换为纯知识点（无练习题）
         knowledgePoints.push({
           id: `kp-${lesson.sequence}-${knowledgePointIndex}`,
-          title: extractTitleFromContent(card.content),
+          title: card.title || extractTitleFromContent(card.content),
           content: card.content,
           exercises: [] // 纯知识点，无练习题
         })
@@ -62,11 +62,13 @@ const backendLessonsData = [
     cards: [
       {
         type: 'knowledge',
+        title: 'LaTeX数学环境',
         content: 'LaTeX数学公式需要在特定环境中编写：\n\n• **行内公式**：使用 `$...$` 包围，如 `$x^2$` → $x^2$\n• **独立公式**：使用 `$$...$$` 包围，如 `$$E = mc^2$$` → $$E = mc^2$$'
       },
       {
         type: 'knowledge',
-        content: '**上标和下标**\n\n• 上标使用 `^` 符号：`$x^2$` → $x^2$\n• 下标使用 `_` 符号：`$x_1$` → $x_1$\n• 同时使用：`$x_1^2$` → $x_1^2$'
+        title: '上标和下标',
+        content: '• 上标使用 `^` 符号：`$x^2$` → $x^2$\n• 下标使用 `_` 符号：`$x_1$` → $x_1$\n• 同时使用：`$x_1^2$` → $x_1^2$'
       },
       {
         type: 'practice',
@@ -100,11 +102,11 @@ const backendLessonsData = [
     cards: [
       {
         type: 'knowledge',
-        content: '**分数表示法**\n\n使用 `\\frac{分子}{分母}` 命令：\n\n• `$\\frac{1}{2}$` → $\\frac{1}{2}$\n• `$\\frac{a+b}{c-d}$` → $\\frac{a+b}{c-d}$\n• `$\\frac{x^2}{y^3}$` → $\\frac{x^2}{y^3}$'
+        content: '使用 `\\frac{分子}{分母}` 命令：\n\n• `$\\frac{1}{2}$` → $\\frac{1}{2}$\n• `$\\frac{a+b}{c-d}$` → $\\frac{a+b}{c-d}$\n• `$\\frac{x^2}{y^3}$` → $\\frac{x^2}{y^3}$'
       },
       {
         type: 'knowledge',
-        content: '**根号表示法**\n\n使用 `\\sqrt{}` 命令：\n\n• `$\\sqrt{x}$` → $\\sqrt{x}$ (平方根)\n• `$\\sqrt[3]{x}$` → $\\sqrt[3]{x}$ (三次根)\n• `$\\sqrt{x^2 + y^2}$` → $\\sqrt{x^2 + y^2}$'
+        content: '使用 `\\sqrt{}` 命令：\n\n• `$\\sqrt{x}$` → $\\sqrt{x}$ (平方根)\n• `$\\sqrt[3]{x}$` → $\\sqrt[3]{x}$ (三次根)\n• `$\\sqrt{x^2 + y^2}$` → $\\sqrt{x^2 + y^2}$'
       },
       {
         type: 'practice',
@@ -145,11 +147,11 @@ const backendLessonsData = [
     cards: [
       {
         type: 'knowledge',
-        content: '**常用小写希腊字母**\n\n• `$\\alpha$` → $\\alpha$ (阿尔法)\n• `$\\beta$` → $\\beta$ (贝塔)\n• `$\\gamma$` → $\\gamma$ (伽马)\n• `$\\delta$` → $\\delta$ (德尔塔)\n• `$\\pi$` → $\\pi$ (派)\n• `$\\theta$` → $\\theta$ (西塔)\n• `$\\lambda$` → $\\lambda$ (兰姆达)\n• `$\\mu$` → $\\mu$ (缪)'
+        content: '• `$\\alpha$` → $\\alpha$ (阿尔法)\n• `$\\beta$` → $\\beta$ (贝塔)\n• `$\\gamma$` → $\\gamma$ (伽马)\n• `$\\delta$` → $\\delta$ (德尔塔)\n• `$\\pi$` → $\\pi$ (派)\n• `$\\theta$` → $\\theta$ (西塔)\n• `$\\lambda$` → $\\lambda$ (兰姆达)\n• `$\\mu$` → $\\mu$ (缪)'
       },
       {
         type: 'knowledge',
-        content: '**常用大写希腊字母**\n\n• `$\\Gamma$` → $\\Gamma$ (大伽马)\n• `$\\Delta$` → $\\Delta$ (大德尔塔)\n• `$\\Theta$` → $\\Theta$ (大西塔)\n• `$\\Lambda$` → $\\Lambda$ (大兰姆达)\n• `$\\Pi$` → $\\Pi$ (大派)\n• `$\\Sigma$` → $\\Sigma$ (大西格马)\n• `$\\Omega$` → $\\Omega$ (大欧米伽)'
+        content: '• `$\\Gamma$` → $\\Gamma$ (大伽马)\n• `$\\Delta$` → $\\Delta$ (大德尔塔)\n• `$\\Theta$` → $\\Theta$ (大西塔)\n• `$\\Lambda$` → $\\Lambda$ (大兰姆达)\n• `$\\Pi$` → $\\Pi$ (大派)\n• `$\\Sigma$` → $\\Sigma$ (大西格马)\n• `$\\Omega$` → $\\Omega$ (大欧米伽)'
       },
       {
         type: 'knowledge',

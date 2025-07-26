@@ -594,9 +594,15 @@ body {
   font-size: 1em !important;
 }
 
-/* 显示模式下的数学公式 */
+/* 显示模式下的数学公式 - 缩小字体大小 */
 .katex-display {
-  margin: 1em 0 !important;
+  margin: 0.8em 0 !important;
+  font-size: 1em !important; /* 进一步缩小到与行内公式相近 */
+}
+
+/* 进一步控制显示模式数学公式的大小 */
+.katex-display .katex {
+  font-size: 0.9em !important; /* 稍微小于正常文本 */
 }
 
 /* 行内数学公式的垂直对齐 */
