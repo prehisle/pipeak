@@ -242,39 +242,20 @@ const LessonPage = () => {
               </div>
             )}
 
-            {/* 练习题部分 - 使用与知识点一致的蓝色风格 */}
+            {/* 练习题部分 - 直接显示练习内容，无蓝色卡片包装 */}
             {currentKnowledgePoint.exercises && currentKnowledgePoint.exercises.length > 0 && (
-              <div className="prose max-w-none">
-                <div className="bg-blue-50 border-l-4 border-blue-400 p-6 rounded-r-lg">
-                  <div className="flex items-start">
-                    <div className="flex-shrink-0">
-                      <div className="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center">
-                        <span className="text-blue-600 font-semibold text-sm">✏️</span>
-                      </div>
-                    </div>
-                    <div className="ml-4 flex-1 min-w-0">
-                      <h3 className="text-xl font-semibold text-blue-900 mb-6">
-                        {t('lessonPage.knowledgePoint', { index: currentKnowledgePointIndex + 1 })}
-                      </h3>
-                      <h4 className="text-lg font-medium text-blue-800 mb-4">
-                        {currentKnowledgePoint.title}
-                      </h4>
-                      <div className="space-y-4">
-                        {currentKnowledgePoint.exercises.map((exercise, index) => (
-                          <PracticeCard
-                            key={index}
-                            ref={practiceCardRef}
-                            exercise={exercise}
-                            lessonId={currentLesson.id}
-                            knowledgePointId={currentKnowledgePoint.id}
-                            cardIndex={index}
-                            onComplete={handlePracticeComplete}
-                          />
-                        ))}
-                      </div>
-                    </div>
-                  </div>
-                </div>
+              <div className="space-y-4">
+                {currentKnowledgePoint.exercises.map((exercise, index) => (
+                  <PracticeCard
+                    key={index}
+                    ref={practiceCardRef}
+                    exercise={exercise}
+                    lessonId={currentLesson.id}
+                    knowledgePointId={currentKnowledgePoint.id}
+                    cardIndex={index}
+                    onComplete={handlePracticeComplete}
+                  />
+                ))}
               </div>
             )}
           </div>
