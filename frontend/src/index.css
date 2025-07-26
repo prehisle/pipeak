@@ -566,3 +566,40 @@ body {
 .lesson-card-locked .lesson-description {
   color: #a16207;
 }
+
+/* KaTeX 数学公式样式优化 */
+.katex {
+  font-size: 1em !important;
+}
+
+/* 调整上标和下标的字体大小 */
+.katex .msupsub {
+  font-size: 0.7em !important;
+}
+
+.katex .msupsub > .vlist-t > .vlist-r > .vlist > .vlist-elem {
+  font-size: 0.7em !important;
+}
+
+/* 更精确的上标下标控制 */
+.katex .mord + .msupsub,
+.katex .mop + .msupsub,
+.katex .mbin + .msupsub,
+.katex .mrel + .msupsub {
+  font-size: 0.7em !important;
+}
+
+/* 确保上标下标的字体大小一致 */
+.katex .msupsub .mord {
+  font-size: 1em !important;
+}
+
+/* 显示模式下的数学公式 */
+.katex-display {
+  margin: 1em 0 !important;
+}
+
+/* 行内数学公式的垂直对齐 */
+.katex {
+  vertical-align: baseline !important;
+}
