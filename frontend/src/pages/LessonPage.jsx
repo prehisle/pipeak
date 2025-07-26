@@ -250,6 +250,7 @@ const LessonPage = () => {
                     exercise={exercise}
                     lessonId={currentLesson.id}
                     knowledgePointId={currentKnowledgePoint.id}
+                    cardIndex={index}
                     onComplete={handlePracticeComplete}
                   />
                 ))}

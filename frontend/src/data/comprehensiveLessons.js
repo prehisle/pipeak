@@ -23,7 +23,7 @@ function convertBackendToFrontend(backendLessons) {
         knowledgePoints.push({
           id: `kp-${lesson.sequence}-${knowledgePointIndex}`,
           title: `练习：${card.question.replace('请输入 LaTeX 代码来表示：', '').replace('请输入 LaTeX 代码来表示', '')}`,
-          content: `## 练习题\n\n${card.question}`, // 简单的练习题说明
+          content: `现在让我们通过练习来巩固刚学到的知识。请根据题目要求输入正确的 LaTeX 代码。`, // 简洁的练习说明
           exercises: [{
             question: card.question,
             answer: card.target_formula,
