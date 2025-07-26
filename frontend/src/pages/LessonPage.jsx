@@ -216,28 +216,31 @@ const LessonPage = () => {
       {currentKnowledgePoint && (
         <div className={`card mb-4 transition-all duration-300 ${isTransitioning ? 'opacity-50 scale-95' : 'opacity-100 scale-100'}`}>
           <div className="card-body">
-            <div className="prose max-w-none">
-              <div className="bg-blue-50 border-l-4 border-blue-400 p-6 rounded-r-lg">
-                <div className="flex items-start">
-                  <div className="flex-shrink-0">
-                    <div className="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center">
-                      <span className="text-blue-600 font-semibold text-sm">💡</span>
+            {/* 只对非练习题类型显示蓝色知识点区域 */}
+            {!(currentKnowledgePoint.exercises && currentKnowledgePoint.exercises.length > 0) && (
+              <div className="prose max-w-none">
+                <div className="bg-blue-50 border-l-4 border-blue-400 p-6 rounded-r-lg">
+                  <div className="flex items-start">
+                    <div className="flex-shrink-0">
+                      <div className="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center">
+                        <span className="text-blue-600 font-semibold text-sm">💡</span>
+                      </div>
                     </div>
-                  </div>
-                  <div className="ml-4 flex-1 min-w-0">
-                    <h3 className="text-xl font-semibold text-blue-900 mb-6">
-                      {t('lessonPage.knowledgePoint', { index: currentKnowledgePointIndex + 1 })}
-                    </h3>
-                    <h4 className="text-lg font-medium text-blue-800 mb-4">
-                      {currentKnowledgePoint.title}
-                    </h4>
-                    <div className="text-blue-800 text-base leading-relaxed overflow-visible">
-                      <MarkdownRenderer content={currentKnowledgePoint.content} theme="default" />
+                    <div className="ml-4 flex-1 min-w-0">
+                      <h3 className="text-xl font-semibold text-blue-900 mb-6">
+                        {t('lessonPage.knowledgePoint', { index: currentKnowledgePointIndex + 1 })}
+                      </h3>
+                      <h4 className="text-lg font-medium text-blue-800 mb-4">
+                        {currentKnowledgePoint.title}
+                      </h4>
+                      <div className="text-blue-800 text-base leading-relaxed overflow-visible">
+                        <MarkdownRenderer content={currentKnowledgePoint.content} theme="default" />
+                      </div>
                     </div>
                   </div>
                 </div>
               </div>
-            </div>
+            )}
 
             {/* 练习题部分 */}
             {currentKnowledgePoint.exercises && currentKnowledgePoint.exercises.length > 0 && (
