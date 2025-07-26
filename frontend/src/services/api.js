@@ -60,25 +60,20 @@ api.interceptors.request.use(
   (config) => {
     // 自动添加认证头 - 从localStorage获取zustand persist的数据
     const authStorage = localStorage.getItem('auth-storage')
-    console.log('DEBUG: authStorage from localStorage:', authStorage ? 'exists' : 'not found')
 
     if (authStorage) {
       try {
         const authData = JSON.parse(authStorage)
-        console.log('DEBUG: parsed authData:', authData)
         const accessToken = authData.state?.accessToken
-        console.log('DEBUG: accessToken:', accessToken ? 'exists' : 'not found')
 
         if (accessToken) {
           config.headers.Authorization = `Bearer ${accessToken}`
-          console.log('DEBUG: Authorization header set:', `Bearer ${accessToken.substring(0, 20)}...`)
         }
       } catch (error) {
         console.error('Failed to parse auth token:', error)
       }
     }
 
-    console.log('DEBUG: Final Authorization header:', config.headers.Authorization)
     return config
   },
   (error) => {
@@ -92,18 +87,11 @@ api.interceptors.response.use(
     return response
   },
   async (error) => {
-    console.log('DEBUG: API error response:', error.response?.status, error.config?.url)
-
     const originalRequest = error.config
 
-    // 如果是401错误，记录详细信息但不立即跳转
+    // 如果是401错误，让应用自己处理401错误
     if (error.response?.status === 401) {
-      console.log('DEBUG: 401 Unauthorized error')
-      console.log('DEBUG: Request URL:', originalRequest?.url)
-      console.log('DEBUG: Request headers:', originalRequest?.headers)
-
-      // 暂时不自动跳转，让应用自己处理401错误
-      // TODO: 实现token刷新逻辑
+      // 可以在这里实现token刷新逻辑
     }
 
     return Promise.reject(error)

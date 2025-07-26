@@ -18,14 +18,11 @@ Thumbs.db
 .idea/
 *.swp
 *.swo
-*~
 .project
 .metadata
 bin/
 tmp/
-*.tmp
 *.bak
-*.swp
 *~.nib
 local.properties
 .settings/
@@ -146,9 +143,6 @@ coverage/
 # Optional npm cache directory
 .npm
 
-# Optional eslint cache
-.eslintcache
-
 # Microbundle cache
 .rpt2_cache/
 .rts2_cache_cjs/
@@ -191,7 +185,6 @@ dist
 
 # ===== 日志文件 =====
 logs/
-*.log
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
@@ -216,27 +209,20 @@ secrets.json
 
 # ===== 操作系统相关 =====
 # Windows
-Thumbs.db
-ehthumbs.db
 Desktop.ini
 $RECYCLE.BIN/
 
 # macOS
-.DS_Store
 .AppleDouble
 .LSOverride
 Icon
-._*
 .DocumentRevisions-V100
 .fseventsd
-.Spotlight-V100
 .TemporaryItems
-.Trashes
 .VolumeIcon.icns
 .com.apple.timemachine.donotpresent
 
 # Linux
-*~
 .fuse_hidden*
 .directory
 .Trash-*

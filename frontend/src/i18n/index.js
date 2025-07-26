@@ -20,7 +20,6 @@ const detectUserLanguage = () => {
   // 首先检查localStorage中是否有用户手动设置的语言
   const savedLanguage = localStorage.getItem('i18nextLng')
   if (savedLanguage && resources[savedLanguage]) {
-    console.log('使用已保存的语言设置:', savedLanguage)
     return savedLanguage
   }
 
@@ -28,13 +27,11 @@ const detectUserLanguage = () => {
   const urlParams = new URLSearchParams(window.location.search)
   const testLang = urlParams.get('testLang')
   if (testLang) {
-    console.log('使用测试语言参数:', testLang)
     return testLang === 'en' ? 'en-US' : 'zh-CN'
   }
 
   // 获取浏览器语言
   const browserLanguage = navigator.language || navigator.userLanguage
-  console.log('检测到浏览器语言:', browserLanguage)
 
   // 检查是否为中文相关语言
   const isChineseLanguage = browserLanguage.toLowerCase().includes('zh') ||
@@ -42,10 +39,8 @@ const detectUserLanguage = () => {
                            browserLanguage.toLowerCase().includes('chinese')
 
   if (isChineseLanguage) {
-    console.log('检测到中文语言，使用中文界面')
     return 'zh-CN'
   } else {
-    console.log('检测到非中文语言，使用英文界面')
     return 'en-US'
   }
 }

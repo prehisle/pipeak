@@ -33,18 +33,13 @@ const OfflinePracticePage = () => {
 
     const loadQuestions = () => {
       try {
-        console.log('开始加载离线练习题...')
-        console.log('课程数据:', { lessons })
-
         const allQuestions = []
 
         // 提取所有练习题
-        lessons.forEach((lesson, lessonIndex) => {
-          console.log(`处理课程 ${lessonIndex + 1}: ${lesson.title}`)
+        lessons.forEach((lesson) => {
           lesson.knowledgePoints.forEach((kp) => {
             if (kp.exercises) {
               kp.exercises.forEach((exercise, exerciseIndex) => {
-                console.log(`找到练习题: ${exercise.question}`)
                 allQuestions.push({
                   id: `${lesson.id}_${kp.id}_${exerciseIndex}`,
                   lessonId: lesson.id,
