@@ -1,4 +1,5 @@
 import api from './api'
+import i18n from '../i18n'
 
 /**
  * 课程相关的API服务
@@ -17,7 +18,7 @@ export const lessonService = {
     } catch (error) {
       return {
         success: false,
-        error: error.response?.data?.message || '获取课程列表失败'
+        error: error.response?.data?.message || i18n.t('dashboard.apiError')
       }
     }
   },
@@ -36,7 +37,7 @@ export const lessonService = {
     } catch (error) {
       return {
         success: false,
-        error: error.response?.data?.message || '获取课程详情失败'
+        error: error.response?.data?.message || i18n.t('common.error')
       }
     }
   },

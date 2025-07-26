@@ -41,6 +41,12 @@ const LessonPage = () => {
     initializeLessons(i18n.language)
   }, [i18n.language, initializeLessons])
 
+  // 监听语言变化并更新课程内容
+  useEffect(() => {
+    const { setLanguage } = useFrontendLessonStore.getState()
+    setLanguage(i18n.language)
+  }, [i18n.language])
+
   // 设置当前课程
   useEffect(() => {
     if (lessonId) {

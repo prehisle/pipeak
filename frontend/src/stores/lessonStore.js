@@ -1,5 +1,6 @@
 import { create } from 'zustand'
 import { lessonAPI } from '../services/api'
+import i18n from '../i18n'
 import { calculateLessonStats, getNextLesson, isLessonCompleted } from '../utils/progressCalculator'
 import localStorageManager from '../utils/localStorage'
 
@@ -52,7 +53,7 @@ const useLessonStore = create((set, get) => ({
       })
       return { success: true }
     } catch (error) {
-      const errorMessage = '获取课程列表失败'
+      const errorMessage = i18n.t('dashboard.apiError')
       set({
         isLoading: false,
         error: errorMessage,

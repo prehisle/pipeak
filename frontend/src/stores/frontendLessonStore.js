@@ -34,11 +34,13 @@ const useFrontendLessonStore = create(
       setLanguage: (language) => {
         const { getLessonsData } = get()
         const lessons = getLessonsData(language)
-        set((state) => ({
+        const state = get()
+        const currentLessonId = state.currentLesson?.id
+        set({
           currentLanguage: language,
           lessons: lessons,
-          currentLesson: state.currentLesson ? lessons.find(l => l.id === state.currentLesson.id) : null
-        }))
+          currentLesson: currentLessonId ? lessons.find(l => l.id === currentLessonId) : null
+        })
       },
 
       // 初始化课程数据

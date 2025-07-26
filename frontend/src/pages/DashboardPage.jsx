@@ -93,8 +93,24 @@ const DashboardPage = () => {
         </p>
       </div>
 
-      {/* 错误提示 */}
-      {error && (
+      {/* 离线模式提示 - 只在有错误但有本地数据时显示 */}
+      {error && lessons.length > 0 && (
+        <div className="bg-blue-50 border border-blue-200 rounded-md p-4 mb-6">
+          <div className="flex items-center">
+            <div className="flex-shrink-0">
+              <svg className="h-5 w-5 text-blue-400" viewBox="0 0 20 20" fill="currentColor">
+                <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clipRule="evenodd" />
+              </svg>
+            </div>
+            <div className="ml-3">
+              <p className="text-sm text-blue-700">{t('dashboard.offlineMode')}</p>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* 真正的错误提示 - 只在没有本地数据时显示 */}
+      {error && lessons.length === 0 && (
         <div className="bg-red-50 border border-red-200 rounded-md p-4 mb-6">
           <p className="text-sm text-red-600">{error}</p>
         </div>
@@ -312,9 +328,6 @@ const DashboardPage = () => {
           ) : (
             <div className="text-center py-8 text-gray-500">
               <p>{t('dashboard.noCourses')}</p>
-              <p className="text-sm mt-2">课程数量: {lessons.length}</p>
-              <p className="text-sm">加载状态: {isLoading ? '加载中' : '已完成'}</p>
-              <p className="text-sm">错误信息: {error || '无'}</p>
               <p className="text-sm mt-2">{t('dashboard.tryAgainLater')}</p>
             </div>
           )}

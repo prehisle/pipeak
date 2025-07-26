@@ -4,6 +4,7 @@
  */
 
 import axios from 'axios'
+import i18n from '../i18n'
 
 // 动态获取API基础URL
 const getApiBaseUrl = () => {
@@ -70,7 +71,7 @@ class RealApiAdapter {
       }
     } catch (error) {
       console.error('获取课程列表失败:', error)
-      throw new Error('获取课程列表失败')
+      throw new Error(i18n.t('dashboard.apiError'))
     }
   }
 
@@ -80,7 +81,7 @@ class RealApiAdapter {
       return { lesson: response.data.lesson }
     } catch (error) {
       console.error('获取课程详情失败:', error)
-      throw new Error('获取课程详情失败')
+      throw new Error(i18n.t('common.error'))
     }
   }
 

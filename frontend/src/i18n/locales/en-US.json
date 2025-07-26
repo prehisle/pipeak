@@ -91,6 +91,9 @@
     "review": "Review",
     "startLearning": "Start Learning",
     "tryAgainLater": "Please try again later or contact administrator",
+    "loadingError": "Server connection failed, using local course data",
+    "offlineMode": "Currently in offline mode, some features may be limited",
+    "apiError": "Service temporarily unavailable, switched to local mode",
     "title": "Learning Dashboard",
     "welcomeBack": "Welcome back!",
     "continueMessage": "Continue your LaTeX learning journey",
@@ -123,6 +126,7 @@
     "courseProgress": "Completed {{completed}}/{{total}} courses",
     "theoryPractice": "📚 Theory + Practice",
     "duration": "⏱️ About {{minutes}} minutes",
+    "unlockPrevious": "Complete previous lesson to unlock",
     "unlockPrevious": "Complete previous lesson to unlock",
     "mastered": "✅ Mastered"
   },
