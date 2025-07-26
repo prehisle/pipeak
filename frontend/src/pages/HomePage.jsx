@@ -164,7 +164,7 @@ const HomePage = () => {
                   </div>
                 </div>
                 <div className="flex items-center justify-between">
-                  <code className="bg-gray-100 px-2 py-1 rounded text-sm">\\frac{1}{2}</code>
+                  <code className="bg-gray-100 px-2 py-1 rounded text-sm">\frac{1}{2}</code>
                   <span className="text-gray-400">→</span>
                   <div className="text-lg">
                     <LaTeXPreview latex={`$\\frac{1}{2}$`} displayMode={false} />
@@ -177,14 +177,14 @@ const HomePage = () => {
               <h3 className="text-lg font-semibold text-gray-900 mb-4">{t('home.advancedFormulas')}</h3>
               <div className="space-y-3 text-left">
                 <div className="flex items-center justify-between">
-                  <code className="bg-gray-100 px-2 py-1 rounded text-sm">\\sqrt{2}</code>
+                  <code className="bg-gray-100 px-2 py-1 rounded text-sm">\sqrt{2}</code>
                   <span className="text-gray-400">→</span>
                   <div className="text-lg">
                     <LaTeXPreview latex={`$\\sqrt{2}$`} displayMode={false} />
                   </div>
                 </div>
                 <div className="flex items-center justify-between">
-                  <code className="bg-gray-100 px-2 py-1 rounded text-sm">\\sqrt[3]{8}</code>
+                  <code className="bg-gray-100 px-2 py-1 rounded text-sm">\sqrt[3]{8}</code>
                   <span className="text-gray-400">→</span>
                   <div className="text-lg">
                     <LaTeXPreview latex={`$\\sqrt[3]{8}$`} displayMode={false} />
