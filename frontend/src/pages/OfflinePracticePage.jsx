@@ -86,10 +86,7 @@ const OfflinePracticePage = () => {
 
       if (response.is_correct) {
         setScore(score + 1)
-        // 2秒后自动进入下一题
-        setTimeout(() => {
-          handleNextQuestion()
-        }, 2000)
+        // 答对后不自动跳转，由用户手动控制
       }
     } catch (error) {
       setFeedback('提交答案时出错，请重试')
