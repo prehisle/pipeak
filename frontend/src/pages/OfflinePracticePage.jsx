@@ -300,6 +300,10 @@ const OfflinePracticePage = () => {
                 }`}
                 rows="2"
                 readOnly={isCorrect}
+                spellCheck={false}
+                autoComplete="off"
+                autoCorrect="off"
+                autoCapitalize="off"
               />
               <div className="absolute bottom-2 right-2 text-xs text-gray-400 dark:text-gray-500 bg-gray-50 dark:bg-gray-600 px-1 py-0.5 rounded text-xs">
                 <div>{t('practice.enterSubmit')}</div>

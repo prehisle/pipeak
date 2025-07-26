@@ -269,6 +269,10 @@ const ReviewPage = () => {
                     className="w-full px-4 py-4 bg-gray-50 rounded-xl focus:bg-white focus:ring-2 focus:ring-blue-500/20 focus:outline-none hover:bg-gray-100 transition-all duration-200 font-mono text-base resize-none border-0"
                     rows="3"
                     disabled={feedback?.is_correct}
+                    spellCheck={false}
+                    autoComplete="off"
+                    autoCorrect="off"
+                    autoCapitalize="off"
                   />
                   <div className="absolute bottom-3 right-3 text-xs text-gray-400 bg-gray-50 px-2 py-1 rounded-md">
                     Ctrl+Enter 提交

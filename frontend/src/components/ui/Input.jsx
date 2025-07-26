@@ -82,6 +82,10 @@ const Textarea = React.forwardRef(({
         className
       )}
       disabled={disabled}
+      spellCheck={false}
+      autoComplete="off"
+      autoCorrect="off"
+      autoCapitalize="off"
       {...props}
     />
   )
