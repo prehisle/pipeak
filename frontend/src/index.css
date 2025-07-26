@@ -280,6 +280,45 @@ body {
   margin: var(--spacing-xl) 0;
 }
 
+/* 暗黑模式下的 KaTeX 样式修复 */
+.dark .katex {
+  color: #f3f4f6 !important;  /* 暗黑模式下的文字颜色 */
+}
+
+.dark .katex .base {
+  color: #f3f4f6 !important;
+}
+
+.dark .katex .mord,
+.dark .katex .mrel,
+.dark .katex .mop,
+.dark .katex .mbin,
+.dark .katex .mpunct,
+.dark .katex .mopen,
+.dark .katex .mclose,
+.dark .katex .minner {
+  color: #f3f4f6 !important;
+}
+
+/* 暗黑模式下的分数线 */
+.dark .katex .frac-line {
+  border-bottom-color: #f3f4f6 !important;
+}
+
+/* 暗黑模式下的根号 */
+.dark .katex .sqrt-line {
+  border-top-color: #f3f4f6 !important;
+}
+
+/* 暗黑模式下的积分符号等 */
+.dark .katex .delimsizing,
+.dark .katex .delim-size1,
+.dark .katex .delim-size2,
+.dark .katex .delim-size3,
+.dark .katex .delim-size4 {
+  color: #f3f4f6 !important;
+}
+
 /* 工具类 */
 .text-center { text-align: center; }
 .text-left { text-align: left; }
