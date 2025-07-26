@@ -51,7 +51,12 @@
     "passwordRequired": "Please enter your password",
     "passwordMinLength": "Password must be at least 6 characters",
     "confirmPasswordRequired": "Please confirm your password",
-    "passwordMismatch": "Passwords do not match"
+    "passwordMismatch": "Passwords do not match",
+    "loginFailed": "Login failed",
+    "registerFailed": "Registration failed",
+    "emailAlreadyExists": "This email is already registered",
+    "invalidCredentials": "Invalid email or password",
+    "networkError": "Network error, please try again later"
   },
   "dashboard": {
     "title": "Learning Dashboard",

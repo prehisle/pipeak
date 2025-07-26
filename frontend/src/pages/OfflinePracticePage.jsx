@@ -19,6 +19,7 @@ const OfflinePracticePage = () => {
   const [showResults, setShowResults] = useState(false)
   const [showHint, setShowHint] = useState(false)
   const [currentHint, setCurrentHint] = useState('')
+  const [answeredQuestions, setAnsweredQuestions] = useState(0)
 
   // 从本地课程数据中提取所有练习题
   useEffect(() => {
@@ -81,7 +82,8 @@ const OfflinePracticePage = () => {
 
       setIsCorrect(response.is_correct)
       setFeedback(response.feedback)
-      
+      setAnsweredQuestions(answeredQuestions + 1)
+
       if (response.is_correct) {
         setScore(score + 1)
         // 2秒后自动进入下一题
@@ -141,6 +143,7 @@ const OfflinePracticePage = () => {
     setFeedback(null)
     setIsCorrect(false)
     setScore(0)
+    setAnsweredQuestions(0)
     setShowResults(false)
   }
 
@@ -235,7 +238,7 @@ const OfflinePracticePage = () => {
         </div>
         
         <h1 className="text-2xl font-bold text-gray-900">{t('offlinePractice.title')}</h1>
-        <p className="text-gray-600">{t('offlinePractice.currentAccuracy', { accuracy: questions.length > 0 ? Math.round((score / (currentQuestionIndex + 1)) * 100) : 0 })}</p>
+        <p className="text-gray-600">{t('offlinePractice.currentAccuracy', { accuracy: answeredQuestions > 0 ? Math.round((score / answeredQuestions) * 100) : 0 })}</p>
       </div>
 
       {/* 练习题卡片 */}

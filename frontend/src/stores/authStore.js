@@ -3,6 +3,35 @@ import { persist } from 'zustand/middleware'
 import api from '../services/api'
 import { useUserModeStore } from './userModeStore'
 import localStorageManager from '../utils/localStorage'
+import i18n from '../i18n'
+
+// 错误信息国际化映射
+const getLocalizedErrorMessage = (errorMessage) => {
+  // 常见错误信息映射
+  const errorMap = {
+    '该邮箱已被注册': 'auth.emailAlreadyExists',
+    '邮箱或密码错误': 'auth.invalidCredentials',
+    '登录失败': 'auth.loginFailed',
+    '注册失败': 'auth.registerFailed',
+    'Email already exists': 'auth.emailAlreadyExists',
+    'Invalid credentials': 'auth.invalidCredentials',
+    'Login failed': 'auth.loginFailed',
+    'Registration failed': 'auth.registerFailed'
+  }
+
+  // 如果找到映射，返回翻译后的文本
+  if (errorMap[errorMessage]) {
+    return i18n.t(errorMap[errorMessage])
+  }
+
+  // 如果是网络错误
+  if (errorMessage.includes('Network') || errorMessage.includes('网络')) {
+    return i18n.t('auth.networkError')
+  }
+
+  // 默认返回原始错误信息
+  return errorMessage
+}
 
 const useAuthStore = create(
   persist(
@@ -89,15 +118,16 @@ const useAuthStore = create(
 
           return { success: true }
         } catch (error) {
-          const errorMessage = error.response?.data?.message || error.message || '登录失败'
+          const rawErrorMessage = error.response?.data?.message || error.message || '登录失败'
+          const localizedErrorMessage = getLocalizedErrorMessage(rawErrorMessage)
           set({
             isLoading: false,
-            error: errorMessage,
+            error: localizedErrorMessage,
             user: null,
             accessToken: null,
             refreshToken: null
           })
-          return { success: false, error: errorMessage }
+          return { success: false, error: localizedErrorMessage }
         }
       },
 
@@ -123,15 +153,16 @@ const useAuthStore = create(
 
           return { success: true }
         } catch (error) {
-          const errorMessage = error.response?.data?.message || error.message || '注册失败'
+          const rawErrorMessage = error.response?.data?.message || error.message || '注册失败'
+          const localizedErrorMessage = getLocalizedErrorMessage(rawErrorMessage)
           set({
             isLoading: false,
-            error: errorMessage,
+            error: localizedErrorMessage,
             user: null,
             accessToken: null,
             refreshToken: null
           })
-          return { success: false, error: errorMessage }
+          return { success: false, error: localizedErrorMessage }
         }
       },
 

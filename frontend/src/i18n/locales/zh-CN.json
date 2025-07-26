@@ -51,7 +51,12 @@
     "passwordRequired": "请输入密码",
     "passwordMinLength": "密码至少需要6个字符",
     "confirmPasswordRequired": "请确认密码",
-    "passwordMismatch": "两次输入的密码不一致"
+    "passwordMismatch": "两次输入的密码不一致",
+    "loginFailed": "登录失败",
+    "registerFailed": "注册失败",
+    "emailAlreadyExists": "该邮箱已被注册",
+    "invalidCredentials": "邮箱或密码错误",
+    "networkError": "网络错误，请稍后重试"
   },
   "dashboard": {
     "title": "学习仪表盘",
