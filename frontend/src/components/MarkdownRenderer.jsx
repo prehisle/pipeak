@@ -269,9 +269,9 @@ const MarkdownRenderer = ({
 
   // 主题样式
   const themeClasses = {
-    default: 'leading-relaxed text-lg',  // 增大默认字体
-    compact: 'leading-relaxed text-base',
-    large: 'leading-loose text-xl'  // 进一步增大large主题
+    default: 'leading-relaxed text-base',  // 统一为16px基础字体
+    compact: 'leading-relaxed text-sm',
+    large: 'leading-loose text-lg'  // 大主题使用18px
   }
 
   return (
@@ -279,7 +279,7 @@ const MarkdownRenderer = ({
       ref={containerRef}
       className={`markdown-renderer ${themeClasses[theme]} ${className}`}
       style={{
-        fontSize: theme === 'compact' ? '16px' : theme === 'large' ? '20px' : '18px'  // 全面增大字体
+        fontSize: theme === 'compact' ? '14px' : theme === 'large' ? '18px' : '16px'  // 统一基础字体为16px
       }}
     />
   )

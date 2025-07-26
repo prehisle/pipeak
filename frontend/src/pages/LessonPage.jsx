@@ -227,7 +227,7 @@ const LessonPage = () => {
                       </div>
                     </div>
                     <div className="ml-4 flex-1 min-w-0">
-                      <h3 className="text-xl font-semibold text-blue-900 mb-6">
+                      <h3 className="text-lg font-semibold text-blue-900 mb-6">
                         {t('lessonPage.knowledgePoint', { index: currentKnowledgePointIndex + 1 })}
                       </h3>
                       <h4 className="text-lg font-medium text-blue-800 mb-4">
