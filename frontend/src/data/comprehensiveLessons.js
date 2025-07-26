@@ -4,41 +4,37 @@
 // 从后端数据转换为前端格式的函数
 function convertBackendToFrontend(backendLessons) {
   return backendLessons.map(lesson => {
-    // 将cards按类型分组
-    const knowledgeCards = lesson.cards.filter(card => card.type === 'knowledge')
-    const practiceCards = lesson.cards.filter(card => card.type === 'practice')
-    
-    // 将知识点和练习题组合
+    // 按照cards的原始顺序转换，保持学习流程的连贯性
     const knowledgePoints = []
-    let practiceIndex = 0
-    
-    knowledgeCards.forEach((knowledgeCard, index) => {
-      const knowledgePoint = {
-        id: `kp-${lesson.sequence}-${index + 1}`,
-        title: extractTitleFromContent(knowledgeCard.content),
-        content: knowledgeCard.content,
-        exercises: []
+    let knowledgePointIndex = 1
+
+    lesson.cards.forEach((card) => {
+      if (card.type === 'knowledge') {
+        // 知识点卡片：转换为纯知识点（无练习题）
+        knowledgePoints.push({
+          id: `kp-${lesson.sequence}-${knowledgePointIndex}`,
+          title: extractTitleFromContent(card.content),
+          content: card.content,
+          exercises: [] // 纯知识点，无练习题
+        })
+        knowledgePointIndex++
+      } else if (card.type === 'practice') {
+        // 练习题卡片：转换为练习知识点（包含一个练习题）
+        knowledgePoints.push({
+          id: `kp-${lesson.sequence}-${knowledgePointIndex}`,
+          title: `练习：${card.question.replace('请输入 LaTeX 代码来表示：', '').replace('请输入 LaTeX 代码来表示', '')}`,
+          content: `## 练习题\n\n${card.question}`, // 简单的练习题说明
+          exercises: [{
+            question: card.question,
+            answer: card.target_formula,
+            hint: card.hints?.[0] || '暂无提示',
+            difficulty: card.difficulty || 'easy'
+          }]
+        })
+        knowledgePointIndex++
       }
-      
-      // 为每个知识点分配练习题（简单分配策略）
-      const exercisesPerKnowledge = Math.ceil(practiceCards.length / knowledgeCards.length)
-      const startIndex = index * exercisesPerKnowledge
-      const endIndex = Math.min(startIndex + exercisesPerKnowledge, practiceCards.length)
-      
-      for (let i = startIndex; i < endIndex; i++) {
-        if (practiceCards[i]) {
-          knowledgePoint.exercises.push({
-            question: practiceCards[i].question,
-            answer: practiceCards[i].target_formula,
-            hint: practiceCards[i].hints?.[0] || '暂无提示',
-            difficulty: practiceCards[i].difficulty || 'easy'
-          })
-        }
-      }
-      
-      knowledgePoints.push(knowledgePoint)
     })
-    
+
     return {
       id: `lesson-${lesson.sequence}`,
       title: lesson.title,
