@@ -54,16 +54,24 @@ def get_lesson(lesson_id):
         if not user:
             return jsonify({'message': '用户不存在'}), 404
 
-        # 验证lesson_id格式
+        # 支持两种格式的lesson_id：ObjectId 和 lesson-{sequence}
+        lesson = None
+
+        # 尝试作为ObjectId查找
         try:
             ObjectId(lesson_id)
+            lesson = Lesson.find_by_id(lesson_id)
         except:
-            return jsonify({'message': '无效的课程ID'}), 400
+            # 如果不是ObjectId，尝试作为lesson-{sequence}格式解析
+            if lesson_id.startswith('lesson-'):
+                try:
+                    sequence = int(lesson_id.replace('lesson-', ''))
+                    lesson = Lesson.find_by_sequence(sequence)
+                except ValueError:
+                    pass
 
-        # 查找课程
-        lesson = Lesson.find_by_id(lesson_id)
         if not lesson:
-            return jsonify({'message': '课程不存在'}), 404
+            return jsonify({'message': '课程不存在'}), 400
 
         # 转换为字典格式并添加用户进度信息
         lesson_dict = lesson.to_dict()
@@ -89,16 +97,24 @@ def complete_lesson(lesson_id):
         if not user:
             return jsonify({'message': '用户不存在'}), 404
 
-        # 验证lesson_id格式
+        # 支持两种格式的lesson_id：ObjectId 和 lesson-{sequence}
+        lesson = None
+
+        # 尝试作为ObjectId查找
         try:
             ObjectId(lesson_id)
+            lesson = Lesson.find_by_id(lesson_id)
         except:
-            return jsonify({'message': '无效的课程ID'}), 400
+            # 如果不是ObjectId，尝试作为lesson-{sequence}格式解析
+            if lesson_id.startswith('lesson-'):
+                try:
+                    sequence = int(lesson_id.replace('lesson-', ''))
+                    lesson = Lesson.find_by_sequence(sequence)
+                except ValueError:
+                    pass
 
-        # 查找课程
-        lesson = Lesson.find_by_id(lesson_id)
         if not lesson:
-            return jsonify({'message': '课程不存在'}), 404
+            return jsonify({'message': '课程不存在'}), 400
 
         # 验证用户是否完成了所有练习题
         from app import get_db
@@ -112,7 +128,7 @@ def complete_lesson(lesson_id):
 
         if not practice_cards:
             # 如果没有练习题，可以直接完成
-            if user.update_progress(lesson_id, completed=True):
+            if user.update_progress(str(lesson._id), completed=True):
                 return jsonify({
                     'message': '课程完成状态已更新',
                     'lesson_id': lesson_id,
@@ -124,7 +140,7 @@ def complete_lesson(lesson_id):
         # 检查用户是否完成了所有练习题
         user_progress = db.user_progress.find_one({
             'user_id': ObjectId(current_user_id),
-            'lesson_id': ObjectId(lesson_id)
+            'lesson_id': lesson._id
         })
 
         if not user_progress:
@@ -152,7 +168,7 @@ def complete_lesson(lesson_id):
             }), 400
 
         # 所有练习题都已完成，可以完成课程
-        if user.update_progress(lesson_id, completed=True):
+        if user.update_progress(str(lesson._id), completed=True):
             return jsonify({
                 'message': '恭喜！课程已完成，您已掌握所有知识点',
                 'lesson_id': lesson_id,
@@ -174,16 +190,24 @@ def get_lesson_completion_status(lesson_id):
     try:
         current_user_id = get_jwt_identity()
 
-        # 验证lesson_id格式
+        # 支持两种格式的lesson_id：ObjectId 和 lesson-{sequence}
+        lesson = None
+
+        # 尝试作为ObjectId查找
         try:
             ObjectId(lesson_id)
+            lesson = Lesson.find_by_id(lesson_id)
         except:
-            return jsonify({'message': '无效的课程ID'}), 400
+            # 如果不是ObjectId，尝试作为lesson-{sequence}格式解析
+            if lesson_id.startswith('lesson-'):
+                try:
+                    sequence = int(lesson_id.replace('lesson-', ''))
+                    lesson = Lesson.find_by_sequence(sequence)
+                except ValueError:
+                    pass
 
-        # 查找课程
-        lesson = Lesson.find_by_id(lesson_id)
         if not lesson:
-            return jsonify({'message': '课程不存在'}), 404
+            return jsonify({'message': '课程不存在'}), 400
 
         from app import get_db
         db = get_db()
@@ -201,7 +225,7 @@ def get_lesson_completion_status(lesson_id):
         # 获取用户进度
         user_progress = db.user_progress.find_one({
             'user_id': ObjectId(current_user_id),
-            'lesson_id': ObjectId(lesson_id)
+            'lesson_id': lesson._id
         })
 
         completed_practices = []
@@ -234,7 +258,7 @@ def get_lesson_completion_status(lesson_id):
 
         # 检查用户是否已经完成了课程
         user = User.find_by_id(current_user_id)
-        is_already_completed = user.is_lesson_completed(lesson_id) if user else False
+        is_already_completed = user.is_lesson_completed(str(lesson._id)) if user else False
 
         return jsonify({
             'lesson_id': lesson_id,
