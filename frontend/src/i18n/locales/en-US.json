@@ -267,5 +267,29 @@
     "nextKnowledgePoint": "Next →",
     "prevKnowledgePoint": "← Previous",
     "keyboardHint": "💡 Use keyboard shortcuts: ← → to switch cards, ESC to return to course list"
+  },
+  "reviewPage": {
+    "pleaseEnterAnswer": "Please enter your answer",
+    "submitError": "Error submitting review, please try again",
+    "loadingReviews": "Loading review tasks...",
+    "reviewStats": "Review Statistics",
+    "sm2Description": "Intelligent review system based on SM-2 algorithm",
+    "todayCompleted": "Today's Review Completed!",
+    "congratulations": "Congratulations on completing all today's review tasks, keep up the good learning habit!",
+    "totalReviews": "Total Reviews",
+    "dueToday": "Due Today",
+    "accuracyRate": "Accuracy Rate",
+    "weekCompleted": "Week Completed",
+    "todayReview": "Today's Review",
+    "forgettingCurveDescription": "Intelligent review system based on forgetting curve",
+    "progress": "Progress",
+    "reviewQuestion": "Review Question {{number}}",
+    "nextReview": "Next Review",
+    "correctAnswer": "Correct Answer",
+    "submitting": "Submitting...",
+    "completed": "Completed ✓",
+    "submitAnswer": "Submit Answer",
+    "repeated": "Repeated {{count}} times",
+    "memoryStrength": "Memory Strength"
   }
 }

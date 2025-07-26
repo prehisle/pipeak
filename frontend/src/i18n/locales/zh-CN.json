@@ -267,5 +267,29 @@
     "nextKnowledgePoint": "下一个 →",
     "prevKnowledgePoint": "← 上一个",
     "keyboardHint": "💡 使用键盘快捷键：← → 切换卡片，ESC 返回课程列表"
+  },
+  "reviewPage": {
+    "pleaseEnterAnswer": "请输入你的答案",
+    "submitError": "提交复习时出错，请重试",
+    "loadingReviews": "加载复习任务中...",
+    "reviewStats": "复习统计",
+    "sm2Description": "基于SM-2算法的智能复习系统",
+    "todayCompleted": "今日复习已完成！",
+    "congratulations": "恭喜你完成了今天的所有复习任务，继续保持学习的好习惯！",
+    "totalReviews": "总复习题目",
+    "dueToday": "今日待复习",
+    "accuracyRate": "复习正确率",
+    "weekCompleted": "本周完成数",
+    "todayReview": "今日复习",
+    "forgettingCurveDescription": "基于遗忘曲线的智能复习系统",
+    "progress": "进度",
+    "reviewQuestion": "复习题 {{number}}",
+    "nextReview": "下次复习",
+    "correctAnswer": "正确答案",
+    "submitting": "提交中...",
+    "completed": "已完成 ✓",
+    "submitAnswer": "提交答案",
+    "repeated": "已重复 {{count}} 次",
+    "memoryStrength": "记忆强度"
   }
 }
