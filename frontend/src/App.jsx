@@ -72,6 +72,7 @@ function App() {
         {/* 测试路由 */}
         <Route path="/test" element={<TestPage />} />
         <Route path="/render-test" element={<RenderTestPage />} />
+        <Route path="/style-test" element={<StyleTestPage />} />
 
         {/* 受保护的路由 - 仅限注册用户 */}
         <Route

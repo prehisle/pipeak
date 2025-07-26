@@ -389,10 +389,21 @@ body {
   overflow: hidden;
 }
 
+/* 暗黑模式下的课程卡片 */
+.dark .lesson-card {
+  background: #1f2937;
+  border-color: #374151;
+}
+
 .lesson-card:hover {
   transform: translateY(-2px);
   box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
   border-color: #3b82f6;
+}
+
+.dark .lesson-card:hover {
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
+  border-color: #60a5fa;
 }
 
 .lesson-card-pending {
@@ -402,6 +413,10 @@ body {
 .lesson-card-completed {
   border-left: 4px solid #10b981;
   background: linear-gradient(135deg, #ffffff 0%, #f0fdf4 100%);
+}
+
+.dark .lesson-card-completed {
+  background: linear-gradient(135deg, #1f2937 0%, #064e3b 100%);
 }
 
 .lesson-card-content {
@@ -451,8 +466,16 @@ body {
   -webkit-line-clamp: 2;
 }
 
+.dark .lesson-title {
+  color: #f9fafb;
+}
+
 .lesson-card-completed .lesson-title {
   color: #065f46;
+}
+
+.dark .lesson-card-completed .lesson-title {
+  color: #6ee7b7;
 }
 
 .lesson-description {
@@ -467,8 +490,16 @@ body {
   -webkit-line-clamp: 3;
 }
 
+.dark .lesson-description {
+  color: #d1d5db;
+}
+
 .lesson-card-completed .lesson-description {
   color: #047857;
+}
+
+.dark .lesson-card-completed .lesson-description {
+  color: #34d399;
 }
 
 .lesson-meta {
@@ -553,6 +584,10 @@ body {
   background: linear-gradient(135deg, #ffffff 0%, #fef3c7 100%);
 }
 
+.dark .lesson-card-locked {
+  background: linear-gradient(135deg, #1f2937 0%, #451a03 100%);
+}
+
 .lesson-card-locked .lesson-number {
   background: linear-gradient(135deg, #f59e0b, #d97706);
   color: white;
@@ -563,8 +598,16 @@ body {
   color: #92400e;
 }
 
+.dark .lesson-card-locked .lesson-title {
+  color: #fbbf24;
+}
+
 .lesson-card-locked .lesson-description {
   color: #a16207;
+}
+
+.dark .lesson-card-locked .lesson-description {
+  color: #f59e0b;
 }
 
 /* KaTeX 数学公式样式优化 */

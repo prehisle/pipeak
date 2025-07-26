@@ -151,6 +151,37 @@ const LessonPage = () => {
     }
   }
 
+  // 处理课程完成 - 需要验证所有练习题都已正确完成
+  const handleCompleteLesson = async () => {
+    if (!currentLesson) return
+
+    try {
+      // 检查课程完成状态
+      const { learningAPI } = await import('../services/api')
+      const statusResponse = await learningAPI.getCompletionStatus(currentLesson.id)
+
+      if (statusResponse.data) {
+        const { can_complete, completed_practices, total_practices } = statusResponse.data
+
+        if (can_complete) {
+          // 所有练习题都已完成，可以完成课程
+          completeLesson(currentLesson.id)
+          showSuccess(t('lessonPage.lessonCompleted'))
+          setShowLessonCompleteModal(true)
+        } else {
+          // 还有练习题未完成
+          showWarning(`请先完成所有练习题！已完成 ${completed_practices}/${total_practices} 题`)
+        }
+      } else {
+        // 如果无法获取状态，显示警告
+        showWarning('请确保完成所有练习题后再完成课程')
+      }
+    } catch (error) {
+      console.error('检查课程完成状态失败:', error)
+      showWarning('请确保完成所有练习题后再完成课程')
+    }
+  }
+
 
 
   // 处理课程完成模态框
@@ -309,11 +340,7 @@ const LessonPage = () => {
 
         {isLastKnowledgePoint ? (
           <button
-            onClick={() => {
-              completeLesson(currentLesson.id)
-              showSuccess(t('lessonPage.lessonCompleted'))
-              setShowLessonCompleteModal(true)
-            }}
+            onClick={handleCompleteLesson}
             disabled={isTransitioning}
             className="btn btn-primary disabled:opacity-50 disabled:cursor-not-allowed"
           >
