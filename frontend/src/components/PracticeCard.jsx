@@ -246,18 +246,18 @@ const PracticeCard = forwardRef(({
         </div>
         <div className="ml-3 flex-1">
           <h3 className="text-base font-semibold text-green-900 mb-3">
-            练习题 {cardIndex + 1}
+            {t('practice.practiceTitle')} {cardIndex + 1}
           </h3>
           
           {/* 题目描述 */}
           <div className="mb-4">
             <p id="practice-question" className="text-green-800 text-sm mb-3">
-              {questionText || '练习题目'}
+              {questionText || t('practice.practiceTitle')}
             </p>
 
             {/* 目标效果预览 */}
             <div className="bg-white p-3 rounded-lg border border-green-200 mb-3">
-              <p className="text-sm text-gray-600 mb-2">目标效果：</p>
+              <p className="text-sm text-gray-600 mb-2">{t('practice.targetEffect')}</p>
               <div className="text-center">
                 <MarkdownRenderer content={targetFormula} />
               </div>
@@ -266,13 +266,13 @@ const PracticeCard = forwardRef(({
 
           {/* 实时预览 */}
           <div className="mb-3">
-            <p className="text-sm font-medium text-green-800 mb-2">实时预览：</p>
+            <p className="text-sm font-medium text-green-800 mb-2">{t('practice.livePreview')}</p>
             <div className="bg-gray-50 p-3 rounded-lg border border-gray-200 min-h-[50px] flex items-center justify-center">
               <div className="text-center w-full">
                 {userAnswer.trim() ? (
                   <MarkdownRenderer content={userAnswer} />
                 ) : (
-                  <span className="text-gray-400 text-xs">请输入LaTeX代码后将在此显示预览</span>
+                  <span className="text-gray-400 text-xs">{t('practice.enterLatex')}</span>
                 )}
               </div>
             </div>
@@ -281,7 +281,7 @@ const PracticeCard = forwardRef(({
           {/* 答案输入区域 */}
           <div className="mb-3">
             <label className="block text-sm font-medium text-green-800 mb-2">
-              请输入 LaTeX 代码：
+              {t('practice.enterLatex')}
             </label>
             <div className="relative">
               <textarea
@@ -289,7 +289,7 @@ const PracticeCard = forwardRef(({
                 value={userAnswer}
                 onChange={(e) => setUserAnswer(e.target.value)}
                 onKeyDown={handleKeyPress}
-                placeholder="例如：$x^2$"
+                placeholder={t('practice.example')}
                 className={`w-full px-3 py-2 rounded-lg focus:ring-2 focus:ring-blue-500/20 focus:outline-none transition-all duration-200 font-mono text-sm resize-none border-0 ${
                   isCorrect
                     ? 'bg-green-50 text-green-800 cursor-default'

@@ -222,7 +222,7 @@ const DashboardPage = () => {
           {isLoading ? (
             <div className="text-center py-8">
               <LoadingSpinner size="lg" />
-              <p className="text-gray-500 mt-4">加载课程中...</p>
+              <p className="text-gray-500 mt-4">{t('dashboard.loadingCourses')}</p>
             </div>
           ) : lessons.length > 0 ? (
             <div className="grid gap-4">
@@ -283,14 +283,14 @@ const DashboardPage = () => {
                             <svg className="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
                             </svg>
-                            复习
+                            {t('dashboard.review')}
                           </>
                         ) : (
                           <>
                             <svg className="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14.828 14.828a4 4 0 01-5.656 0M9 10h1m4 0h1m-6 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                             </svg>
-                            开始学习
+                            {t('dashboard.startLearning')}
                           </>
                         )}
                       </Link>
@@ -315,11 +315,11 @@ const DashboardPage = () => {
             </div>
           ) : (
             <div className="text-center py-8 text-gray-500">
-              <p>暂无课程数据</p>
+              <p>{t('dashboard.noCourses')}</p>
               <p className="text-sm mt-2">课程数量: {lessons.length}</p>
               <p className="text-sm">加载状态: {isLoading ? '加载中' : '已完成'}</p>
               <p className="text-sm">错误信息: {error || '无'}</p>
-              <p className="text-sm mt-2">请稍后再试或联系管理员</p>
+              <p className="text-sm mt-2">{t('dashboard.tryAgainLater')}</p>
             </div>
           )}
         </div>

@@ -68,7 +68,7 @@ const OfflinePracticePage = () => {
 
   const handleSubmit = async () => {
     if (!userAnswer.trim()) {
-      setFeedback('请输入你的答案')
+      setFeedback(t('practice.enterAnswer'))
       return
     }
 
@@ -89,7 +89,7 @@ const OfflinePracticePage = () => {
         // 答对后不自动跳转，由用户手动控制
       }
     } catch (error) {
-      setFeedback('提交答案时出错，请重试')
+      setFeedback(t('practice.submitError'))
       console.error('提交练习答案失败:', error)
     } finally {
       setIsSubmitting(false)
@@ -116,7 +116,7 @@ const OfflinePracticePage = () => {
       setCurrentHint(currentQuestion.hints[0])
       setShowHint(true)
     } else {
-      setCurrentHint('暂无提示信息')
+      setCurrentHint(t('practice.noHint'))
       setShowHint(true)
     }
   }
@@ -288,8 +288,8 @@ const OfflinePracticePage = () => {
                 readOnly={isCorrect}
               />
               <div className="absolute bottom-2 right-2 text-xs text-gray-400 bg-gray-50 px-1 py-0.5 rounded text-xs">
-                <div>Enter 提交</div>
-                {!isCorrect && <div>Tab 获取提示</div>}
+                <div>{t('practice.enterSubmit')}</div>
+                {!isCorrect && <div>{t('practice.tabHint')}</div>}
               </div>
             </div>
           </div>
@@ -304,7 +304,7 @@ const OfflinePracticePage = () => {
               <p className="font-medium text-sm">{feedback}</p>
               {isCorrect && (
                 <p className="text-xs mt-1">
-                  🎉 按 Enter 键或点击"下一题"继续
+                  {t('practice.continueHint')}
                 </p>
               )}
             </div>
@@ -314,7 +314,7 @@ const OfflinePracticePage = () => {
           {showHint && currentHint && (
             <div className="mb-4 p-3 bg-yellow-100 border border-yellow-300 rounded-lg">
               <p className="text-yellow-800 text-sm">
-                <span className="font-medium">💡 提示：</span>
+                <span className="font-medium">{t('practice.hintPrefix')}</span>
                 {currentHint}
               </p>
             </div>
@@ -333,7 +333,7 @@ const OfflinePracticePage = () => {
                       : 'bg-blue-600 text-white hover:bg-blue-700'
                   }`}
                 >
-                  {isSubmitting ? '提交中...' : t('offlinePractice.submitAnswer')}
+                  {isSubmitting ? t('practice.submitting') : t('offlinePractice.submitAnswer')}
                 </button>
                 <button
                   onClick={handleGetHint}
@@ -343,9 +343,9 @@ const OfflinePracticePage = () => {
                       ? 'bg-gray-400 text-white cursor-not-allowed'
                       : 'bg-yellow-500 text-white hover:bg-yellow-600'
                   }`}
-                  title="获取解题提示"
+                  title={t('practice.hintTooltip')}
                 >
-                  💡 获取提示
+                  {t('practice.getHint')}
                 </button>
               </>
             ) : (
@@ -353,7 +353,7 @@ const OfflinePracticePage = () => {
                 onClick={handleNextQuestion}
                 className="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors font-medium text-sm"
               >
-                {currentQuestionIndex < questions.length - 1 ? '下一题 →' : '查看结果'}
+                {currentQuestionIndex < questions.length - 1 ? t('practice.nextQuestion') : t('practice.viewResults')}
               </button>
             )}
           </div>
