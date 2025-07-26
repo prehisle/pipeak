@@ -1,10 +1,14 @@
 import React, { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
+import { useTranslation } from 'react-i18next'
 import MarkdownRenderer from '../components/MarkdownRenderer'
 import { learningAPI, lessonAPI } from '../services/api'
+import ThemeSwitcher from '../components/ThemeSwitcher'
+import LanguageSwitcher from '../components/LanguageSwitcher'
 
 const OfflinePracticePage = () => {
   const navigate = useNavigate()
+  const { t } = useTranslation()
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0)
   const [userAnswer, setUserAnswer] = useState('')
   const [feedback, setFeedback] = useState(null)
@@ -127,7 +131,7 @@ const OfflinePracticePage = () => {
       <div className="max-w-4xl mx-auto px-4 py-8">
         <div className="text-center">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
-          <p className="text-gray-600">加载练习题中...</p>
+          <p className="text-gray-600">{t('offlinePractice.loading')}</p>
         </div>
       </div>
     )
@@ -142,15 +146,15 @@ const OfflinePracticePage = () => {
             <div className="w-20 h-20 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-4">
               <span className="text-3xl">🎉</span>
             </div>
-            <h1 className="text-3xl font-bold text-gray-900 mb-2">练习完成！</h1>
-            <p className="text-gray-600">恭喜你完成了所有练习题</p>
+            <h1 className="text-3xl font-bold text-gray-900 mb-2">{t('offlinePractice.practiceComplete')}</h1>
+            <p className="text-gray-600">{t('offlinePractice.congratulations')}</p>
           </div>
-          
+
           <div className="bg-gray-50 rounded-lg p-6 mb-6">
             <div className="grid grid-cols-3 gap-4 text-center">
               <div>
                 <div className="text-2xl font-bold text-blue-600">{score}</div>
-                <div className="text-sm text-gray-600">正确题数</div>
+                <div className="text-sm text-gray-600">{t('offlinePractice.correctAnswers')}</div>
               </div>
               <div>
                 <div className="text-2xl font-bold text-gray-600">{questions.length}</div>
@@ -158,7 +162,7 @@ const OfflinePracticePage = () => {
               </div>
               <div>
                 <div className="text-2xl font-bold text-green-600">{percentage}%</div>
-                <div className="text-sm text-gray-600">正确率</div>
+                <div className="text-sm text-gray-600">{t('offlinePractice.accuracy')}</div>
               </div>
             </div>
           </div>
@@ -168,13 +172,13 @@ const OfflinePracticePage = () => {
               onClick={restartPractice}
               className="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
             >
-              重新练习
+              {t('offlinePractice.restartPractice')}
             </button>
             <button
               onClick={() => navigate('/')}
               className="px-6 py-3 bg-gray-600 text-white rounded-lg hover:bg-gray-700 transition-colors"
             >
-              返回首页
+              {t('offlinePractice.backToHomePage')}
             </button>
           </div>
         </div>
@@ -191,10 +195,17 @@ const OfflinePracticePage = () => {
             onClick={() => navigate('/')}
             className="text-blue-600 hover:text-blue-700 flex items-center text-sm"
           >
-            ← 返回首页
+            {t('offlinePractice.backToHome')}
           </button>
+
+          {/* 主题和语言切换器 */}
+          <div className="flex items-center space-x-2">
+            <ThemeSwitcher />
+            <LanguageSwitcher />
+          </div>
+
           <div className="text-sm text-gray-600">
-            第 {currentQuestionIndex + 1} 题 / 共 {questions.length} 题
+            {t('offlinePractice.questionProgress', { current: currentQuestionIndex + 1, total: questions.length })}
           </div>
         </div>
         
@@ -205,20 +216,20 @@ const OfflinePracticePage = () => {
           ></div>
         </div>
         
-        <h1 className="text-2xl font-bold text-gray-900">⚡ 离线练习模式</h1>
-        <p className="text-gray-600">当前正确率：{questions.length > 0 ? Math.round((score / (currentQuestionIndex + 1)) * 100) : 0}%</p>
+        <h1 className="text-2xl font-bold text-gray-900">{t('offlinePractice.title')}</h1>
+        <p className="text-gray-600">{t('offlinePractice.currentAccuracy', { accuracy: questions.length > 0 ? Math.round((score / (currentQuestionIndex + 1)) * 100) : 0 })}</p>
       </div>
 
       {/* 练习题卡片 */}
       {currentQuestion && (
         <div className="bg-white rounded-lg shadow-lg p-6">
           <div className="mb-4">
-            <div className="text-sm text-blue-600 mb-2">来自课程：{currentQuestion.lessonTitle}</div>
+            <div className="text-sm text-blue-600 mb-2">{t('offlinePractice.fromLesson', { lesson: currentQuestion.lessonTitle })}</div>
             <h2 className="text-lg font-semibold text-gray-900 mb-4">{currentQuestion.question}</h2>
-            
+
             {/* 目标效果预览 */}
             <div className="bg-blue-50 p-4 rounded-lg border border-blue-200 mb-4">
-              <p className="text-sm text-blue-800 mb-2">目标效果：</p>
+              <p className="text-sm text-blue-800 mb-2">{t('offlinePractice.targetEffect')}</p>
               <div className="text-center bg-white p-3 rounded border">
                 <MarkdownRenderer content={currentQuestion.target_formula} />
               </div>
@@ -227,13 +238,13 @@ const OfflinePracticePage = () => {
 
           {/* 实时预览 */}
           <div className="mb-4">
-            <p className="text-sm font-medium text-gray-700 mb-2">实时预览：</p>
+            <p className="text-sm font-medium text-gray-700 mb-2">{t('offlinePractice.realTimePreview')}</p>
             <div className="bg-gray-50 p-4 rounded-lg border border-gray-200 min-h-[60px] flex items-center justify-center">
               <div className="text-center w-full">
                 {userAnswer.trim() ? (
                   <MarkdownRenderer content={userAnswer} />
                 ) : (
-                  <span className="text-gray-400 text-sm">输入LaTeX代码后将在此显示预览</span>
+                  <span className="text-gray-400 text-sm">{t('offlinePractice.previewPlaceholder')}</span>
                 )}
               </div>
             </div>
@@ -242,13 +253,13 @@ const OfflinePracticePage = () => {
           {/* 答案输入 */}
           <div className="mb-4">
             <label className="block text-sm font-medium text-gray-700 mb-2">
-              请输入 LaTeX 代码：
+              {t('offlinePractice.inputPrompt')}
             </label>
             <textarea
               value={userAnswer}
               onChange={(e) => setUserAnswer(e.target.value)}
               onKeyDown={handleKeyPress}
-              placeholder="例如：$x^2$"
+              placeholder={t('offlinePractice.inputPlaceholder')}
               className={`w-full px-3 py-2 rounded-lg focus:ring-2 focus:ring-blue-500/20 focus:outline-none transition-all duration-200 font-mono text-sm resize-none border ${
                 isCorrect
                   ? 'bg-green-50 text-green-800 border-green-300'
@@ -287,7 +298,7 @@ const OfflinePracticePage = () => {
                     : 'bg-blue-600 text-white hover:bg-blue-700'
                 }`}
               >
-                {isSubmitting ? '提交中...' : '提交答案'}
+                {isSubmitting ? '提交中...' : t('offlinePractice.submitAnswer')}
               </button>
             ) : (
               <button
