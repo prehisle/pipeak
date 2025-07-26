@@ -17,6 +17,8 @@ const OfflinePracticePage = () => {
   const [questions, setQuestions] = useState([])
   const [score, setScore] = useState(0)
   const [showResults, setShowResults] = useState(false)
+  const [showHint, setShowHint] = useState(false)
+  const [currentHint, setCurrentHint] = useState('')
 
   // 从本地课程数据中提取所有练习题
   useEffect(() => {
@@ -101,9 +103,22 @@ const OfflinePracticePage = () => {
       setUserAnswer('')
       setFeedback(null)
       setIsCorrect(false)
+      setShowHint(false)
+      setCurrentHint('')
     } else {
       // 显示最终结果
       setShowResults(true)
+    }
+  }
+
+  const handleGetHint = () => {
+    const currentQuestion = questions[currentQuestionIndex]
+    if (currentQuestion && currentQuestion.hints && currentQuestion.hints.length > 0) {
+      setCurrentHint(currentQuestion.hints[0])
+      setShowHint(true)
+    } else {
+      setCurrentHint('暂无提示信息')
+      setShowHint(true)
     }
   }
 
@@ -114,6 +129,9 @@ const OfflinePracticePage = () => {
     } else if (e.key === 'Enter' && !isCorrect && userAnswer.trim()) {
       e.preventDefault()
       handleSubmit()
+    } else if (e.key === 'Tab' && !e.shiftKey && !isCorrect) {
+      e.preventDefault()
+      handleGetHint()
     }
   }
 
@@ -255,19 +273,25 @@ const OfflinePracticePage = () => {
             <label className="block text-sm font-medium text-gray-700 mb-2">
               {t('offlinePractice.inputPrompt')}
             </label>
-            <textarea
-              value={userAnswer}
-              onChange={(e) => setUserAnswer(e.target.value)}
-              onKeyDown={handleKeyPress}
-              placeholder={t('offlinePractice.inputPlaceholder')}
-              className={`w-full px-3 py-2 rounded-lg focus:ring-2 focus:ring-blue-500/20 focus:outline-none transition-all duration-200 font-mono text-sm resize-none border ${
-                isCorrect
-                  ? 'bg-green-50 text-green-800 border-green-300'
-                  : 'bg-white border-gray-300 focus:border-blue-500'
-              }`}
-              rows="2"
-              readOnly={isCorrect}
-            />
+            <div className="relative">
+              <textarea
+                value={userAnswer}
+                onChange={(e) => setUserAnswer(e.target.value)}
+                onKeyDown={handleKeyPress}
+                placeholder={t('offlinePractice.inputPlaceholder')}
+                className={`w-full px-3 py-2 rounded-lg focus:ring-2 focus:ring-blue-500/20 focus:outline-none transition-all duration-200 font-mono text-sm resize-none border ${
+                  isCorrect
+                    ? 'bg-green-50 text-green-800 border-green-300'
+                    : 'bg-white border-gray-300 focus:border-blue-500'
+                }`}
+                rows="2"
+                readOnly={isCorrect}
+              />
+              <div className="absolute bottom-2 right-2 text-xs text-gray-400 bg-gray-50 px-1 py-0.5 rounded text-xs">
+                <div>Enter 提交</div>
+                {!isCorrect && <div>Tab 获取提示</div>}
+              </div>
+            </div>
           </div>
 
           {/* 反馈信息 */}
@@ -286,20 +310,44 @@ const OfflinePracticePage = () => {
             </div>
           )}
 
+          {/* 提示信息 */}
+          {showHint && currentHint && (
+            <div className="mb-4 p-3 bg-yellow-100 border border-yellow-300 rounded-lg">
+              <p className="text-yellow-800 text-sm">
+                <span className="font-medium">💡 提示：</span>
+                {currentHint}
+              </p>
+            </div>
+          )}
+
           {/* 操作按钮 */}
           <div className="flex gap-3">
             {!isCorrect ? (
-              <button
-                onClick={handleSubmit}
-                disabled={isSubmitting || !userAnswer.trim()}
-                className={`px-4 py-2 rounded-lg font-medium text-sm transition-colors ${
-                  isSubmitting || !userAnswer.trim()
-                    ? 'bg-gray-400 text-white cursor-not-allowed'
-                    : 'bg-blue-600 text-white hover:bg-blue-700'
-                }`}
-              >
-                {isSubmitting ? '提交中...' : t('offlinePractice.submitAnswer')}
-              </button>
+              <>
+                <button
+                  onClick={handleSubmit}
+                  disabled={isSubmitting || !userAnswer.trim()}
+                  className={`px-4 py-2 rounded-lg font-medium text-sm transition-colors ${
+                    isSubmitting || !userAnswer.trim()
+                      ? 'bg-gray-400 text-white cursor-not-allowed'
+                      : 'bg-blue-600 text-white hover:bg-blue-700'
+                  }`}
+                >
+                  {isSubmitting ? '提交中...' : t('offlinePractice.submitAnswer')}
+                </button>
+                <button
+                  onClick={handleGetHint}
+                  disabled={isSubmitting}
+                  className={`px-3 py-2 rounded-lg transition-colors text-sm ${
+                    isSubmitting
+                      ? 'bg-gray-400 text-white cursor-not-allowed'
+                      : 'bg-yellow-500 text-white hover:bg-yellow-600'
+                  }`}
+                  title="获取解题提示"
+                >
+                  💡 获取提示
+                </button>
+              </>
             ) : (
               <button
                 onClick={handleNextQuestion}
