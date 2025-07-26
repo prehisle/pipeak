@@ -71,28 +71,50 @@ const useAuthStore = create(
       // 初始化认证状态
       initializeAuth: () => {
         try {
-          // 从localStorage恢复用户状态
-          const token = localStorage.getItem('auth_token')
-          const userData = localStorage.getItem('user_data')
+          // 检查Zustand persist存储的认证数据
+          const authStorage = localStorage.getItem('auth-storage')
+          if (!authStorage) {
+            // 清理可能存在的旧版本数据
+            localStorage.removeItem('auth_token')
+            localStorage.removeItem('user_data')
+            return
+          }
 
-          if (token && userData) {
-            const user = JSON.parse(userData)
-            set({
-              user,
-              accessToken: token,
-              isLoading: false,
-              error: null
-            })
+          const authData = JSON.parse(authStorage)
+          const { user, accessToken } = authData.state || {}
 
-            // 设置API认证头
-            api.defaults.headers.common['Authorization'] = `Bearer ${token}`
-            console.log('从localStorage恢复用户状态:', user.email)
+          if (accessToken && user) {
+            // 验证用户数据的完整性
+            if (user.email && typeof user.email === 'string') {
+              set({
+                user,
+                accessToken,
+                isLoading: false,
+                error: null
+              })
+
+              // 设置API认证头
+              api.defaults.headers.common['Authorization'] = `Bearer ${accessToken}`
+              console.log('从localStorage恢复用户状态:', user.email)
+            } else {
+              throw new Error('用户数据不完整')
+            }
           }
         } catch (error) {
           console.error('恢复用户状态失败:', error)
           // 清理无效数据
+          localStorage.removeItem('auth-storage')
           localStorage.removeItem('auth_token')
           localStorage.removeItem('user_data')
+
+          // 重置状态
+          set({
+            user: null,
+            accessToken: null,
+            refreshToken: null,
+            isLoading: false,
+            error: null
+          })
         }
       },
 
@@ -174,9 +196,38 @@ const useAuthStore = create(
           refreshToken: null,
           error: null
         })
-        
+
         // 清除API认证头
         delete api.defaults.headers.common['Authorization']
+
+        // 清理所有认证相关的localStorage数据
+        localStorage.removeItem('auth-storage')
+        localStorage.removeItem('auth_token')
+        localStorage.removeItem('user_data')
+      },
+
+      // 清理测试数据（开发用）
+      clearTestData: () => {
+        console.log('清理测试数据...')
+
+        // 清理认证数据
+        localStorage.removeItem('auth-storage')
+        localStorage.removeItem('auth_token')
+        localStorage.removeItem('user_data')
+
+        // 重置状态
+        set({
+          user: null,
+          accessToken: null,
+          refreshToken: null,
+          isLoading: false,
+          error: null
+        })
+
+        // 清除API认证头
+        delete api.defaults.headers.common['Authorization']
+
+        console.log('测试数据已清理')
       },
 
       // 检查认证状态

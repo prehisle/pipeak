@@ -35,8 +35,21 @@ const useLessonStore = create((set, get) => ({
     }
   },
 
-  // 获取课程列表
+  // 获取课程列表（添加防重复调用机制）
   fetchLessons: async () => {
+    const { isLoading, lessons } = get()
+
+    // 如果正在加载或已有数据，避免重复调用
+    if (isLoading) {
+      console.log('DEBUG: fetchLessons 已在进行中，跳过重复调用')
+      return { success: true, lessons }
+    }
+
+    if (lessons && lessons.length > 0) {
+      console.log('DEBUG: fetchLessons 已有数据，跳过重复调用')
+      return { success: true, lessons }
+    }
+
     set({ isLoading: true, error: null })
     console.log('DEBUG: fetchLessons 开始')
 
@@ -44,14 +57,12 @@ const useLessonStore = create((set, get) => ({
       const result = await lessonAPI.getLessons()
       console.log('DEBUG: lessonAPI.getLessons 结果:', result)
 
-      console.log('DEBUG: 课程数据:', result)
-      console.log('DEBUG: 课程数量:', result.lessons?.length || 0)
       set({
         lessons: result.lessons || [],
         isLoading: false,
         error: null
       })
-      return { success: true }
+      return { success: true, lessons: result.lessons || [] }
     } catch (error) {
       const errorMessage = i18n.t('dashboard.apiError')
       set({

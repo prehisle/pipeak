@@ -16,7 +16,6 @@ import ReviewPage from './pages/ReviewPage'
 import OfflinePracticePage from './pages/OfflinePracticePage'
 import TestPage from './pages/TestPage'
 import RenderTestPage from './pages/RenderTestPage'
-import StyleTestPage from './pages/StyleTestPage'
 
 // 布局组件
 import Layout from './components/Layout'
@@ -72,7 +71,6 @@ function App() {
         {/* 测试路由 */}
         <Route path="/test" element={<TestPage />} />
         <Route path="/render-test" element={<RenderTestPage />} />
-        <Route path="/style-test" element={<StyleTestPage />} />
 
         {/* 受保护的路由 - 仅限注册用户 */}
         <Route
@@ -86,7 +84,7 @@ function App() {
           <Route path="lesson/:lessonId" element={<LessonPage />} />
           {/* 移除练习中心相关路由 - 精简为核心学习路径 */}
           <Route path="review" element={<ReviewPage />} />
-          <Route path="style-test" element={<StyleTestPage />} />
+
         </Route>
 
         {/* 兼容性重定向 */}

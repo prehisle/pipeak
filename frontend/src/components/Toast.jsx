@@ -4,14 +4,19 @@ const Toast = ({ message, type = 'info', duration = 3000, onClose }) => {
   const [isVisible, setIsVisible] = useState(true)
 
   useEffect(() => {
-    const timer = setTimeout(() => {
+    let hideTimer, closeTimer
+
+    hideTimer = setTimeout(() => {
       setIsVisible(false)
-      setTimeout(() => {
+      closeTimer = setTimeout(() => {
         onClose && onClose()
       }, 300) // 等待动画完成
     }, duration)
 
-    return () => clearTimeout(timer)
+    return () => {
+      clearTimeout(hideTimer)
+      clearTimeout(closeTimer)
+    }
   }, [duration, onClose])
 
   const getToastStyles = () => {
@@ -91,17 +96,26 @@ export const useToast = () => {
   const addToast = (message, type = 'info', duration = 3000) => {
     const id = Date.now() + Math.random()
     const newToast = { id, message, type, duration }
-    
+
     setToasts(prev => [...prev, newToast])
-    
-    // 自动移除
-    setTimeout(() => {
+
+    // 自动移除 - 使用ref存储定时器ID以便清理
+    const timerId = setTimeout(() => {
       removeToast(id)
     }, duration + 300)
+
+    // 存储定时器ID到toast对象中，以便后续清理
+    newToast.timerId = timerId
   }
 
   const removeToast = (id) => {
-    setToasts(prev => prev.filter(toast => toast.id !== id))
+    setToasts(prev => {
+      const toastToRemove = prev.find(toast => toast.id === id)
+      if (toastToRemove && toastToRemove.timerId) {
+        clearTimeout(toastToRemove.timerId)
+      }
+      return prev.filter(toast => toast.id !== id)
+    })
   }
 
   const showSuccess = (message, duration) => addToast(message, 'success', duration)

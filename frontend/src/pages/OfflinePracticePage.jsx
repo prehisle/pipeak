@@ -137,7 +137,8 @@ const OfflinePracticePage = () => {
     } else if (e.key === 'Enter' && !isCorrect && userAnswer.trim()) {
       e.preventDefault()
       handleSubmit()
-    } else if (e.key === 'Tab' && !e.shiftKey && !isCorrect) {
+    } else if (e.key === 'F1' && !isCorrect) {
+      // 使用F1键作为提示快捷键，不影响Tab导航
       e.preventDefault()
       handleGetHint()
     }
@@ -285,9 +286,16 @@ const OfflinePracticePage = () => {
             <div className="relative">
               <textarea
                 value={userAnswer}
-                onChange={(e) => setUserAnswer(e.target.value)}
+                onChange={(e) => {
+                  const value = e.target.value
+                  // 限制输入长度为500字符，防止界面变形
+                  if (value.length <= 500) {
+                    setUserAnswer(value)
+                  }
+                }}
                 onKeyDown={handleKeyPress}
                 placeholder={t('offlinePractice.inputPlaceholder')}
+                maxLength={500}
                 className={`w-full px-3 py-2 rounded-lg focus:ring-2 focus:ring-blue-500/20 focus:outline-none transition-all duration-200 font-mono text-sm resize-none border ${
                   isCorrect
                     ? 'bg-green-50 dark:bg-green-900/20 text-green-800 dark:text-green-300 border-green-300 dark:border-green-600'
@@ -302,8 +310,12 @@ const OfflinePracticePage = () => {
               />
               <div className="absolute bottom-2 right-2 text-xs text-gray-400 dark:text-gray-500 bg-gray-50 dark:bg-gray-600 px-1 py-0.5 rounded text-xs">
                 <div>{t('practice.enterSubmit')}</div>
-                {!isCorrect && <div>{t('practice.tabHint')}</div>}
+                {!isCorrect && <div>F1 获取提示</div>}
               </div>
+            </div>
+            {/* 字符计数器 */}
+            <div className="text-xs text-gray-500 dark:text-gray-400 mt-1 text-right">
+              {userAnswer.length}/500 字符
             </div>
           </div>
 

@@ -1,28 +1,15 @@
 import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
-import { useAuthStore } from '../stores/authStore'
 import { useLessonStore } from '../stores/lessonStore'
 import useFrontendLessonStore from '../stores/frontendLessonStore'
-import { useUserModeStore } from '../stores/userModeStore'
 import { reviewAPI } from '../services/api'
 import LoadingSpinner from '../components/LoadingSpinner'
-import SmartText from '../components/SmartText'
-
-
-
 const DashboardPage = () => {
-  const { user } = useAuthStore()
-  const { isGuestMode } = useUserModeStore()
   const { t } = useTranslation()
   const {
-    lessons: oldLessons,
     isLoading,
     error,
-    fetchLessons,
-    getLessonStats,
-    getNextLesson: getOldNextLesson,
-    getDataSummary,
     clearError,
     initializeStorageListener
   } = useLessonStore()
@@ -41,18 +28,18 @@ const DashboardPage = () => {
   const [reviewStats, setReviewStats] = useState(null)
 
   useEffect(() => {
-    // 初始化前端课程数据
+    // 初始化前端课程数据（用于显示）
     initializeLessons(t.language || 'zh-CN')
 
-    // 保持原有的API调用用于复习数据
-    fetchLessons()
+    // 只在需要时调用API获取复习数据
+    // 避免重复调用fetchLessons，因为前端课程数据已足够
     loadReviewStats()
 
     // 初始化存储监听器
     const cleanupStorageListener = initializeStorageListener()
 
     return cleanupStorageListener
-  }, [fetchLessons, initializeStorageListener, initializeLessons, t.language])
+  }, [initializeStorageListener, initializeLessons, t.language])
 
   // 监听语言变化
   useEffect(() => {
