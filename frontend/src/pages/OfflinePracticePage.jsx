@@ -1,8 +1,7 @@
-import React, { useState, useEffect } from 'react'
+import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import MarkdownRenderer from '../components/MarkdownRenderer'
-import { learningAPI } from '../services/api'
 import ThemeSwitcher from '../components/ThemeSwitcher'
 import LanguageSwitcher from '../components/LanguageSwitcher'
 import useFrontendLessonStore from '../stores/frontendLessonStore'
@@ -83,23 +82,22 @@ const OfflinePracticePage = () => {
 
     setIsSubmitting(true)
     try {
-      const response = await learningAPI.submitAnswer({
-        lesson_id: currentQuestion.lessonId,
-        card_index: currentQuestion.cardIndex,
-        user_answer: userAnswer
-      })
+      // 离线练习模式：本地验证答案
+      const isAnswerCorrect = userAnswer.trim() === currentQuestion.target_formula.trim()
 
-      setIsCorrect(response.is_correct)
-      setFeedback(response.feedback)
+      setIsCorrect(isAnswerCorrect)
       setAnsweredQuestions(answeredQuestions + 1)
 
-      if (response.is_correct) {
+      if (isAnswerCorrect) {
         setScore(score + 1)
+        setFeedback(t('lesson.correct'))
         // 答对后不自动跳转，由用户手动控制
+      } else {
+        setFeedback(t('lesson.incorrect'))
       }
     } catch (error) {
       setFeedback(t('practice.submitError'))
-      console.error('提交练习答案失败:', error)
+      console.error('验证答案失败:', error)
     } finally {
       setIsSubmitting(false)
     }
