@@ -15,6 +15,41 @@ const resources = {
   }
 }
 
+// 智能语言检测函数
+const detectUserLanguage = () => {
+  // 首先检查localStorage中是否有用户手动设置的语言
+  const savedLanguage = localStorage.getItem('i18nextLng')
+  if (savedLanguage && resources[savedLanguage]) {
+    console.log('使用已保存的语言设置:', savedLanguage)
+    return savedLanguage
+  }
+
+  // 检查URL参数中是否有测试语言设置
+  const urlParams = new URLSearchParams(window.location.search)
+  const testLang = urlParams.get('testLang')
+  if (testLang) {
+    console.log('使用测试语言参数:', testLang)
+    return testLang === 'en' ? 'en-US' : 'zh-CN'
+  }
+
+  // 获取浏览器语言
+  const browserLanguage = navigator.language || navigator.userLanguage
+  console.log('检测到浏览器语言:', browserLanguage)
+
+  // 检查是否为中文相关语言
+  const isChineseLanguage = browserLanguage.toLowerCase().includes('zh') ||
+                           browserLanguage.toLowerCase().includes('cn') ||
+                           browserLanguage.toLowerCase().includes('chinese')
+
+  if (isChineseLanguage) {
+    console.log('检测到中文语言，使用中文界面')
+    return 'zh-CN'
+  } else {
+    console.log('检测到非中文语言，使用英文界面')
+    return 'en-US'
+  }
+}
+
 i18n
   // 检测用户语言
   .use(LanguageDetector)
@@ -23,7 +58,8 @@ i18n
   // 初始化 i18next
   .init({
     resources,
-    fallbackLng: 'zh-CN', // 默认语言
+    lng: detectUserLanguage(), // 使用智能检测的语言
+    fallbackLng: 'en-US', // 非中文默认使用英文
     debug: process.env.NODE_ENV === 'development',
 
     interpolation: {

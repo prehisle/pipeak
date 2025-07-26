@@ -2,6 +2,7 @@ import { create } from 'zustand'
 import { persist } from 'zustand/middleware'
 import { comprehensiveLessonsData } from '../data/comprehensiveLessons'
 import { lessonsDataEN } from '../data/lessons-en'
+import i18n from '../i18n'
 
 // 前端课程存储 - 管理课程数据和学习进度
 const useFrontendLessonStore = create(
@@ -41,11 +42,14 @@ const useFrontendLessonStore = create(
       },
 
       // 初始化课程数据
-      initializeLessons: (language = 'zh-CN') => {
+      initializeLessons: (language) => {
         const { getLessonsData } = get()
-        const lessons = getLessonsData(language)
+        // 如果没有指定语言，使用i18n的当前语言
+        const currentLang = language || i18n.language || 'zh-CN'
+        const lessons = getLessonsData(currentLang)
+        console.log('初始化课程数据，语言:', currentLang, '课程数量:', lessons.length)
         set({
-          currentLanguage: language,
+          currentLanguage: currentLang,
           lessons: lessons
         })
       },
