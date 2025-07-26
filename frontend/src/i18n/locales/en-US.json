@@ -219,5 +219,15 @@
     "restartPractice": "Restart Practice",
     "backToHomePage": "Back to Home",
     "loading": "Loading practice questions..."
+  },
+  "lesson": {
+    "backToDashboard": "← Back to Dashboard",
+    "knowledgePoint": "Knowledge Point {{index}}",
+    "progress": "{{current}} / {{total}}",
+    "knowledgePointCompleted": "Knowledge Point Completed!",
+    "lessonCompleted": "Lesson Completed!",
+    "nextKnowledgePoint": "Next →",
+    "prevKnowledgePoint": "← Previous",
+    "keyboardHint": "💡 Use keyboard shortcuts: ← → to switch cards, ESC to return to course list"
   }
 }

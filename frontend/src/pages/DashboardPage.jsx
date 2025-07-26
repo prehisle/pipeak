@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { useAuthStore } from '../stores/authStore'
 import { useLessonStore } from '../stores/lessonStore'
+import useFrontendLessonStore from '../stores/frontendLessonStore'
 import { useUserModeStore } from '../stores/userModeStore'
 import { reviewAPI } from '../services/api'
 import LoadingSpinner from '../components/LoadingSpinner'
@@ -15,22 +16,35 @@ const DashboardPage = () => {
   const { isGuestMode } = useUserModeStore()
   const { t } = useTranslation()
   const {
-    lessons,
+    lessons: oldLessons,
     isLoading,
     error,
     fetchLessons,
     getLessonStats,
-    getNextLesson,
+    getNextLesson: getOldNextLesson,
     getDataSummary,
     clearError,
     initializeStorageListener
   } = useLessonStore()
+
+  const {
+    lessons,
+    initializeLessons,
+    getStats,
+    getNextLesson,
+    isLessonCompleted,
+    setLanguage
+  } = useFrontendLessonStore()
 
 
 
   const [reviewStats, setReviewStats] = useState(null)
 
   useEffect(() => {
+    // 初始化前端课程数据
+    initializeLessons(t.language || 'zh-CN')
+
+    // 保持原有的API调用用于复习数据
     fetchLessons()
     loadReviewStats()
 
@@ -38,7 +52,12 @@ const DashboardPage = () => {
     const cleanupStorageListener = initializeStorageListener()
 
     return cleanupStorageListener
-  }, [fetchLessons, initializeStorageListener])
+  }, [fetchLessons, initializeStorageListener, initializeLessons, t.language])
+
+  // 监听语言变化
+  useEffect(() => {
+    setLanguage(t.language || 'zh-CN')
+  }, [t.language, setLanguage])
 
 
 
@@ -60,7 +79,7 @@ const DashboardPage = () => {
     }
   }, [error, clearError])
 
-  const stats = getLessonStats()
+  const stats = getStats()
   const nextLesson = getNextLesson()
 
   return (
@@ -208,13 +227,14 @@ const DashboardPage = () => {
           ) : lessons.length > 0 ? (
             <div className="grid gap-4">
               {lessons.map((lesson, index) => {
-                const isLocked = !lesson.is_completed && index > 0 && !lessons[index - 1]?.is_completed;
+                const completed = isLessonCompleted(lesson.id)
+                const isLocked = !completed && index > 0 && !isLessonCompleted(lessons[index - 1]?.id)
 
                 return (
                   <div
-                    key={lesson._id}
+                    key={lesson.id}
                     className={`lesson-card ${
-                      lesson.is_completed
+                      completed
                         ? 'lesson-card-completed'
                         : isLocked
                           ? 'lesson-card-locked'
@@ -223,7 +243,7 @@ const DashboardPage = () => {
                   >
                   <div className="lesson-card-content">
                     <div className="lesson-number">
-                      {lesson.is_completed ? (
+                      {completed ? (
                         <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
                           <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
                         </svg>
@@ -243,8 +263,8 @@ const DashboardPage = () => {
                       <div className="lesson-meta">
                         <div className="flex items-center space-x-4 text-xs text-gray-500">
                           <span>{t('dashboard.theoryPractice')}</span>
-                          <span>{t('dashboard.duration', { minutes: 15 })}</span>
-                          {lesson.is_completed && (
+                          <span>{t('dashboard.duration', { minutes: lesson.duration || 15 })}</span>
+                          {completed && (
                             <span className="text-green-600">{t('dashboard.mastered')}</span>
                           )}
                         </div>
@@ -253,12 +273,12 @@ const DashboardPage = () => {
 
                     <div className="lesson-actions">
                       <Link
-                        to={`/app/lesson/${lesson._id}`}
+                        to={`/app/lesson/${lesson.id}`}
                         className={`lesson-btn ${
-                          lesson.is_completed ? 'lesson-btn-review' : 'lesson-btn-learn'
+                          completed ? 'lesson-btn-review' : 'lesson-btn-learn'
                         }`}
                       >
-                        {lesson.is_completed ? (
+                        {completed ? (
                           <>
                             <svg className="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />

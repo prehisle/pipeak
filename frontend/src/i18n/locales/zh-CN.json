@@ -219,5 +219,15 @@
     "restartPractice": "重新开始",
     "backToHomePage": "返回首页",
     "loading": "加载练习题中..."
+  },
+  "lesson": {
+    "backToDashboard": "← 返回学习面板",
+    "knowledgePoint": "知识点 {{index}}",
+    "progress": "{{current}} / {{total}}",
+    "knowledgePointCompleted": "知识点完成！",
+    "lessonCompleted": "课程完成！",
+    "nextKnowledgePoint": "下一个 →",
+    "prevKnowledgePoint": "← 上一个",
+    "keyboardHint": "💡 使用键盘快捷键：← → 切换卡片，ESC 返回课程列表"
   }
 }

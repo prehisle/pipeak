@@ -1,9 +1,9 @@
 import { useEffect, useState, useRef } from 'react'
 import { useParams, useNavigate, Link } from 'react-router-dom'
-import { useLessonStore } from '../stores/lessonStore'
+import { useTranslation } from 'react-i18next'
+import useFrontendLessonStore from '../stores/frontendLessonStore'
 import LoadingSpinner from '../components/LoadingSpinner'
 import MarkdownRenderer from '../components/MarkdownRenderer'
-import { learningAPI } from '../services/api'
 import PracticeCard from '../components/PracticeCard'
 import { useToast } from '../components/Toast'
 import LessonCompleteModal from '../components/LessonCompleteModal'
@@ -12,10 +12,9 @@ import LessonSkeleton from '../components/LessonSkeleton'
 const LessonPage = () => {
   const { lessonId } = useParams()
   const navigate = useNavigate()
+  const { t, i18n } = useTranslation()
   const [currentCardIndex, setCurrentCardIndex] = useState(0)
   const [isTransitioning, setIsTransitioning] = useState(false)
-  const [completionStatus, setCompletionStatus] = useState(null)
-  const [showCompletionModal, setShowCompletionModal] = useState(false)
   const [showLessonCompleteModal, setShowLessonCompleteModal] = useState(false)
 
   // Toast系统
@@ -26,50 +25,28 @@ const LessonPage = () => {
 
   const {
     currentLesson,
-    isLoading,
-    error,
-    fetchLesson,
+    currentKnowledgePointIndex,
+    initializeLessons,
+    setCurrentLesson,
+    setCurrentKnowledgePointIndex,
+    completeKnowledgePoint,
     completeLesson,
-    clearError,
-    clearCurrentLesson
-  } = useLessonStore()
+    isLessonCompleted,
+    isKnowledgePointCompleted,
+    getLessonProgress
+  } = useFrontendLessonStore()
 
-  const fetchCompletionStatus = async (currentLessonId) => {
-    try {
-      console.log('开始获取完成状态...');
-      const response = await learningAPI.getCompletionStatus(currentLessonId);
+  // 初始化课程数据
+  useEffect(() => {
+    initializeLessons(i18n.language)
+  }, [i18n.language, initializeLessons])
 
-      if (response.data) {
-        setCompletionStatus(response.data);
-        console.log('完成状态获取成功:', response.data);
-      }
-    } catch (error) {
-      console.error('获取完成状态失败:', error);
-      if (error.response?.status === 401) {
-        console.warn('Token可能已过期，请重新登录');
-      }
-    }
-  }
-
+  // 设置当前课程
   useEffect(() => {
     if (lessonId) {
-      fetchLesson(lessonId)
-      fetchCompletionStatus(lessonId)
+      setCurrentLesson(lessonId)
     }
-
-    return () => {
-      clearCurrentLesson()
-    }
-  }, [lessonId, fetchLesson, clearCurrentLesson])
-
-  useEffect(() => {
-    if (error) {
-      const timer = setTimeout(() => {
-        clearError()
-      }, 5000)
-      return () => clearTimeout(timer)
-    }
-  }, [error, clearError])
+  }, [lessonId, setCurrentLesson])
 
   // 键盘导航支持
   useEffect(() => {
@@ -92,11 +69,11 @@ const LessonPage = () => {
       switch (event.key) {
         case 'ArrowLeft':
           event.preventDefault()
-          handlePrevCard()
+          handlePrevKnowledgePoint()
           break
         case 'ArrowRight':
           event.preventDefault()
-          handleNextCard()
+          handleNextKnowledgePoint()
           break
         case 'Escape':
           event.preventDefault()
@@ -112,41 +89,33 @@ const LessonPage = () => {
 
     window.addEventListener('keydown', handleKeyPress)
     return () => window.removeEventListener('keydown', handleKeyPress)
-  }, [currentLesson, currentCardIndex, navigate])
+  }, [currentLesson, currentKnowledgePointIndex, navigate])
 
-  const handleNextCard = () => {
-    if (currentLesson && currentCardIndex < currentLesson.cards.length - 1 && !isTransitioning) {
+  const handleNextKnowledgePoint = () => {
+    if (currentLesson && currentKnowledgePointIndex < currentLesson.knowledgePoints.length - 1 && !isTransitioning) {
       setIsTransitioning(true)
       setTimeout(() => {
-        setCurrentCardIndex(currentCardIndex + 1)
-        setIsTransitioning(false)
-
-        // 如果下一个卡片是练习题，自动聚焦到输入框
-        setTimeout(() => {
-          const nextCard = currentLesson.cards[currentCardIndex + 1]
-          if (nextCard && nextCard.type === 'practice' && practiceCardRef.current) {
-            practiceCardRef.current.focus()
-          }
-        }, 100) // 等待DOM更新完成
-      }, 150)
-    }
-  }
-
-  const handlePrevCard = () => {
-    if (currentCardIndex > 0 && !isTransitioning) {
-      setIsTransitioning(true)
-      setTimeout(() => {
-        setCurrentCardIndex(currentCardIndex - 1)
+        setCurrentKnowledgePointIndex(currentKnowledgePointIndex + 1)
         setIsTransitioning(false)
       }, 150)
     }
   }
 
-  const handleCardClick = (index) => {
-    if (index !== currentCardIndex && !isTransitioning) {
+  const handlePrevKnowledgePoint = () => {
+    if (currentKnowledgePointIndex > 0 && !isTransitioning) {
       setIsTransitioning(true)
       setTimeout(() => {
-        setCurrentCardIndex(index)
+        setCurrentKnowledgePointIndex(currentKnowledgePointIndex - 1)
+        setIsTransitioning(false)
+      }, 150)
+    }
+  }
+
+  const handleKnowledgePointClick = (index) => {
+    if (index !== currentKnowledgePointIndex && !isTransitioning) {
+      setIsTransitioning(true)
+      setTimeout(() => {
+        setCurrentKnowledgePointIndex(index)
         setIsTransitioning(false)
       }, 150)
     }
@@ -154,16 +123,23 @@ const LessonPage = () => {
 
   const handlePracticeComplete = (isCorrect, immediate = false) => {
     console.log('LessonPage收到练习完成回调:', { isCorrect, immediate })
-    if (isCorrect) {
+    if (isCorrect && currentLesson) {
+      const currentKnowledgePoint = currentLesson.knowledgePoints[currentKnowledgePointIndex]
+      if (currentKnowledgePoint) {
+        // 标记知识点为已完成
+        completeKnowledgePoint(currentLesson.id, currentKnowledgePoint.id)
+        showSuccess(t('lesson.knowledgePointCompleted'))
+      }
+
       if (immediate) {
-        // 立即进入下一个卡片（用户按Enter键触发）
-        console.log('立即进入下一个卡片')
-        handleNextCard()
+        // 立即进入下一个知识点（用户按Enter键触发）
+        console.log('立即进入下一个知识点')
+        handleNextKnowledgePoint()
       } else {
-        // 延迟进入下一个卡片（自动触发）
-        console.log('2秒后自动进入下一个卡片')
+        // 延迟进入下一个知识点（自动触发）
+        console.log('2秒后自动进入下一个知识点')
         setTimeout(() => {
-          handleNextCard()
+          handleNextKnowledgePoint()
         }, 2000)
       }
     }
@@ -217,46 +193,28 @@ const LessonPage = () => {
   // 处理课程完成模态框
   const handleLessonCompleteClose = () => {
     setShowLessonCompleteModal(false)
-    navigate('/dashboard')
   }
 
   const handleLessonCompleteContinue = () => {
     setShowLessonCompleteModal(false)
-    navigate('/learning')
-  }
-
-  if (isLoading) {
-    return <LessonSkeleton />
-  }
-
-  if (error) {
-    return (
-      <div className="max-w-4xl mx-auto">
-        <div className="bg-red-50 border border-red-200 rounded-md p-6 text-center">
-          <p className="text-red-600 mb-4">{typeof error === 'string' ? error : '加载课程失败，请重试'}</p>
-          <Link to="/dashboard" className="btn btn-primary">
-            返回学习面板
-          </Link>
-        </div>
-      </div>
-    )
+    navigate('/app/dashboard')
   }
 
   if (!currentLesson) {
     return (
       <div className="max-w-4xl mx-auto">
         <div className="text-center py-12">
-          <p className="text-gray-500 text-lg">课程不存在</p>
-          <Link to="/dashboard" className="btn btn-primary mt-4">
-            返回学习面板
+          <p className="text-gray-500 text-lg">{t('common.courseNotFound')}</p>
+          <Link to="/app/dashboard" className="btn btn-primary mt-4">
+            {t('lesson.backToDashboard')}
           </Link>
         </div>
       </div>
     )
   }
 
-  const currentCard = currentLesson.cards[currentCardIndex]
-  const isLastCard = currentCardIndex === currentLesson.cards.length - 1
+  const currentKnowledgePoint = currentLesson.knowledgePoints[currentKnowledgePointIndex]
+  const isLastKnowledgePoint = currentKnowledgePointIndex === currentLesson.knowledgePoints.length - 1
 
   return (
     <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -264,23 +222,23 @@ const LessonPage = () => {
       <div className="mb-4">
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-3 space-y-2 sm:space-y-0">
           <Link
-            to="/dashboard"
+            to="/app/dashboard"
             className="text-blue-600 hover:text-blue-700 flex items-center text-sm"
           >
-            ← 返回学习面板
+            {t('lesson.backToDashboard')}
           </Link>
-          {currentLesson.is_completed && (
+          {isLessonCompleted(currentLesson.id) && (
             <span className="text-xs bg-green-100 text-green-700 px-2 py-1 rounded-full">
-              已完成
+              {t('dashboard.mastered')}
             </span>
           )}
         </div>
 
         <h1 className="text-xl font-bold text-gray-900 mb-2">
-          {typeof currentLesson.title === 'string' ? currentLesson.title : '课程标题'}
+          {currentLesson.title}
         </h1>
         <p className="text-sm text-gray-600 mb-3">
-          {typeof currentLesson.description === 'string' ? currentLesson.description : '课程描述'}
+          {currentLesson.description}
         </p>
 
         {/* 进度条 */}
@@ -288,64 +246,57 @@ const LessonPage = () => {
           <div
             className="bg-blue-600 h-1.5 rounded-full transition-all duration-300"
             style={{
-              width: `${((currentCardIndex + 1) / currentLesson.cards.length) * 100}%`
+              width: `${((currentKnowledgePointIndex + 1) / currentLesson.knowledgePoints.length) * 100}%`
             }}
           ></div>
         </div>
         <p className="text-sm text-gray-500 mt-1">
-          {currentCardIndex + 1} / {currentLesson.cards.length}
+          {t('lesson.progress', { current: currentKnowledgePointIndex + 1, total: currentLesson.knowledgePoints.length })}
         </p>
       </div>
 
-      {/* 课程内容卡片 */}
-      {currentCard && (
+      {/* 知识点内容卡片 */}
+      {currentKnowledgePoint && (
         <div className={`card mb-4 transition-all duration-300 ${isTransitioning ? 'opacity-50 scale-95' : 'opacity-100 scale-100'}`}>
           <div className="card-body">
-            {currentCard.type === 'knowledge' ? (
-              <div className="prose max-w-none">
-                <div className="bg-blue-50 border-l-4 border-blue-400 p-6 rounded-r-lg">
-                  <div className="flex items-start">
-                    <div className="flex-shrink-0">
-                      <div className="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center">
-                        <span className="text-blue-600 font-semibold text-sm">💡</span>
-                      </div>
+            <div className="prose max-w-none">
+              <div className="bg-blue-50 border-l-4 border-blue-400 p-6 rounded-r-lg">
+                <div className="flex items-start">
+                  <div className="flex-shrink-0">
+                    <div className="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center">
+                      <span className="text-blue-600 font-semibold text-sm">💡</span>
                     </div>
-                    <div className="ml-4 flex-1 min-w-0">
-                      <h3 className="text-xl font-semibold text-blue-900 mb-6">
-                        知识点 {currentCardIndex + 1}
-                      </h3>
-                      <div className="text-blue-800 text-base leading-relaxed overflow-visible">
-                        <MarkdownRenderer content={currentCard.content} theme="default" />
-                      </div>
+                  </div>
+                  <div className="ml-4 flex-1 min-w-0">
+                    <h3 className="text-xl font-semibold text-blue-900 mb-6">
+                      {t('lesson.knowledgePoint', { index: currentKnowledgePointIndex + 1 })}
+                    </h3>
+                    <h4 className="text-lg font-medium text-blue-800 mb-4">
+                      {currentKnowledgePoint.title}
+                    </h4>
+                    <div className="text-blue-800 text-base leading-relaxed overflow-visible">
+                      <MarkdownRenderer content={currentKnowledgePoint.content} theme="default" />
                     </div>
+                  </div>
                   </div>
                 </div>
               </div>
-            ) : currentCard.type === 'practice' ? (
-              <PracticeCard
-                ref={practiceCardRef}
-                card={currentCard}
-                lessonId={lessonId}
-                cardIndex={currentCardIndex}
-                onComplete={handlePracticeComplete}
-              />
-            ) : (
-              <div className="bg-gray-50 border-l-4 border-gray-400 p-6 rounded-r-lg">
-                <div className="flex items-start">
-                  <div className="flex-shrink-0">
-                    <div className="w-8 h-8 bg-gray-100 rounded-full flex items-center justify-center">
-                      <span className="text-gray-600 font-semibold text-sm">?</span>
-                    </div>
-                  </div>
-                  <div className="ml-4">
-                    <h3 className="text-lg font-semibold text-gray-900 mb-2">
-                      未知卡片类型
-                    </h3>
-                    <p className="text-gray-800">
-                      卡片类型：{typeof currentCard.type === 'string' ? currentCard.type : '未知'}
-                    </p>
-                  </div>
-                </div>
+            </div>
+
+            {/* 练习题部分 */}
+            {currentKnowledgePoint.exercises && currentKnowledgePoint.exercises.length > 0 && (
+              <div className="mt-6">
+                <h4 className="text-lg font-semibold text-gray-900 mb-4">练习题</h4>
+                {currentKnowledgePoint.exercises.map((exercise, index) => (
+                  <PracticeCard
+                    key={index}
+                    ref={practiceCardRef}
+                    exercise={exercise}
+                    lessonId={currentLesson.id}
+                    knowledgePointId={currentKnowledgePoint.id}
+                    onComplete={handlePracticeComplete}
+                  />
+                ))}
               </div>
             )}
           </div>
@@ -355,54 +306,50 @@ const LessonPage = () => {
       {/* 导航按钮 */}
       <div className="flex items-center justify-between">
         <button
-          onClick={handlePrevCard}
-          disabled={currentCardIndex === 0 || isTransitioning}
+          onClick={handlePrevKnowledgePoint}
+          disabled={currentKnowledgePointIndex === 0 || isTransitioning}
           className="btn btn-secondary disabled:opacity-50 disabled:cursor-not-allowed"
         >
-          ← 上一个
+          {t('lesson.prevKnowledgePoint')}
         </button>
 
         <div className="flex space-x-3">
-          {currentLesson.cards.map((_, index) => (
+          {currentLesson.knowledgePoints.map((_, index) => (
             <button
               key={index}
-              onClick={() => handleCardClick(index)}
+              onClick={() => handleKnowledgePointClick(index)}
               disabled={isTransitioning}
               className={`w-4 h-4 rounded-full transition-all duration-200 hover:scale-110 ${
-                index === currentCardIndex
+                index === currentKnowledgePointIndex
                   ? 'bg-blue-600 ring-2 ring-blue-200'
-                  : index < currentCardIndex
+                  : index < currentKnowledgePointIndex
                     ? 'bg-green-400 hover:bg-green-500'
                     : 'bg-gray-300 hover:bg-gray-400'
               }`}
-              title={`第 ${index + 1} 个知识点`}
+              title={t('lesson.knowledgePoint', { index: index + 1 })}
             />
           ))}
         </div>
 
-        {isLastCard ? (
+        {isLastKnowledgePoint ? (
           <button
-            onClick={handleCompleteLesson}
+            onClick={() => {
+              completeLesson(currentLesson.id)
+              showSuccess(t('lesson.lessonCompleted'))
+              setShowLessonCompleteModal(true)
+            }}
             disabled={isTransitioning}
-            className={`btn disabled:opacity-50 disabled:cursor-not-allowed ${
-              completionStatus?.can_complete
-                ? 'btn-primary'
-                : 'bg-orange-500 hover:bg-orange-600 text-white'
-            }`}
+            className="btn btn-primary disabled:opacity-50 disabled:cursor-not-allowed"
           >
-            {completionStatus?.can_complete ? (
-              <>完成课程 ✓</>
-            ) : (
-              <>检查完成状态 📋</>
-            )}
+            {t('lesson.lessonCompleted')} ✓
           </button>
         ) : (
           <button
-            onClick={handleNextCard}
-            disabled={currentCardIndex === currentLesson.cards.length - 1 || isTransitioning}
+            onClick={handleNextKnowledgePoint}
+            disabled={currentKnowledgePointIndex === currentLesson.knowledgePoints.length - 1 || isTransitioning}
             className="btn btn-primary disabled:opacity-50 disabled:cursor-not-allowed"
           >
-            下一个 →
+            {t('lesson.nextKnowledgePoint')}
           </button>
         )}
       </div>
