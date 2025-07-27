@@ -145,6 +145,11 @@ const LessonPage = () => {
         // 标记知识点为已完成
         completeKnowledgePoint(currentLesson.id, currentKnowledgePoint.id)
         showSuccess(t('lessonPage.knowledgePointCompleted'))
+
+        // 检查是否应该完成整个课程
+        setTimeout(() => {
+          checkAndCompleteLesson()
+        }, 500) // 稍微延迟以确保状态更新完成
       }
 
       if (immediate) {
@@ -157,6 +162,48 @@ const LessonPage = () => {
         setTimeout(() => {
           handleNextKnowledgePoint()
         }, 2000)
+      }
+    }
+  }
+
+  // 检查并自动完成课程
+  const checkAndCompleteLesson = () => {
+    if (!currentLesson) return
+
+    // 统计课程中的所有练习题
+    let totalPractices = 0
+    let completedPractices = 0
+
+    currentLesson.knowledgePoints.forEach((kp) => {
+      if (kp.exercises && kp.exercises.length > 0) {
+        totalPractices++
+        // 检查这个知识点是否已完成（前端状态）
+        if (isKnowledgePointCompleted(kp.id)) {
+          completedPractices++
+        }
+      }
+    })
+
+    console.log(`课程完成检查: ${completedPractices}/${totalPractices} 练习题已完成`)
+
+    if (completedPractices === totalPractices && totalPractices > 0) {
+      // 所有练习题都已完成，自动完成课程
+      console.log('所有练习题已完成，自动完成课程')
+      completeLesson(currentLesson.id)
+      showSuccess(t('lessonPage.lessonCompleted'))
+      setShowLessonCompleteModal(true)
+
+      // 尝试同步到后端（失败也不影响前端流程）
+      try {
+        import('../services/api').then(({ learningAPI }) => {
+          learningAPI.completeLesson(currentLesson.id).then(() => {
+            console.log('课程完成状态已同步到后端')
+          }).catch((error) => {
+            console.error('同步课程完成状态到后端失败:', error)
+          })
+        })
+      } catch (error) {
+        console.error('导入API模块失败:', error)
       }
     }
   }

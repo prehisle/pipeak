@@ -3,6 +3,20 @@ import { persist } from 'zustand/middleware'
 import { comprehensiveLessonsData } from '../data/comprehensiveLessons'
 import i18n from '../i18n'
 
+// 获取当前用户ID用于数据隔离
+const getCurrentUserId = () => {
+  try {
+    const authStorage = localStorage.getItem('auth-storage')
+    if (authStorage) {
+      const authData = JSON.parse(authStorage)
+      return authData.state?.user?.email || 'anonymous'
+    }
+  } catch (error) {
+    console.warn('获取用户ID失败:', error)
+  }
+  return 'anonymous'
+}
+
 // 前端课程存储 - 管理课程数据和学习进度
 const useFrontendLessonStore = create(
   persist(
@@ -178,13 +192,24 @@ const useFrontendLessonStore = create(
             lessonProgress: {}
           }
         })
+      },
+
+      // 清理用户数据（用户登出时调用）
+      clearUserData: () => {
+        set({
+          progress: {
+            completedLessons: [],
+            completedKnowledgePoints: [],
+            lessonProgress: {},
+          }
+        })
       }
     }),
     {
-      name: 'frontend-lesson-storage',
-      partialize: (state) => ({ 
+      name: () => `frontend-lesson-storage-${getCurrentUserId()}`,
+      partialize: (state) => ({
         progress: state.progress,
-        currentLanguage: state.currentLanguage 
+        currentLanguage: state.currentLanguage
       })
     }
   )

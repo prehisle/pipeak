@@ -190,6 +190,9 @@ const useAuthStore = create(
 
       // 登出
       logout: () => {
+        // 获取当前用户ID用于清理数据
+        const currentUserId = get().user?.email || 'anonymous'
+
         set({
           user: null,
           accessToken: null,
@@ -204,6 +207,9 @@ const useAuthStore = create(
         localStorage.removeItem('auth-storage')
         localStorage.removeItem('auth_token')
         localStorage.removeItem('user_data')
+
+        // 清理用户特定的lesson数据
+        localStorage.removeItem(`frontend-lesson-storage-${currentUserId}`)
       },
 
       // 清理测试数据（开发用）
