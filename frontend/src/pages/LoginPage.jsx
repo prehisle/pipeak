@@ -208,7 +208,7 @@ const LoginPage = () => {
           </Button>
 
           {/* 注册链接 */}
-          <div className="text-center">
+          <div className="text-center space-y-3">
             <p className="text-sm text-gray-600 dark:text-gray-400">
               {t('auth.noAccount')}{' '}
               <Link
@@ -216,6 +216,16 @@ const LoginPage = () => {
                 className="font-medium text-blue-600 dark:text-blue-400 hover:text-blue-500 dark:hover:text-blue-300 transition-colors"
               >
                 {t('auth.createAccount')}
+              </Link>
+            </p>
+
+            {/* 返回首页链接 */}
+            <p className="text-sm">
+              <Link
+                to="/"
+                className="text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200 transition-colors"
+              >
+                ← {t('auth.backToHome')}
               </Link>
             </p>
           </div>

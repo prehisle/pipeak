@@ -235,7 +235,7 @@ const RegisterPage = () => {
           </Button>
 
           {/* 登录链接 */}
-          <div className="text-center">
+          <div className="text-center space-y-3">
             <p className="text-sm text-gray-600">
               {t('auth.hasAccount')}{' '}
               <Link
@@ -243,6 +243,16 @@ const RegisterPage = () => {
                 className="font-medium text-blue-600 hover:text-blue-500 transition-colors"
               >
                 {t('auth.loginNow')}
+              </Link>
+            </p>
+
+            {/* 返回首页链接 */}
+            <p className="text-sm">
+              <Link
+                to="/"
+                className="text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200 transition-colors"
+              >
+                ← {t('auth.backToHome')}
               </Link>
             </p>
           </div>

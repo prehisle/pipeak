@@ -1,6 +1,7 @@
 import React from 'react'
 import { Link } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
+import { useDocumentTitle, PAGE_TITLES } from '../hooks/useDocumentTitle'
 import { useAuthStore } from '../stores/authStore'
 import ThemeSwitcher from '../components/ThemeSwitcher'
 import LanguageSwitcher from '../components/LanguageSwitcher'
@@ -9,6 +10,9 @@ import LaTeXPreview from '../components/LaTeXPreview'
 const HomePage = () => {
   const { user } = useAuthStore()
   const { t } = useTranslation()
+
+  // 设置动态页面标题
+  useDocumentTitle(PAGE_TITLES.HOME)
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900">

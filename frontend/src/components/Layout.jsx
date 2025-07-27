@@ -1,5 +1,6 @@
 import { Outlet, Link, useLocation } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
+import { useState } from 'react'
 import { useAuthStore } from '../stores/authStore'
 import { useUserModeStore } from '../stores/userModeStore'
 import LanguageSwitcher from './LanguageSwitcher'
@@ -11,6 +12,7 @@ const Layout = () => {
   const { isGuestMode } = useUserModeStore()
   const { t } = useTranslation()
   const location = useLocation()
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
 
   const handleLogout = () => {
     logout()
@@ -34,7 +36,7 @@ const Layout = () => {
               <span className="font-semibold text-lg text-gray-900 dark:text-gray-100">LaTeX {t('common.trainer', 'Trainer')}</span>
             </Link>
 
-            {/* 导航菜单 */}
+            {/* 桌面端导航菜单 */}
             <nav className="hidden md:flex items-center space-x-6">
               <Link
                 to="/app/dashboard"
@@ -47,7 +49,6 @@ const Layout = () => {
                 {t('nav.dashboard')}
               </Link>
 
-              {/* 移除学习中心导航 - 避免与仪表盘功能重复 */}
               <Link
                 to="/app/review"
                 className={`px-3 py-2 rounded-md text-sm font-medium transition-colors ${
@@ -59,6 +60,21 @@ const Layout = () => {
                 {t('nav.review')}
               </Link>
             </nav>
+
+            {/* 移动端汉堡菜单按钮 */}
+            <button
+              className="md:hidden p-2 rounded-md text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-gray-100 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
+              onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+              aria-label={t('common.mobileMenu.toggle')}
+            >
+              <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                {isMobileMenuOpen ? (
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                ) : (
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
+                )}
+              </svg>
+            </button>
 
             {/* 用户菜单 */}
             <div className="flex items-center space-x-4">
@@ -97,10 +113,38 @@ const Layout = () => {
               )}
             </div>
           </div>
+
+          {/* 移动端导航菜单 */}
+          {isMobileMenuOpen && (
+            <div className="md:hidden border-t border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800">
+              <div className="px-4 py-3 space-y-2">
+                <Link
+                  to="/app/dashboard"
+                  className={`block px-3 py-2 rounded-md text-base font-medium transition-colors ${
+                    isActive('/app/dashboard')
+                      ? 'bg-blue-100 dark:bg-blue-900 text-blue-700 dark:text-blue-300'
+                      : 'text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-gray-100 hover:bg-gray-100 dark:hover:bg-gray-700'
+                  }`}
+                  onClick={() => setIsMobileMenuOpen(false)}
+                >
+                  {t('nav.dashboard')}
+                </Link>
+                <Link
+                  to="/app/review"
+                  className={`block px-3 py-2 rounded-md text-base font-medium transition-colors ${
+                    isActive('/app/review')
+                      ? 'bg-blue-100 dark:bg-blue-900 text-blue-700 dark:text-blue-300'
+                      : 'text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-gray-100 hover:bg-gray-100 dark:hover:bg-gray-700'
+                  }`}
+                  onClick={() => setIsMobileMenuOpen(false)}
+                >
+                  {t('nav.review')}
+                </Link>
+              </div>
+            </div>
+          )}
         </div>
       </header>
-
-
 
       {/* 主内容区域 */}
       <main className="container mx-auto px-4 py-8">

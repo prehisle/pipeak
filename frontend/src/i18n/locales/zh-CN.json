@@ -19,7 +19,15 @@
     "settings": "设置",
     "trainer": "训练器",
     "slogan": "专注提升数学公式输入效率",
-    "courseNotFound": "课程不存在"
+    "courseNotFound": "课程不存在",
+    "themeToggle": {
+      "tooltip": "切换到明亮模式",
+      "tooltipDark": "切换到深色模式"
+    },
+    "mobileMenu": {
+      "toggle": "切换菜单",
+      "close": "关闭菜单"
+    }
   },
   "nav": {
     "dashboard": "仪表盘",
@@ -56,7 +64,8 @@
     "registerFailed": "注册失败",
     "emailAlreadyExists": "该邮箱已被注册",
     "invalidCredentials": "邮箱或密码错误",
-    "networkError": "网络错误，请稍后重试"
+    "networkError": "网络错误，请稍后重试",
+    "backToHome": "返回首页"
   },
   "practice": {
     "enterAnswer": "请输入你的答案",
@@ -72,6 +81,9 @@
     "nextQuestion": "下一题 →",
     "viewResults": "查看结果",
     "continueHint": "🎉 按 Enter 键或点击\"下一题\"继续",
+    "characterCount": "{{count}}/{{max}} 字符",
+    "keyboardShortcuts": "Enter 提交",
+    "hintShortcut": "F1 获取提示",
     "practiceTitle": "练习题",
     "targetEffect": "目标效果：",
     "livePreview": "实时预览：",
@@ -79,10 +91,27 @@
     "example": "例如：$x^2$",
     "perfectAnswer": "🎉 太棒了！答案完全正确！",
     "incorrectAnswer": "答案不正确，请再试一次",
+    "allHintsShown": "已显示所有提示",
     "difficulty": {
       "easy": "简单",
       "medium": "中等",
       "hard": "困难"
+    },
+    "hintPatterns": {
+      "superscript": "使用 ^ 符号表示上标",
+      "superscriptContent": "上标内容是 {{content}}",
+      "subscript": "使用 _ 符号表示下标",
+      "subscriptContent": "下标内容是 {{content}}",
+      "fraction": "使用 \\frac{分子}{分母} 表示分数",
+      "sqrt": "使用 \\sqrt{内容} 表示根号",
+      "neq": "不等于符号是 \\neq",
+      "infty": "无穷符号是 \\infty",
+      "alpha": "α 是 \\alpha",
+      "beta": "β 是 \\beta",
+      "pi": "希腊字母 π 的 LaTeX 命令是 \\pi",
+      "delta": "大德尔塔是 \\Delta",
+      "approx": "约等于符号是 \\approx",
+      "completeFormat": "完整格式：{{formula}}"
     }
   },
   "dashboard": {
@@ -107,6 +136,7 @@
     "noNextLesson": "恭喜！您已完成所有课程",
     "allCompleted": "所有课程已完成",
     "todayReview": "今日复习",
+    "startReview": "开始复习",
     "reviewRecord": "复习记录",
     "learningAnalysis": "学习分析",
     "detailedAnalysis": "详细分析",
@@ -264,12 +294,52 @@
   "lessonPage": {
     "backToDashboard": "← 返回学习面板",
     "knowledgePoint": "知识点 {{index}}",
+    "practiceExercise": "练习题 {{index}}",
     "progress": "{{current}} / {{total}}",
     "knowledgePointCompleted": "知识点完成！",
     "lessonCompleted": "课程完成！",
     "nextKnowledgePoint": "下一个 →",
     "prevKnowledgePoint": "← 上一个",
-    "keyboardHint": "💡 使用键盘快捷键：← → 切换卡片，ESC 返回课程列表"
+    "keyboardHint": "💡 使用键盘快捷键：← → 切换卡片，ESC 返回课程列表",
+    "keyboardShortcuts": "💡 使用键盘快捷键：← → 切换卡片，ESC 返回课程列表",
+    "swipeHint": "💡 滑动或点击导航按钮切换知识点"
+  },
+  "pages": {
+    "home": {
+      "title": "LaTeX 速成训练器 - 高效学习数学公式编写"
+    },
+    "dashboard": {
+      "title": "学习面板 - LaTeX 速成训练器"
+    },
+    "lesson": {
+      "title": "{{lessonTitle}} - LaTeX 速成训练器"
+    },
+    "practice": {
+      "title": "离线练习 - LaTeX 速成训练器"
+    },
+    "review": {
+      "title": "复习中心 - LaTeX 速成训练器"
+    }
+  },
+  "practiceCard": {
+    "submitAnswer": "提交答案",
+    "submitting": "提交中...",
+    "completed": "已完成 ✓",
+    "getHint": "💡 获取提示",
+    "nextQuestion": "下一题 →",
+    "difficulty": "难度：",
+    "difficultyEasy": "简单",
+    "difficultyMedium": "中等",
+    "difficultyHard": "困难",
+    "correctAnswer": "🎉 太棒了！答案完全正确！",
+    "congratulations": "🎉 恭喜答对了！",
+    "continueHint": "💡 按 {{key}} 键或点击 {{button}} 按钮继续",
+    "enterKey": "Enter",
+    "nextButton": "\"下一题\"",
+    "submitShortcut": "Ctrl+Enter 提交",
+    "hintShortcut": "Tab 获取提示",
+    "getHintTooltip": "获取解题提示",
+    "nextQuestionTooltip": "进入下一题"
   },
   "reviewPage": {
     "pleaseEnterAnswer": "请输入你的答案",

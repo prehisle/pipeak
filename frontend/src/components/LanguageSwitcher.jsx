@@ -21,13 +21,13 @@ const LanguageSwitcher = ({ className = '' }) => {
     <div className={`relative ${className}`}>
       <button
         onClick={() => setIsOpen(!isOpen)}
-        className="flex items-center space-x-2 px-3 py-2 text-sm font-medium text-gray-600 hover:text-gray-900 hover:bg-gray-100 rounded-md transition-colors"
+        className="flex items-center space-x-1 px-2 py-2 text-sm font-medium text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-gray-100 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-md transition-colors"
         aria-label="切换语言 / Switch Language"
       >
         <span className="text-lg">{currentLanguage.flag}</span>
-        <span className="hidden sm:inline">{currentLanguage.name}</span>
+        <span className="text-xs sm:text-sm">{currentLanguage.name}</span>
         <svg
-          className={`w-4 h-4 transition-transform ${isOpen ? 'rotate-180' : ''}`}
+          className={`w-3 h-3 sm:w-4 sm:h-4 transition-transform ${isOpen ? 'rotate-180' : ''}`}
           fill="none"
           stroke="currentColor"
           viewBox="0 0 24 24"
@@ -45,16 +45,16 @@ const LanguageSwitcher = ({ className = '' }) => {
           />
           
           {/* 下拉菜单 */}
-          <div className="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg border border-gray-200 z-20">
+          <div className="absolute right-0 mt-2 w-48 bg-white dark:bg-gray-800 rounded-md shadow-lg border border-gray-200 dark:border-gray-600 z-20">
             <div className="py-1">
               {languages.map((language) => (
                 <button
                   key={language.code}
                   onClick={() => handleLanguageChange(language.code)}
-                  className={`w-full flex items-center space-x-3 px-4 py-2 text-sm text-left hover:bg-gray-100 transition-colors ${
+                  className={`w-full flex items-center space-x-3 px-4 py-2 text-sm text-left hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors ${
                     currentLanguage.code === language.code
-                      ? 'bg-blue-50 text-blue-600'
-                      : 'text-gray-700'
+                      ? 'bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400'
+                      : 'text-gray-700 dark:text-gray-300'
                   }`}
                 >
                   <span className="text-lg">{language.flag}</span>

@@ -1,15 +1,17 @@
 import React from 'react'
+import { useTranslation } from 'react-i18next'
 import { useThemeStore } from '../stores/themeStore'
 
 const ThemeSwitcher = ({ className = '' }) => {
   const { theme, toggleTheme } = useThemeStore()
+  const { t } = useTranslation()
 
   return (
     <button
       onClick={toggleTheme}
       className={`p-2 rounded-md text-gray-600 hover:text-gray-900 hover:bg-gray-100 dark:text-gray-300 dark:hover:text-gray-100 dark:hover:bg-gray-700 transition-colors ${className}`}
-      aria-label={theme === 'light' ? '切换到暗黑模式' : '切换到明亮模式'}
-      title={theme === 'light' ? '切换到暗黑模式' : '切换到明亮模式'}
+      aria-label={theme === 'light' ? t('common.themeToggle.tooltipDark') : t('common.themeToggle.tooltip')}
+      title={theme === 'light' ? t('common.themeToggle.tooltipDark') : t('common.themeToggle.tooltip')}
     >
       {theme === 'light' ? (
         // 月亮图标 (暗黑模式)

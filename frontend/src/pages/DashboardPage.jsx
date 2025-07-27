@@ -1,12 +1,16 @@
 import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
+import { useDocumentTitle, PAGE_TITLES } from '../hooks/useDocumentTitle'
 import { useLessonStore } from '../stores/lessonStore'
 import useFrontendLessonStore from '../stores/frontendLessonStore'
 import { reviewAPI } from '../services/api'
 import LoadingSpinner from '../components/LoadingSpinner'
 const DashboardPage = () => {
-  const { t } = useTranslation()
+  const { t, i18n } = useTranslation()
+
+  // 设置动态页面标题
+  useDocumentTitle(PAGE_TITLES.DASHBOARD)
   const {
     isLoading,
     error,
@@ -29,7 +33,7 @@ const DashboardPage = () => {
 
   useEffect(() => {
     // 初始化前端课程数据（用于显示）
-    initializeLessons(t.language || 'zh-CN')
+    initializeLessons(i18n.language || 'zh-CN')
 
     // 只在需要时调用API获取复习数据
     // 避免重复调用fetchLessons，因为前端课程数据已足够
@@ -43,17 +47,73 @@ const DashboardPage = () => {
 
   // 监听语言变化
   useEffect(() => {
-    setLanguage(t.language || 'zh-CN')
-  }, [t.language, setLanguage])
+    setLanguage(i18n.language || 'zh-CN')
+  }, [i18n.language, setLanguage])
 
 
 
   const loadReviewStats = async () => {
     try {
+      // 优先使用API获取复习统计，确保与复习中心页面数据一致
       const response = await reviewAPI.getTodayReviews()
       setReviewStats(response.stats)
     } catch (error) {
       console.error('加载复习统计失败:', error)
+      // 如果API失败，尝试使用前端数据计算
+      try {
+        const frontendStats = calculateFrontendReviewStats()
+        setReviewStats(frontendStats)
+      } catch (frontendError) {
+        console.error('前端复习统计计算失败:', frontendError)
+        // 设置默认值，避免显示错误
+        setReviewStats({
+          due_today: 0,
+          due_tomorrow: 0,
+          total_reviews: 0,
+          accuracy_rate: 0,
+          week_completed: 0
+        })
+      }
+    }
+  }
+
+  // 从前端课程数据计算复习统计
+  const calculateFrontendReviewStats = () => {
+    const allPractices = []
+
+    // 从所有课程中提取练习题
+    lessons.forEach(lesson => {
+      lesson.knowledgePoints?.forEach(kp => {
+        kp.exercises?.forEach((exercise, index) => {
+          allPractices.push({
+            id: `${lesson.id}_${kp.id}_${index}`,
+            lessonId: lesson.id,
+            exercise
+          })
+        })
+      })
+    })
+
+    // 从localStorage获取练习记录
+    const practiceRecords = JSON.parse(localStorage.getItem('practice_records') || '[]')
+    const completedPractices = practiceRecords.filter(record => record.isCorrect)
+
+    // 简单的复习逻辑：完成的练习题在24小时后需要复习
+    const now = new Date()
+    const oneDayAgo = new Date(now.getTime() - 24 * 60 * 60 * 1000)
+
+    const needReview = completedPractices.filter(record => {
+      const completedDate = new Date(record.timestamp)
+      return completedDate < oneDayAgo
+    })
+
+    return {
+      due_today: needReview.length,
+      due_tomorrow: 0,
+      total_reviews: completedPractices.length,
+      total_practices: allPractices.length,
+      accuracy_rate: allPractices.length > 0 ? Math.round((completedPractices.length / allPractices.length) * 100) : 0,
+      week_completed: completedPractices.length
     }
   }
 
@@ -70,12 +130,12 @@ const DashboardPage = () => {
   const nextLesson = getNextLesson()
 
   return (
-    <div className="max-w-4xl mx-auto">
-      <div className="mb-8">
-        <h1 className="text-3xl font-bold text-gray-900 mb-2">
+    <div className="max-w-4xl mx-auto px-4 md:px-0">
+      <div className="mb-6 md:mb-8">
+        <h1 className="text-2xl md:text-3xl font-bold text-gray-900 dark:text-gray-100 mb-2">
           {t('dashboard.title')}
         </h1>
-        <p className="text-gray-600">
+        <p className="text-sm md:text-base text-gray-600 dark:text-gray-400">
           {t('dashboard.viewProgress')}
         </p>
       </div>
@@ -106,14 +166,14 @@ const DashboardPage = () => {
 
 
       {/* 学习进度概览 */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-6 mb-6 md:mb-8">
         <div className="card">
           <div className="card-body text-center">
-            <div className="text-3xl font-bold text-blue-600 mb-2">
+            <div className="text-2xl md:text-3xl font-bold text-blue-600 mb-2">
               {stats.completedLessons}
             </div>
-            <div className="text-base text-gray-600">{t('dashboard.completedCourses')}</div>
-            <div className="text-sm text-gray-400 mt-1">
+            <div className="text-sm md:text-base text-gray-600 dark:text-gray-300 font-medium">{t('dashboard.completedCourses')}</div>
+            <div className="text-xs md:text-sm text-gray-400 dark:text-gray-500 mt-1">
               {t('dashboard.totalCourses', { total: stats.totalLessons })}
             </div>
           </div>
@@ -121,11 +181,11 @@ const DashboardPage = () => {
 
         <div className="card">
           <div className="card-body text-center">
-            <div className="text-3xl font-bold text-green-600 mb-2">
+            <div className="text-2xl md:text-3xl font-bold text-green-600 mb-2">
               {stats.progressPercentage}%
             </div>
-            <div className="text-base text-gray-600 dark:text-gray-300">{t('dashboard.learningProgress')}</div>
-            <div className="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2 mt-2">
+            <div className="text-sm md:text-base text-gray-600 dark:text-gray-300 font-medium">{t('dashboard.learningProgress')}</div>
+            <div className="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2 mt-3">
               <div
                 className="bg-green-600 h-2 rounded-full transition-all duration-300"
                 style={{ width: `${stats.progressPercentage}%` }}
@@ -136,11 +196,11 @@ const DashboardPage = () => {
 
         <div className="card">
           <div className="card-body text-center">
-            <div className="text-3xl font-bold text-orange-600 mb-2">
+            <div className="text-2xl md:text-3xl font-bold text-orange-600 mb-2">
               {reviewStats?.due_today || 0}
             </div>
-            <div className="text-base text-gray-600">{t('dashboard.reviewTasks')}</div>
-            <div className="text-sm text-gray-400 mt-1">
+            <div className="text-sm md:text-base text-gray-600 dark:text-gray-300 font-medium">{t('dashboard.reviewTasks')}</div>
+            <div className="text-xs md:text-sm text-gray-400 dark:text-gray-500 mt-1">
               {reviewStats?.due_tomorrow ? t('dashboard.tomorrowTasks', { count: reviewStats.due_tomorrow }) : t('dashboard.basedOnForgettingCurve')}
             </div>
           </div>
@@ -148,44 +208,40 @@ const DashboardPage = () => {
       </div>
 
       {/* 快速操作 */}
-      <div className="grid md:grid-cols-3 gap-6 mb-8">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6 mb-6 md:mb-8">
         {/* 今日复习 */}
         <div className="card">
-          <div className="card-body">
-            <div className="flex items-start justify-between gap-4">
-              <div className="flex-1 min-w-0">
-                <h3 className="text-lg font-semibold text-gray-900 mb-1">
-                  {t('dashboard.todayReview')}
-                </h3>
-                <p className="text-gray-600 text-sm">
-                  {reviewStats?.due_today ? t('dashboard.reviewTasksCount', { count: reviewStats.due_today }) : t('dashboard.noReviewTasks')}
-                </p>
-              </div>
-              <div className="flex-shrink-0">
-                <Link
-                  to="/app/review"
-                  className={`btn ${reviewStats?.due_today > 0 ? 'btn-primary' : 'btn-secondary'}`}
-                >
-                  {reviewStats?.due_today > 0 ? t('dashboard.startLearning') : t('dashboard.reviewRecord')}
-                </Link>
-              </div>
+          <div className="card-body h-full">
+            <div className="flex flex-col h-full text-center">
+              <h3 className="text-base md:text-lg font-semibold text-gray-900 dark:text-gray-100 mb-2">
+                {t('dashboard.todayReview')}
+              </h3>
+              <p className="text-gray-600 dark:text-gray-400 text-sm mb-4 flex-grow">
+                {reviewStats?.due_today ? t('dashboard.reviewTasksCount', { count: reviewStats.due_today }) : t('dashboard.noReviewTasks')}
+              </p>
+              <Link
+                to="/app/review"
+                className={`btn w-full md:w-auto ${reviewStats?.due_today > 0 ? 'btn-primary' : 'btn-secondary'}`}
+              >
+                {reviewStats?.due_today > 0 ? t('dashboard.startReview') : t('dashboard.reviewRecord')}
+              </Link>
             </div>
           </div>
         </div>
 
         {/* 核心学习路径 */}
         <div className="card">
-          <div className="card-body">
-            <div className="text-center">
-              <h3 className="text-lg font-semibold text-gray-900 mb-2">
+          <div className="card-body h-full">
+            <div className="flex flex-col h-full text-center">
+              <h3 className="text-base md:text-lg font-semibold text-gray-900 dark:text-gray-100 mb-2">
                 {t('dashboard.smartLearningPath')}
               </h3>
-              <p className="text-gray-600 text-sm mb-4">
+              <p className="text-gray-600 dark:text-gray-400 text-sm mb-4 flex-grow">
                 {t('dashboard.smartLearningDesc')}
               </p>
               <Link
                 to={nextLesson ? `/app/lesson/${nextLesson.id}` : "/app/dashboard"}
-                className="btn btn-primary"
+                className="btn btn-primary w-full md:w-auto"
               >
                 {nextLesson ? t('dashboard.startLearning') : t('dashboard.viewCourses')}
               </Link>

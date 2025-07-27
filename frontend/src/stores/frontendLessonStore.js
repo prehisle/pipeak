@@ -1,7 +1,6 @@
 import { create } from 'zustand'
 import { persist } from 'zustand/middleware'
 import { comprehensiveLessonsData } from '../data/comprehensiveLessons'
-import { lessonsDataEN } from '../data/lessons-en'
 import i18n from '../i18n'
 
 // 前端课程存储 - 管理课程数据和学习进度
@@ -24,9 +23,7 @@ const useFrontendLessonStore = create(
       // 动作
       // 获取课程数据的辅助函数
       getLessonsData: (language) => {
-        if (language === 'en-US') {
-          return lessonsDataEN
-        }
+        // 统一使用comprehensiveLessonsData，确保中英文版本题目一致
         return comprehensiveLessonsData[language] || comprehensiveLessonsData['zh-CN']
       },
 

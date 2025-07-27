@@ -2,6 +2,7 @@ import { useState, useEffect, useRef, useImperativeHandle, forwardRef } from 're
 import { useTranslation } from 'react-i18next'
 import MarkdownRenderer from './MarkdownRenderer'
 import { learningAPI } from '../services/api'
+import { translateHint, translateAllHintsShown } from '../utils/hintTranslator'
 
 const PracticeCard = forwardRef(({
   card,
@@ -26,6 +27,7 @@ const PracticeCard = forwardRef(({
   const [showHint, setShowHint] = useState(false)
   const [currentHint, setCurrentHint] = useState('')
   const [hintLevel, setHintLevel] = useState(0)
+  const [originalHint, setOriginalHint] = useState('') // 存储原始提示内容用于重新翻译
   const [isCorrect, setIsCorrect] = useState(false)
   const [syntaxSuggestions, setSyntaxSuggestions] = useState([])
 
@@ -52,6 +54,25 @@ const PracticeCard = forwardRef(({
     }
   }, [cardIndex]) // 当卡片索引变化时重新聚焦
 
+  // 监听语言变化，重新翻译当前显示的提示
+  useEffect(() => {
+    if (showHint && originalHint) {
+      if (originalHint === 'NO_HINT') {
+        // 无提示情况
+        setCurrentHint(t('practice.noHint'))
+      } else if (originalHint.includes('|||ALL_HINTS_SHOWN')) {
+        // 所有提示已显示的情况
+        const lastHint = originalHint.replace('|||ALL_HINTS_SHOWN', '')
+        const translatedMessage = translateAllHintsShown(lastHint, t)
+        setCurrentHint(translatedMessage)
+      } else {
+        // 普通提示情况
+        const translatedHint = translateHint(originalHint, t)
+        setCurrentHint(translatedHint)
+      }
+    }
+  }, [t, showHint, originalHint])
+
   // 检查当前练习是否已完成并加载状态
   useEffect(() => {
     const checkPracticeStatus = async () => {
@@ -70,7 +91,7 @@ const PracticeCard = forwardRef(({
             setUserAnswer(targetFormula)
             setFeedback({
               type: 'success',
-              message: '🎉 太棒了！答案完全正确！'
+              message: t('practiceCard.correctAnswer')
             })
           } else {
             // 如果未完成，重置状态
@@ -158,6 +179,31 @@ const PracticeCard = forwardRef(({
     }
   }, [userAnswer])
 
+  // 答案等价性检查函数
+  const checkAnswerEquivalence = (userAnswer, targetAnswer) => {
+    // 标准化函数：移除多余空格，统一格式
+    const normalize = (str) => {
+      return str
+        .replace(/\s+/g, '') // 移除所有空格
+        .toLowerCase() // 转换为小写
+        .replace(/^\$+|\$+$/g, '') // 移除开头和结尾的美元符号
+    }
+
+    const normalizedUser = normalize(userAnswer)
+    const normalizedTarget = normalize(targetAnswer)
+
+    // 直接比较标准化后的字符串
+    if (normalizedUser === normalizedTarget) {
+      return true
+    }
+
+    // 检查是否只是美元符号的差异
+    const userWithDollar = `$${normalizedUser}$`
+    const targetWithDollar = `$${normalizedTarget}$`
+
+    return normalize(userWithDollar) === normalize(targetWithDollar)
+  }
+
   const handleSubmit = async () => {
     if (!userAnswer.trim()) {
       setFeedback('请输入你的答案')
@@ -166,15 +212,25 @@ const PracticeCard = forwardRef(({
 
     setIsSubmitting(true)
 
-    // 简单的答案比较（去除空格）
-    const normalizedUserAnswer = userAnswer.trim()
-    const normalizedTargetAnswer = targetFormula.trim()
-
-    const isAnswerCorrect = normalizedUserAnswer === normalizedTargetAnswer
+    // 使用改进的答案检查逻辑，支持多种正确格式
+    const isAnswerCorrect = checkAnswerEquivalence(userAnswer.trim(), targetFormula.trim())
 
     if (isAnswerCorrect) {
       setIsCorrect(true)
-      setFeedback('🎉 太棒了！答案完全正确！')
+      setFeedback(t('practiceCard.correctAnswer'))
+
+      // 提交答案到后端API
+      try {
+        await learningAPI.submitAnswer({
+          lesson_id: lessonId,
+          card_index: cardIndex, // cardIndex现在是正确的后端卡片索引
+          user_answer: userAnswer.trim()
+        })
+        console.log('练习答案已提交到后端')
+      } catch (error) {
+        console.error('提交练习答案失败:', error)
+        // 即使提交失败，也继续本地流程
+      }
 
       // 调用父组件的完成回调
       if (onComplete) {
@@ -195,12 +251,87 @@ const PracticeCard = forwardRef(({
     setIsSubmitting(false)
   }
 
+  // 智能分析用户答案并生成多级提示
+  const analyzeAnswerAndGenerateHints = (userAnswer, targetAnswer) => {
+    const hints = []
+
+    // 标准化答案进行比较
+    const normalizeAnswer = (answer) => {
+      return answer.replace(/\s+/g, '').replace(/\$+/g, '').toLowerCase()
+    }
+
+    const normalizedUser = normalizeAnswer(userAnswer)
+    const normalizedTarget = normalizeAnswer(targetAnswer)
+
+    // 分析具体错误
+    if (normalizedUser.includes('\\neq') && normalizedTarget.includes('\\neq')) {
+      // 用户知道不等于号，但可能不知道其他符号
+      if (normalizedTarget.includes('\\infty') && !normalizedUser.includes('\\infty')) {
+        hints.push('提示：无穷大符号的LaTeX代码是 \\infty')
+        hints.push('提示：完整答案应该是 x \\neq \\infty')
+        hints.push('提示：记住，\\infty 表示无穷大，\\neq 表示不等于')
+      }
+    } else if (normalizedTarget.includes('\\neq') && !normalizedUser.includes('\\neq')) {
+      hints.push('提示：不等于号的LaTeX代码是 \\neq')
+      if (normalizedTarget.includes('\\infty')) {
+        hints.push('提示：无穷大符号的LaTeX代码是 \\infty')
+        hints.push('提示：完整答案是 x \\neq \\infty')
+      }
+    }
+
+    // 通用提示
+    if (hints.length === 0) {
+      hints.push('提示：检查你的LaTeX语法和符号')
+      hints.push('提示：确保所有的反斜杠和命令都正确')
+    }
+
+    return hints
+  }
+
   const handleGetHint = () => {
-    if (hintText) {
-      setCurrentHint(hintText)
+    // 优先使用传入的hints数组（渐进式提示）
+    if (hints && Array.isArray(hints) && hints.length > 0) {
+      const nextHintIndex = hintLevel
+      if (nextHintIndex < hints.length) {
+        const originalHintText = hints[nextHintIndex]
+        const translatedHint = translateHint(originalHintText, t)
+        setOriginalHint(originalHintText) // 存储原始提示
+        setCurrentHint(translatedHint)
+        setHintLevel(nextHintIndex + 1)
+        setShowHint(true)
+        return
+      } else {
+        // 所有预设提示都用完了，保持显示最后一个提示，并添加提示信息
+        const lastHint = hints[hints.length - 1]
+        const translatedMessage = translateAllHintsShown(lastHint, t)
+        setOriginalHint(`${lastHint}|||ALL_HINTS_SHOWN`) // 特殊标记表示所有提示已显示
+        setCurrentHint(translatedMessage)
+        setShowHint(true)
+        return
+      }
+    }
+
+    // 如果没有预设提示，生成智能提示
+    const smartHints = analyzeAnswerAndGenerateHints(userAnswer, targetFormula)
+
+    // 获取下一个提示
+    const nextHintIndex = hintLevel
+    if (nextHintIndex < smartHints.length) {
+      const smartHint = smartHints[nextHintIndex]
+      setOriginalHint(smartHint) // 存储原始提示
+      setCurrentHint(smartHint)
+      setHintLevel(nextHintIndex + 1)
+      setShowHint(true)
+    } else if (hintText) {
+      // 如果智能提示用完了，使用原始提示
+      const translatedHint = translateHint(hintText, t)
+      setOriginalHint(hintText) // 存储原始提示
+      setCurrentHint(translatedHint)
       setShowHint(true)
     } else {
-      setCurrentHint('暂无提示信息')
+      const noMoreHints = t('practice.noHint')
+      setOriginalHint('NO_HINT') // 特殊标记
+      setCurrentHint(noMoreHints)
       setShowHint(true)
     }
   }
@@ -308,8 +439,8 @@ const PracticeCard = forwardRef(({
                 aria-describedby="practice-question"
               />
               <div className="absolute bottom-2 right-2 text-xs text-gray-400 bg-gray-50 px-1 py-0.5 rounded text-xs">
-                <div>Ctrl+Enter 提交</div>
-                {!isCorrect && <div>Tab 获取提示</div>}
+                <div>{t('practiceCard.submitShortcut')}</div>
+                {!isCorrect && <div>{t('practiceCard.hintShortcut')}</div>}
               </div>
             </div>
           </div>
@@ -324,8 +455,11 @@ const PracticeCard = forwardRef(({
               <p className="font-medium text-sm">{typeof feedback === 'string' ? feedback : '反馈信息'}</p>
               {isCorrect && (
                 <div className="text-xs mt-2 text-green-600 space-y-1">
-                  <p>🎉 恭喜答对了！</p>
-                  <p>💡 按 <kbd className="px-1 py-0.5 bg-green-200 rounded text-xs font-mono">Enter</kbd> 键或点击 <strong>"下一题"</strong> 按钮继续</p>
+                  <p>{t('practiceCard.congratulations')}</p>
+                  <p>{t('practiceCard.continueHint', {
+                    key: t('practiceCard.enterKey'),
+                    button: t('practiceCard.nextButton')
+                  })}</p>
                 </div>
               )}
             </div>
@@ -354,7 +488,7 @@ const PracticeCard = forwardRef(({
                   : 'bg-green-600 text-white hover:bg-green-700'
               }`}
             >
-              {isSubmitting ? '提交中...' : isCorrect ? '已完成 ✓' : '提交答案'}
+              {isSubmitting ? t('practiceCard.submitting') : isCorrect ? t('practiceCard.completed') : t('practiceCard.submitAnswer')}
             </button>
 
             {!isCorrect && (
@@ -366,9 +500,9 @@ const PracticeCard = forwardRef(({
                     ? 'bg-gray-400 text-white cursor-not-allowed'
                     : 'bg-yellow-500 text-white hover:bg-yellow-600'
                 }`}
-                title="获取解题提示"
+                title={t('practiceCard.getHintTooltip')}
               >
-                💡 获取提示
+                {t('practiceCard.getHint')}
               </button>
             )}
 
@@ -376,16 +510,16 @@ const PracticeCard = forwardRef(({
               <button
                 onClick={() => onComplete && onComplete(true, true)}
                 className="px-3 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors text-sm"
-                title="进入下一题"
+                title={t('practiceCard.nextQuestionTooltip')}
               >
-                下一题 →
+                {t('practiceCard.nextQuestion')}
               </button>
             )}
           </div>
 
           {/* 难度标识 */}
           <div className="mt-3 flex items-center gap-2">
-            <span className="text-sm text-gray-600">难度：</span>
+            <span className="text-sm text-gray-600">{t('practiceCard.difficulty')}</span>
             <span className={`px-2 py-1 rounded text-xs font-medium ${
               difficulty === 'easy'
                 ? 'bg-green-100 text-green-800'
@@ -393,8 +527,9 @@ const PracticeCard = forwardRef(({
                 ? 'bg-yellow-100 text-yellow-800'
                 : 'bg-red-100 text-red-800'
             }`}>
-              {difficulty === 'easy' ? '简单' :
-               difficulty === 'medium' ? '中等' : '困难'}
+              {difficulty === 'easy' ? t('practiceCard.difficultyEasy') :
+               difficulty === 'medium' ? t('practiceCard.difficultyMedium') :
+               t('practiceCard.difficultyHard')}
             </span>
           </div>
         </div>

@@ -27,7 +27,8 @@ function convertBackendToFrontend(backendLessons) {
           exercises: [{
             question: card.question,
             answer: card.target_formula,
-            hint: card.hints?.[0] || '暂无提示',
+            hint: card.hints?.[0] || '暂无提示', // 保持向后兼容
+            hints: card.hints || ['暂无提示'], // 保持完整的提示数组
             difficulty: card.difficulty || 'easy'
           }]
         })
@@ -511,16 +512,149 @@ const backendLessonsData = [
   }
 ]
 
+// 练习题翻译映射
+const practiceTranslations = {
+  '请输入 LaTeX 代码来表示：x 的平方': 'Please enter LaTeX code to represent: x squared',
+  '请输入 LaTeX 代码来表示：a 下标 1': 'Please enter LaTeX code to represent: a subscript 1',
+  '请输入 LaTeX 代码来表示：x 下标 n 的平方': 'Please enter LaTeX code to represent: x subscript n squared',
+  '请输入 LaTeX 代码来表示：分数 a 分之 b': 'Please enter LaTeX code to represent: fraction b over a',
+  '请输入 LaTeX 代码来表示：根号 x': 'Please enter LaTeX code to represent: square root of x',
+  '请输入 LaTeX 代码来表示：x 加 y 的平方，除以 2': 'Please enter LaTeX code to represent: x plus y squared, divided by 2',
+  '请输入 LaTeX 代码来表示：8 的立方根': 'Please enter LaTeX code to represent: cube root of 8',
+  '请输入 LaTeX 代码来表示：正弦 x': 'Please enter LaTeX code to represent: sine of x',
+  '请输入 LaTeX 代码来表示：x 加 1 的自然对数': 'Please enter LaTeX code to represent: natural logarithm of x plus 1',
+  '请输入 LaTeX 代码来表示：从 0 到 1 对 x 的积分': 'Please enter LaTeX code to represent: integral from 0 to 1 of x dx',
+  '请输入 LaTeX 代码来表示：实数集': 'Please enter LaTeX code to represent: real numbers set'
+}
+
+// 提示翻译映射
+const hintTranslations = {
+  '使用 ^ 符号表示上标': 'Use ^ symbol for superscript',
+  '上标内容是 2': 'Superscript content is 2',
+  '完整格式：$x^2$': 'Complete format: $x^2$',
+  '使用 _ 符号表示下标': 'Use _ symbol for subscript',
+  '下标内容是 1': 'Subscript content is 1',
+  '完整格式：$a_1$': 'Complete format: $a_1$',
+  '使用 \\frac{分子}{分母} 格式': 'Use \\frac{numerator}{denominator} format',
+  '使用 \\sqrt{} 表示平方根': 'Use \\sqrt{} for square root',
+  '使用 \\sqrt[n]{} 表示 n 次方根': 'Use \\sqrt[n]{} for nth root',
+  '立方根是 \\sqrt[3]{}': 'Cube root is \\sqrt[3]{}',
+  '使用 \\sin 命令': 'Use \\sin command',
+  '使用 \\ln 命令': 'Use \\ln command',
+  '使用 \\int 命令': 'Use \\int command',
+  '下界是 _0': 'Lower bound is _0',
+  '上界是 ^1': 'Upper bound is ^1',
+  '使用 \\mathbb{R} 表示实数集': 'Use \\mathbb{R} for real numbers',
+  '暂无提示': 'No hint available'
+}
+
+// 翻译练习题的函数
+const translateExercise = (exercise) => {
+  return {
+    ...exercise,
+    question: practiceTranslations[exercise.question] || exercise.question,
+    hint: hintTranslations[exercise.hint] || exercise.hint
+  }
+}
+
+// 翻译知识点的函数
+const translateKnowledgePoint = (kp) => {
+  return {
+    ...kp,
+    title: kp.title
+      .replace('练习：', 'Exercise: ')
+      .replace('LaTeX数学环境', 'LaTeX Math Environment')
+      .replace('上标和下标', 'Superscripts and Subscripts')
+      .replace('分数表示法', 'Fraction Notation')
+      .replace('根号表示法', 'Radical Notation')
+      .replace('希腊字母', 'Greek Letters')
+      .replace('常用数学符号', 'Common Mathematical Symbols')
+      .replace('函数表示法', 'Function Notation')
+      .replace('三角函数', 'Trigonometric Functions')
+      .replace('求和符号', 'Summation Symbols')
+      .replace('积分符号', 'Integral Symbols')
+      .replace('极限符号', 'Limit Symbols')
+      .replace('矩阵表示法', 'Matrix Notation')
+      .replace('向量表示法', 'Vector Notation')
+      .replace('方程组表示法', 'Equation System Notation')
+      .replace('不等式表示法', 'Inequality Notation')
+      .replace('集合符号', 'Set Symbols')
+      .replace('逻辑符号', 'Logic Symbols')
+      .replace('数论符号', 'Number Theory Symbols')
+      .replace('特殊运算', 'Special Operations')
+      .replace('高级积分与微分', 'Advanced Integration & Differentiation')
+      .replace('拓扑符号', 'Topology Symbols')
+      // 练习题标题翻译
+      .replace('x 的平方', 'x squared')
+      .replace('a 下标 1', 'a subscript 1')
+      .replace('x 下标 n 的平方', 'x subscript n squared')
+      .replace('分数 a 分之 b', 'fraction b over a')
+      .replace('根号 x', 'square root of x')
+      .replace('x 加 y 的平方，除以 2', 'x plus y squared, divided by 2')
+      .replace('8 的立方根', 'cube root of 8')
+      .replace('正弦 x', 'sine of x')
+      .replace('x 加 1 的自然对数', 'natural logarithm of x plus 1')
+      .replace('从 0 到 1 对 x 的积分', 'integral from 0 to 1 of x dx')
+      .replace('实数集', 'real numbers set'),
+    content: kp.content
+      .replace('现在让我们通过练习来巩固刚学到的知识。请根据题目要求输入正确的 LaTeX 代码。',
+               'Now let\'s practice to consolidate what we\'ve learned. Please enter the correct LaTeX code according to the question.')
+      .replace('LaTeX数学公式需要在特定环境中编写', 'LaTeX mathematical formulas need to be written in specific environments')
+      .replace('使用 ^ 符号表示上标', 'Use ^ symbol for superscript')
+      .replace('使用 _ 符号表示下标', 'Use _ symbol for subscript')
+      .replace('使用 \\frac{分子}{分母} 命令', 'Use \\frac{numerator}{denominator} command')
+      .replace('使用 \\sqrt{} 表示平方根', 'Use \\sqrt{} for square root')
+      .replace('使用 \\sqrt[n]{} 表示 n 次方根', 'Use \\sqrt[n]{} for nth root'),
+    exercises: kp.exercises.map(translateExercise)
+  }
+}
+
+// 翻译课程的函数
+const translateLesson = (lesson) => {
+  return {
+    ...lesson,
+    title: lesson.title
+      .replace('第1课：数学环境与基础语法', 'Lesson 1: Math Environment & Basic Syntax')
+      .replace('第2课：分数与根号', 'Lesson 2: Fractions & Radicals')
+      .replace('第3课：希腊字母与常用符号', 'Lesson 3: Greek Letters & Common Symbols')
+      .replace('第4课：函数与三角函数', 'Lesson 4: Functions & Trigonometric Functions')
+      .replace('第5课：求和、积分与极限', 'Lesson 5: Summation, Integration & Limits')
+      .replace('第6课：矩阵与向量', 'Lesson 6: Matrices & Vectors')
+      .replace('第7课：方程组与不等式', 'Lesson 7: Equation Systems & Inequalities')
+      .replace('第8课：集合论与逻辑符号', 'Lesson 8: Set Theory & Logic Symbols')
+      .replace('第9课：数论与特殊运算', 'Lesson 9: Number Theory & Special Operations')
+      .replace('第10课：高级分析与拓扑', 'Lesson 10: Advanced Analysis & Topology'),
+    description: lesson.description
+      .replace('学习LaTeX数学公式的基础语法，掌握数学环境、上标、下标的使用方法。',
+               'Learn the basic syntax of LaTeX mathematical formulas, master the use of math environments, superscripts, and subscripts.')
+      .replace('学习如何在LaTeX中表示分数和根号，掌握复杂数学表达式的写法。',
+               'Learn how to represent fractions and radicals in LaTeX, master complex mathematical expressions.')
+      .replace('学习常用的希腊字母和数学符号的LaTeX写法，为高级数学公式打基础。',
+               'Learn LaTeX notation for common Greek letters and mathematical symbols, laying foundation for advanced formulas.')
+      .replace('学习函数表示法、三角函数、对数函数等常用数学函数的LaTeX写法。',
+               'Learn LaTeX representation of function notation, trigonometric functions, logarithmic functions and other common mathematical functions.')
+      .replace('学习求和符号、积分符号、极限符号等高级数学记号的LaTeX表示方法。',
+               'Learn LaTeX representation of summation symbols, integral symbols, limit symbols and other advanced mathematical notations.')
+      .replace('学习矩阵、向量、行列式等线性代数符号的LaTeX表示方法。',
+               'Learn LaTeX representation of matrices, vectors, determinants and other linear algebra symbols.')
+      .replace('学习方程组、不等式组、条件表达式等复杂数学结构的LaTeX表示。',
+               'Learn LaTeX representation of equation systems, inequality systems, conditional expressions and other complex mathematical structures.')
+      .replace('学习集合论符号、逻辑运算符、量词等数学逻辑的LaTeX表示方法。',
+               'Learn LaTeX representation of set theory symbols, logical operators, quantifiers and other mathematical logic notations.')
+      .replace('学习数论符号、同余、高德纳箭头、超运算等高级数学运算的LaTeX表示。',
+               'Learn LaTeX representation of number theory symbols, congruence, Knuth arrows, hyperoperations and other advanced mathematical operations.')
+      .replace('学习高级数学分析、拓扑学、泛函分析等领域的专业LaTeX符号。',
+               'Learn professional LaTeX symbols in advanced mathematical analysis, topology, functional analysis and other fields.'),
+    knowledgePoints: lesson.knowledgePoints.map(translateKnowledgePoint)
+  }
+}
+
 // 转换数据并导出
 const convertedLessons = convertBackendToFrontend(backendLessonsData)
 
 export const comprehensiveLessonsData = {
   "zh-CN": convertedLessons,
-  "en-US": convertedLessons.map(lesson => ({
-    ...lesson,
-    // 英文版本可以在这里添加翻译
-    // 暂时使用中文版本
-  }))
+  "en-US": convertedLessons.map(translateLesson)
 }
 
 export default comprehensiveLessonsData

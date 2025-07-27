@@ -28,11 +28,26 @@ const ReviewPage = () => {
       setReviews(response.reviews)
       setStats(response.stats)
 
-      if (response.reviews.length === 0) {
+      // 判断是否有待复习任务：优先使用stats.due_today，fallback到reviews.length
+      const hasDueReviews = (response.stats?.due_today > 0) || (response.reviews.length > 0)
+
+      console.log('复习任务检查:', {
+        'stats.due_today': response.stats?.due_today,
+        'reviews.length': response.reviews.length,
+        'hasDueReviews': hasDueReviews
+      })
+
+      if (!hasDueReviews) {
         // 没有复习任务，加载详细统计
+        console.log('没有待复习任务，显示统计页面')
         const statsResponse = await reviewAPI.getStats()
         setStats(statsResponse.stats)
         setShowStats(true)
+      } else {
+        // 有待复习任务，应该显示复习界面
+        console.log('有待复习任务，应该显示复习界面')
+        setReviews(response.reviews)
+        setStats(response.stats)
       }
     } catch (error) {
       console.error('加载复习任务失败:', error)
@@ -115,27 +130,57 @@ const ReviewPage = () => {
     )
   }
 
-  // 显示统计页面
-  if (showStats || reviews.length === 0) {
+  // 处理有待复习任务但无法加载具体内容的情况
+  if (!showStats && reviews.length === 0 && stats?.due_today > 0) {
     return (
       <div className="max-w-4xl mx-auto">
         <div className="mb-8">
-          <h1 className="text-3xl font-bold text-gray-900 mb-2">
+          <h1 className="text-3xl font-bold text-gray-900 dark:text-gray-100 mb-2">复习中心</h1>
+          <p className="text-gray-600 dark:text-gray-400">基于SM-2算法的智能复习系统</p>
+        </div>
+
+        <div className="bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-800 rounded-lg p-6 mb-6">
+          <div className="text-center">
+            <div className="text-yellow-600 dark:text-yellow-400 text-4xl mb-4">⚠️</div>
+            <h2 className="text-xl font-semibold text-yellow-900 dark:text-yellow-100 mb-2">
+              复习任务加载异常
+            </h2>
+            <p className="text-yellow-700 dark:text-yellow-300 mb-4">
+              检测到有 {stats.due_today} 个待复习任务，但无法加载具体内容。
+            </p>
+            <button
+              onClick={() => window.location.reload()}
+              className="bg-yellow-600 dark:bg-yellow-500 text-white px-4 py-2 rounded-lg hover:bg-yellow-700 dark:hover:bg-yellow-600 transition-colors"
+            >
+              刷新页面重试
+            </button>
+          </div>
+        </div>
+      </div>
+    )
+  }
+
+  // 显示统计页面
+  if (showStats) {
+    return (
+      <div className="max-w-4xl mx-auto">
+        <div className="mb-8">
+          <h1 className="text-3xl font-bold text-gray-900 dark:text-gray-100 mb-2">
             {t('reviewPage.reviewStats')}
           </h1>
-          <p className="text-gray-600">
+          <p className="text-gray-600 dark:text-gray-400">
             {t('reviewPage.sm2Description')}
           </p>
         </div>
 
         {reviews.length === 0 ? (
-          <div className="bg-green-50 border border-green-200 rounded-lg p-6 mb-6">
+          <div className="bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 rounded-lg p-6 mb-6">
             <div className="text-center">
-              <div className="text-green-600 text-4xl mb-4">🎉</div>
-              <h2 className="text-xl font-semibold text-green-900 mb-2">
+              <div className="text-green-600 dark:text-green-400 text-4xl mb-4">🎉</div>
+              <h2 className="text-xl font-semibold text-green-900 dark:text-green-100 mb-2">
                 {t('reviewPage.todayCompleted')}
               </h2>
-              <p className="text-green-700">
+              <p className="text-green-700 dark:text-green-300">
                 {t('reviewPage.congratulations')}
               </p>
             </div>
@@ -144,28 +189,28 @@ const ReviewPage = () => {
 
         {stats && (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-            <div className="bg-blue-50 border border-blue-200 rounded-lg p-6">
-              <div className="text-blue-600 text-2xl mb-2">📚</div>
-              <div className="text-2xl font-bold text-blue-900">{stats.total_reviews}</div>
-              <div className="text-base text-blue-700">{t('reviewPage.totalReviews')}</div>
+            <div className="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg p-6">
+              <div className="text-blue-600 dark:text-blue-400 text-2xl mb-2">📚</div>
+              <div className="text-2xl font-bold text-blue-900 dark:text-blue-100">{stats.total_reviews}</div>
+              <div className="text-base text-blue-700 dark:text-blue-300">{t('reviewPage.totalReviews')}</div>
             </div>
 
-            <div className="bg-orange-50 border border-orange-200 rounded-lg p-6">
-              <div className="text-orange-600 text-2xl mb-2">⏰</div>
-              <div className="text-2xl font-bold text-orange-900">{stats.due_today}</div>
-              <div className="text-base text-orange-700">{t('reviewPage.dueToday')}</div>
+            <div className="bg-orange-50 dark:bg-orange-900/20 border border-orange-200 dark:border-orange-800 rounded-lg p-6">
+              <div className="text-orange-600 dark:text-orange-400 text-2xl mb-2">⏰</div>
+              <div className="text-2xl font-bold text-orange-900 dark:text-orange-100">{stats.due_today}</div>
+              <div className="text-base text-orange-700 dark:text-orange-300">{t('reviewPage.dueToday')}</div>
             </div>
 
-            <div className="bg-purple-50 border border-purple-200 rounded-lg p-6">
-              <div className="text-purple-600 text-2xl mb-2">📈</div>
-              <div className="text-2xl font-bold text-purple-900">{stats.accuracy_rate || 0}%</div>
-              <div className="text-base text-purple-700">{t('reviewPage.accuracyRate')}</div>
+            <div className="bg-purple-50 dark:bg-purple-900/20 border border-purple-200 dark:border-purple-800 rounded-lg p-6">
+              <div className="text-purple-600 dark:text-purple-400 text-2xl mb-2">📈</div>
+              <div className="text-2xl font-bold text-purple-900 dark:text-purple-100">{stats.accuracy_rate || 0}%</div>
+              <div className="text-base text-purple-700 dark:text-purple-300">{t('reviewPage.accuracyRate')}</div>
             </div>
 
-            <div className="bg-green-50 border border-green-200 rounded-lg p-6">
-              <div className="text-green-600 text-2xl mb-2">🔥</div>
-              <div className="text-2xl font-bold text-green-900">{stats.week_completed || 0}</div>
-              <div className="text-base text-green-700">{t('reviewPage.weekCompleted')}</div>
+            <div className="bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 rounded-lg p-6">
+              <div className="text-green-600 dark:text-green-400 text-2xl mb-2">🔥</div>
+              <div className="text-2xl font-bold text-green-900 dark:text-green-100">{stats.week_completed || 0}</div>
+              <div className="text-base text-green-700 dark:text-green-300">{t('reviewPage.weekCompleted')}</div>
             </div>
           </div>
         )}

@@ -19,7 +19,32 @@
     "settings": "Settings",
     "trainer": "Trainer",
     "slogan": "Focus on improving mathematical formula input efficiency",
-    "courseNotFound": "Course not found"
+    "courseNotFound": "Course not found",
+    "themeToggle": {
+      "tooltip": "Switch to light mode",
+      "tooltipDark": "Switch to dark mode"
+    },
+    "mobileMenu": {
+      "toggle": "Toggle menu",
+      "close": "Close menu"
+    }
+  },
+  "pages": {
+    "home": {
+      "title": "LaTeX Quick Trainer - Efficient Mathematical Formula Learning"
+    },
+    "dashboard": {
+      "title": "Learning Dashboard - LaTeX Quick Trainer"
+    },
+    "lesson": {
+      "title": "{{lessonTitle}} - LaTeX Quick Trainer"
+    },
+    "practice": {
+      "title": "Offline Practice - LaTeX Quick Trainer"
+    },
+    "review": {
+      "title": "Review Center - LaTeX Quick Trainer"
+    }
   },
   "nav": {
     "dashboard": "Dashboard",
@@ -56,7 +81,8 @@
     "registerFailed": "Registration failed",
     "emailAlreadyExists": "This email is already registered",
     "invalidCredentials": "Invalid email or password",
-    "networkError": "Network error, please try again later"
+    "networkError": "Network error, please try again later",
+    "backToHome": "Back to Home"
   },
   "practice": {
     "enterAnswer": "Please enter your answer",
@@ -72,17 +98,37 @@
     "nextQuestion": "Next →",
     "viewResults": "View Results",
     "continueHint": "🎉 Press Enter or click \"Next\" to continue",
-    "practiceTitle": "Practice Questions",
+    "characterCount": "{{count}}/{{max}} characters",
+    "keyboardShortcuts": "Enter Submit",
+    "hintShortcut": "F1 Get Hint",
+    "practiceTitle": "Exercise",
     "targetEffect": "Target Effect:",
     "livePreview": "Live Preview:",
     "enterLatex": "Please enter LaTeX code:",
     "example": "Example: $x^2$",
     "perfectAnswer": "🎉 Excellent! Your answer is completely correct!",
     "incorrectAnswer": "Answer is incorrect, please try again",
+    "allHintsShown": "All hints shown",
     "difficulty": {
       "easy": "Easy",
       "medium": "Medium",
       "hard": "Hard"
+    },
+    "hintPatterns": {
+      "superscript": "Use ^ symbol for superscript",
+      "superscriptContent": "Superscript content is {{content}}",
+      "subscript": "Use _ symbol for subscript",
+      "subscriptContent": "Subscript content is {{content}}",
+      "fraction": "Use \\frac{numerator}{denominator} for fractions",
+      "sqrt": "Use \\sqrt{content} for square root",
+      "neq": "Not equal symbol is \\neq",
+      "infty": "Infinity symbol is \\infty",
+      "alpha": "α is \\alpha",
+      "beta": "β is \\beta",
+      "pi": "Greek letter π LaTeX command is \\pi",
+      "delta": "Capital delta is \\Delta",
+      "approx": "Approximately equal symbol is \\approx",
+      "completeFormat": "Complete format: {{formula}}"
     }
   },
   "dashboard": {
@@ -107,6 +153,7 @@
     "noNextLesson": "Congratulations! You've completed all lessons",
     "allCompleted": "All lessons completed",
     "todayReview": "Today's Review",
+    "startReview": "Start Review",
     "reviewRecord": "Review Records",
     "learningAnalysis": "Learning Analysis",
     "detailedAnalysis": "Detailed Analysis",
@@ -152,7 +199,7 @@
     "nextCard": "Next",
     "prevCard": "Previous",
     "cardProgress": "{{current}}/{{total}}",
-    "practiceTitle": "Exercise {{number}}",
+
     "yourAnswer": "Your Answer",
     "targetFormula": "Target Formula",
     "checkAnswer": "Check Answer",
@@ -265,12 +312,35 @@
   "lessonPage": {
     "backToDashboard": "← Back to Dashboard",
     "knowledgePoint": "Knowledge Point {{index}}",
+    "practiceExercise": "Practice Exercise {{index}}",
     "progress": "{{current}} / {{total}}",
     "knowledgePointCompleted": "Knowledge Point Completed!",
     "lessonCompleted": "Lesson Completed!",
     "nextKnowledgePoint": "Next →",
     "prevKnowledgePoint": "← Previous",
-    "keyboardHint": "💡 Use keyboard shortcuts: ← → to switch cards, ESC to return to course list"
+    "keyboardHint": "💡 Use keyboard shortcuts: ← → to switch cards, ESC to return to course list",
+    "keyboardShortcuts": "💡 Use keyboard shortcuts: ← → to switch cards, ESC to return to course list",
+    "swipeHint": "💡 Swipe or tap navigation buttons to switch knowledge points"
+  },
+  "practiceCard": {
+    "submitAnswer": "Submit Answer",
+    "submitting": "Submitting...",
+    "completed": "Completed ✓",
+    "getHint": "💡 Get Hint",
+    "nextQuestion": "Next →",
+    "difficulty": "Difficulty:",
+    "difficultyEasy": "Easy",
+    "difficultyMedium": "Medium",
+    "difficultyHard": "Hard",
+    "correctAnswer": "🎉 Excellent! Answer is completely correct!",
+    "congratulations": "🎉 Congratulations on getting it right!",
+    "continueHint": "💡 Press {{key}} key or click {{button}} button to continue",
+    "enterKey": "Enter",
+    "nextButton": "\"Next\"",
+    "submitShortcut": "Ctrl+Enter Submit",
+    "hintShortcut": "Tab Get Hint",
+    "getHintTooltip": "Get solving hint",
+    "nextQuestionTooltip": "Go to next question"
   },
   "reviewPage": {
     "pleaseEnterAnswer": "Please enter your answer",
