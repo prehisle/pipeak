@@ -259,7 +259,7 @@ const PracticeCard = forwardRef(({
 
   const handleSubmit = async () => {
     if (!userAnswer.trim()) {
-      setFeedback('请输入你的答案')
+      setFeedback(t('practice.enterAnswer'))
       return
     }
 
@@ -309,7 +309,7 @@ const PracticeCard = forwardRef(({
         }, 2000)
       }
     } else {
-      setFeedback('答案不正确，请再试一次。提示：检查语法和格式是否正确。')
+      setFeedback(t('practice.incorrectAnswer'))
 
       // 显示提示
       if (hintText) {

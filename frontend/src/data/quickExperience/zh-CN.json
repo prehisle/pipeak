@@ -1,0 +1,151 @@
+{
+  "questions": [
+    {
+      "id": "qe_1",
+      "question": "请输入 LaTeX 代码来表示：x 的平方",
+      "target_formula": "$x^2$",
+      "hints": ["使用 ^ 符号表示上标", "上标内容是 2", "完整格式：$x^2$"],
+      "difficulty": "easy",
+      "lessonTitle": "基础语法"
+    },
+    {
+      "id": "qe_2", 
+      "question": "请输入 LaTeX 代码来表示：a 下标 1",
+      "target_formula": "$a_1$",
+      "hints": ["使用 _ 符号表示下标", "下标内容是 1", "完整格式：$a_1$"],
+      "difficulty": "easy",
+      "lessonTitle": "基础语法"
+    },
+    {
+      "id": "qe_3",
+      "question": "请输入 LaTeX 代码来表示：x 下标 i 的平方",
+      "target_formula": "$x_i^2$",
+      "hints": ["先写下标 _i", "再写上标 ^2", "完整格式：$x_i^2$"],
+      "difficulty": "medium",
+      "lessonTitle": "基础语法"
+    },
+    {
+      "id": "qe_4",
+      "question": "请输入 LaTeX 代码来表示：二分之一",
+      "target_formula": "$\\frac{1}{2}$",
+      "hints": ["使用 \\frac{分子}{分母}", "分子是 1，分母是 2", "完整格式：$\\frac{1}{2}$"],
+      "difficulty": "easy",
+      "lessonTitle": "分数与根号"
+    },
+    {
+      "id": "qe_5",
+      "question": "请输入 LaTeX 代码来表示：根号 2",
+      "target_formula": "$\\sqrt{2}$",
+      "hints": ["使用 \\sqrt{} 表示根号", "根号内容是 2", "完整格式：$\\sqrt{2}$"],
+      "difficulty": "easy",
+      "lessonTitle": "分数与根号"
+    },
+    {
+      "id": "qe_6",
+      "question": "请输入 LaTeX 代码来表示：x 加 y 的平方，除以 2",
+      "target_formula": "$\\frac{(x+y)^2}{2}$",
+      "hints": ["先写分子 (x+y)^2", "再写分母 2", "完整格式：$\\frac{(x+y)^2}{2}$"],
+      "difficulty": "medium",
+      "lessonTitle": "分数与根号"
+    },
+    {
+      "id": "qe_7",
+      "question": "请输入 LaTeX 代码来表示：三次根号下 8",
+      "target_formula": "$\\sqrt[3]{8}$",
+      "hints": ["使用 \\sqrt[n]{} 表示n次根号", "这里n是3", "完整格式：$\\sqrt[3]{8}$"],
+      "difficulty": "medium",
+      "lessonTitle": "分数与根号"
+    },
+    {
+      "id": "qe_8",
+      "question": "请输入 LaTeX 代码来表示希腊字母：π (圆周率)",
+      "target_formula": "$\\pi$",
+      "hints": ["希腊字母 π 的 LaTeX 命令是 \\pi", "完整格式：$\\pi$"],
+      "difficulty": "easy",
+      "lessonTitle": "希腊字母"
+    },
+    {
+      "id": "qe_9",
+      "question": "请输入 LaTeX 代码来表示：α + β",
+      "target_formula": "$\\alpha + \\beta$",
+      "hints": ["α 是 \\alpha", "β 是 \\beta", "完整格式：$\\alpha + \\beta$"],
+      "difficulty": "easy",
+      "lessonTitle": "希腊字母"
+    },
+    {
+      "id": "qe_10",
+      "question": "请输入 LaTeX 代码来表示：x ≠ ∞",
+      "target_formula": "$x \\neq \\infty$",
+      "hints": ["不等于符号是 \\neq", "无穷符号是 \\infty", "完整格式：$x \\neq \\infty$"],
+      "difficulty": "medium",
+      "lessonTitle": "运算符"
+    },
+    {
+      "id": "qe_11",
+      "question": "请输入 LaTeX 代码来表示：Δx ≈ 0",
+      "target_formula": "$\\Delta x \\approx 0$",
+      "hints": ["大德尔塔是 \\Delta", "约等于符号是 \\approx", "完整格式：$\\Delta x \\approx 0$"],
+      "difficulty": "medium",
+      "lessonTitle": "运算符"
+    },
+    {
+      "id": "qe_12",
+      "question": "请输入 LaTeX 代码来表示：sin x",
+      "target_formula": "$\\sin x$",
+      "hints": ["正弦函数是 \\sin", "完整格式：$\\sin x$"],
+      "difficulty": "easy",
+      "lessonTitle": "函数"
+    },
+    {
+      "id": "qe_13",
+      "question": "请输入 LaTeX 代码来表示：f(x) = x²",
+      "target_formula": "$f(x) = x^2$",
+      "hints": ["函数表示法 f(x)", "等号和上标", "完整格式：$f(x) = x^2$"],
+      "difficulty": "easy",
+      "lessonTitle": "函数"
+    },
+    {
+      "id": "qe_14",
+      "question": "请输入 LaTeX 代码来表示：sin²θ + cos²θ = 1",
+      "target_formula": "$\\sin^2\\theta + \\cos^2\\theta = 1$",
+      "hints": ["sin²是 \\sin^2", "θ是 \\theta", "cos²是 \\cos^2"],
+      "difficulty": "hard",
+      "lessonTitle": "函数"
+    },
+    {
+      "id": "qe_15",
+      "question": "请输入 LaTeX 代码来表示：ln(e^x) = x",
+      "target_formula": "$\\ln(e^x) = x$",
+      "hints": ["自然对数是 \\ln", "自然常数是 e", "完整格式：$\\ln(e^x) = x$"],
+      "difficulty": "medium",
+      "lessonTitle": "函数"
+    }
+  ],
+  "lessons": [
+    {
+      "id": "qe_lesson_1",
+      "title": "基础语法",
+      "description": "学习上标、下标的基本用法"
+    },
+    {
+      "id": "qe_lesson_2", 
+      "title": "分数与根号",
+      "description": "掌握分数和根号的LaTeX表示"
+    },
+    {
+      "id": "qe_lesson_3",
+      "title": "希腊字母",
+      "description": "学习常用希腊字母的输入"
+    },
+    {
+      "id": "qe_lesson_4",
+      "title": "运算符",
+      "description": "掌握数学运算符的表示"
+    },
+    {
+      "id": "qe_lesson_5",
+      "title": "函数",
+      "description": "学习数学函数的LaTeX语法"
+    }
+  ]
+}

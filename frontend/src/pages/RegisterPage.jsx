@@ -8,8 +8,7 @@ import ThemeSwitcher from '../components/ThemeSwitcher'
 import Button from '../components/ui/Button'
 import { Input, Label } from '../components/ui/Input'
 import { Alert, AlertDescription } from '../components/ui/Alert'
-import DataSyncModal from '../components/DataSyncModal'
-import dataSyncService from '../services/dataSyncService'
+
 
 const RegisterPage = () => {
   const [formData, setFormData] = useState({
@@ -18,7 +17,7 @@ const RegisterPage = () => {
     confirmPassword: ''
   })
   const [errors, setErrors] = useState({})
-  const [showSyncModal, setShowSyncModal] = useState(false)
+
   const [registrationSuccess, setRegistrationSuccess] = useState(false)
 
   const { register, isLoading, error } = useAuthStore()
@@ -79,55 +78,13 @@ const RegisterPage = () => {
     if (result.success) {
       setRegistrationSuccess(true)
 
-      // 检查是否有本地数据需要同步
-      if (isGuestMode && hasLocalData()) {
-        setShowSyncModal(true)
-      } else {
-        // 直接切换到用户模式并跳转
-        switchToUserMode()
-        navigate('/app/dashboard')
-      }
-    }
-  }
-
-  const handleSyncData = async () => {
-    try {
-      const result = await dataSyncService.syncAllData()
-      if (result.success) {
-        // 同步成功，清除本地数据并切换模式
-        await dataSyncService.clearLocalData()
-        switchToUserMode()
-        setShowSyncModal(false)
-        navigate('/app/dashboard')
-      } else {
-        console.error('Data sync failed:', result.message)
-        // 即使同步失败，也允许用户继续
-        switchToUserMode()
-        setShowSyncModal(false)
-        navigate('/app/dashboard')
-      }
-    } catch (error) {
-      console.error('Data sync error:', error)
-      // 同步出错，但仍然允许用户继续
+      // 直接切换到用户模式并跳转
       switchToUserMode()
-      setShowSyncModal(false)
       navigate('/app/dashboard')
     }
   }
 
-  const handleSkipSync = () => {
-    // 跳过同步，直接切换到用户模式
-    switchToUserMode()
-    setShowSyncModal(false)
-    navigate('/app/dashboard')
-  }
 
-  const handleCloseSyncModal = () => {
-    setShowSyncModal(false)
-    // 如果用户关闭模态框，仍然切换到用户模式
-    switchToUserMode()
-    navigate('/dashboard')
-  }
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-50 dark:bg-gray-900 py-12 px-4 sm:px-6 lg:px-8 transition-colors">
@@ -259,13 +216,7 @@ const RegisterPage = () => {
         </form>
       </div>
 
-      {/* 数据同步模态框 */}
-      <DataSyncModal
-        isOpen={showSyncModal}
-        onClose={handleCloseSyncModal}
-        onSync={handleSyncData}
-        onSkip={handleSkipSync}
-      />
+
     </div>
   )
 }

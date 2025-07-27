@@ -475,11 +475,19 @@ def check_latex_answer(user_answer, target_answer):
 
 
 def get_feedback(is_correct, user_answer, target_answer):
-    """生成反馈信息"""
+    """生成反馈信息 - 返回状态标识符，由前端进行翻译"""
     if is_correct:
-        return "🎉 太棒了！答案完全正确！"
+        return {
+            "type": "success",
+            "message_key": "practice.perfectAnswer"
+        }
     else:
-        return f"答案不正确。你的答案：{user_answer}，正确答案：{target_answer}"
+        return {
+            "type": "error",
+            "message_key": "practice.incorrectAnswer",
+            "user_answer": user_answer,
+            "target_answer": target_answer
+        }
 
 
 def update_user_progress(db, user_id, lesson_id, card_index, is_correct):

@@ -35,6 +35,7 @@ const LessonPage = () => {
   const isLoggedIn = !!user
 
   const {
+    lessons,
     currentLesson,
     currentKnowledgePointIndex,
     fetchLessons,
@@ -65,12 +66,12 @@ const LessonPage = () => {
     setLanguage(i18n.language)
   }, [i18n.language])
 
-  // 设置当前课程
+  // 设置当前课程 - 确保课程数据加载完成后再查找
   useEffect(() => {
-    if (lessonId) {
+    if (lessonId && lessons && lessons.length > 0) {
       setCurrentLesson(lessonId)
     }
-  }, [lessonId, setCurrentLesson])
+  }, [lessonId, lessons, setCurrentLesson])
 
   // 键盘导航支持
   useEffect(() => {
@@ -105,8 +106,11 @@ const LessonPage = () => {
         activeElement.contentEditable === 'true'
       )
 
-      // 如果用户正在输入，只处理 Escape 键
-      if (isInInput && event.key !== 'Escape') {
+      // 检查输入框是否为只读状态（练习题已完成）
+      const isReadOnly = activeElement && activeElement.readOnly
+
+      // 如果用户正在输入（非只读状态），只处理 Escape 键
+      if (isInInput && !isReadOnly && event.key !== 'Escape') {
         return
       }
 
@@ -322,10 +326,10 @@ const LessonPage = () => {
           )}
         </div>
 
-        <h1 className="text-xl font-bold text-gray-900 mb-2">
+        <h1 className="text-xl font-bold text-gray-900 dark:text-gray-100 mb-2">
           {currentLesson.title}
         </h1>
-        <p className="text-sm text-gray-600 mb-3">
+        <p className="text-sm text-gray-600 dark:text-gray-300 mb-3">
           {currentLesson.description}
         </p>
 
@@ -359,11 +363,8 @@ const LessonPage = () => {
                     </div>
                     <div className="ml-4 flex-1 min-w-0">
                       <h3 className="text-lg font-semibold text-blue-900 dark:text-blue-100 mb-6">
-                        {t('lessonPage.knowledgePoint', { index: currentKnowledgePointIndex + 1 })}
-                      </h3>
-                      <h4 className="text-lg font-medium text-blue-800 dark:text-blue-200 mb-4">
                         {currentKnowledgePoint.titleKey ? t(currentKnowledgePoint.titleKey) : currentKnowledgePoint.title}
-                      </h4>
+                      </h3>
                       <div className="text-blue-800 dark:text-blue-200 text-base leading-relaxed overflow-visible">
                         <MarkdownRenderer content={currentKnowledgePoint.contentKey ? t(currentKnowledgePoint.contentKey) : currentKnowledgePoint.content} theme="default" />
                       </div>

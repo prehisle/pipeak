@@ -35,14 +35,13 @@ const isRegisteredUser = () => {
   }
 }
 
-// 获取合适的API适配器
+// 获取API适配器 - 登录用户始终使用后端API
 const getApiAdapter = () => {
   if (isRegisteredUser()) {
-    // 注册用户使用真实API适配器（后端已启动）
-    return realApiAdapter // 真实API适配器
+    return realApiAdapter
   } else {
-    // 未登录用户不应该访问课程API，只能使用Quick Experience
-    throw new Error('未登录用户无法访问课程数据，请先登录或使用Quick Experience')
+    // 未登录用户不应该访问课程API
+    throw new Error('请先登录以访问课程数据')
   }
 }
 

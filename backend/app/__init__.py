@@ -150,22 +150,26 @@ def create_indexes():
 
 def register_blueprints(app):
     """注册蓝图"""
-    
+
     # 导入并注册认证蓝图
     from app.routes.auth import auth_bp
     app.register_blueprint(auth_bp, url_prefix='/api/auth')
-    
+
     # 导入并注册课程蓝图
     from app.routes.lessons import lessons_bp
     app.register_blueprint(lessons_bp, url_prefix='/api/lessons')
-    
+
     # 导入并注册练习蓝图
     from app.routes.practice import practice_bp
     app.register_blueprint(practice_bp, url_prefix='/api/practice')
-    
+
     # 导入并注册复习蓝图
     from app.routes.reviews import reviews_bp
     app.register_blueprint(reviews_bp, url_prefix='/api/reviews')
+
+    # 初始化管理后台
+    from app.admin import init_admin
+    init_admin(app)
 
 
 def register_error_handlers(app):

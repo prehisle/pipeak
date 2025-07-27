@@ -1,0 +1,630 @@
+{
+  "lessons": [
+    {
+      "id": "677f1a2b3c4d5e6f78901234",
+      "translations": {
+        "en-US": {
+          "title": "Lesson 1: Math Environment & Basic Syntax",
+          "description": "Learn the basic syntax of LaTeX mathematical formulas, master the use of math environments, superscripts, and subscripts.",
+          "cards": [
+            {
+              "type": "knowledge",
+              "content": "**LaTeX Math Environment**\n\nLaTeX mathematical formulas need to be written in specific environments:\n\n• **Inline formulas**: Use `$...$` to surround, e.g., `$x^2$` → $x^2$\n• **Display formulas**: Use `$$...$$` to surround, e.g., `$$E = mc^2$$` → $$E = mc^2$$"
+            },
+            {
+              "type": "knowledge",
+              "content": "**Superscripts and Subscripts**\n\n• Superscripts use `^` symbol: `$x^2$` → $x^2$\n• Subscripts use `_` symbol: `$x_1$` → $x_1$\n• Combined use: `$x_1^2$` → $x_1^2$"
+            },
+            {
+              "type": "practice",
+              "question": "Please enter LaTeX code to represent: x squared",
+              "target_formula": "$x^2$",
+              "hints": [
+                "Use ^ symbol for superscript",
+                "The superscript content is 2",
+                "Complete format: $x^2$"
+              ],
+              "difficulty": "easy"
+            },
+            {
+              "type": "practice",
+              "question": "Please enter LaTeX code to represent: a subscript 1",
+              "target_formula": "$a_1$",
+              "hints": [
+                "Use _ symbol for subscript",
+                "The subscript content is 1",
+                "Complete format: $a_1$"
+              ],
+              "difficulty": "easy"
+            },
+            {
+              "type": "practice",
+              "question": "Please enter LaTeX code to represent: x subscript n squared",
+              "target_formula": "$x_n^2$",
+              "hints": [
+                "Write subscript _n first, then superscript ^2",
+                "Or write as x_{n}^{2}",
+                "Complete format: $x_n^2$"
+              ],
+              "difficulty": "medium"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "677f1a2b3c4d5e6f78901235",
+      "translations": {
+        "en-US": {
+          "title": "Lesson 2: Fractions & Radicals",
+          "description": "Learn how to represent fractions and radicals in LaTeX, master complex mathematical expressions.",
+          "cards": [
+            {
+              "type": "knowledge",
+              "content": "**Fraction Notation**\n\nUse `\\frac{numerator}{denominator}` command:\n\n• `$\\frac{1}{2}$` → $\\frac{1}{2}$\n• `$\\frac{a+b}{c-d}$` → $\\frac{a+b}{c-d}$\n• `$\\frac{x^2}{y^3}$` → $\\frac{x^2}{y^3}$"
+            },
+            {
+              "type": "knowledge",
+              "content": "**Radical Notation**\n\nUse `\\sqrt{}` command:\n\n• `$\\sqrt{x}$` → $\\sqrt{x}$ (square root)\n• `$\\sqrt[3]{x}$` → $\\sqrt[3]{x}$ (cube root)\n• `$\\sqrt{x^2 + y^2}$` → $\\sqrt{x^2 + y^2}$"
+            },
+            {
+              "type": "practice",
+              "question": "Please enter LaTeX code to represent the fraction: one half",
+              "target_formula": "$\\frac{1}{2}$",
+              "hints": [
+                "Use \\frac{numerator}{denominator} command",
+                "Numerator is 1, denominator is 2",
+                "Complete format: $\\frac{1}{2}$"
+              ],
+              "difficulty": "easy"
+            },
+            {
+              "type": "practice",
+              "question": "Please enter LaTeX code to represent: square root of 2",
+              "target_formula": "$\\sqrt{2}$",
+              "hints": [
+                "Use \\sqrt{} command for square root",
+                "The content under the root is 2",
+                "Complete format: $\\sqrt{2}$"
+              ],
+              "difficulty": "easy"
+            },
+            {
+              "type": "practice",
+              "question": "Please enter LaTeX code to represent: (x plus y) squared, divided by 2",
+              "target_formula": "$\\frac{(x+y)^2}{2}$",
+              "hints": [
+                "Numerator is (x+y)^2, denominator is 2",
+                "Note the use of parentheses",
+                "Complete format: $\\frac{(x+y)^2}{2}$"
+              ],
+              "difficulty": "medium"
+            },
+            {
+              "type": "practice",
+              "question": "Please enter LaTeX code to represent: cube root of 8",
+              "target_formula": "$\\sqrt[3]{8}$",
+              "hints": [
+                "Use \\sqrt[n]{} for nth root",
+                "Cube root is \\sqrt[3]{}",
+                "Complete format: $\\sqrt[3]{8}$"
+              ],
+              "difficulty": "medium"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "677f1a2b3c4d5e6f78901236",
+      "translations": {
+        "en-US": {
+          "title": "Lesson 3: Greek Letters & Common Symbols",
+          "description": "Learn LaTeX notation for common Greek letters and mathematical symbols, laying foundation for advanced formulas.",
+          "cards": [
+            {
+              "type": "knowledge",
+              "content": "**Common Lowercase Greek Letters**\n\n• `$\\alpha$` → $\\alpha$ (alpha)\n• `$\\beta$` → $\\beta$ (beta)\n• `$\\gamma$` → $\\gamma$ (gamma)\n• `$\\delta$` → $\\delta$ (delta)\n• `$\\pi$` → $\\pi$ (pi)\n• `$\\theta$` → $\\theta$ (theta)\n• `$\\lambda$` → $\\lambda$ (lambda)\n• `$\\mu$` → $\\mu$ (mu)"
+            },
+            {
+              "type": "knowledge",
+              "content": "**Common Uppercase Greek Letters**\n\n• `$\\Gamma$` → $\\Gamma$ (Gamma)\n• `$\\Delta$` → $\\Delta$ (Delta)\n• `$\\Theta$` → $\\Theta$ (Theta)\n• `$\\Lambda$` → $\\Lambda$ (Lambda)\n• `$\\Pi$` → $\\Pi$ (Pi)\n• `$\\Sigma$` → $\\Sigma$ (Sigma)\n• `$\\Omega$` → $\\Omega$ (Omega)"
+            },
+            {
+              "type": "knowledge",
+              "content": "**Common Mathematical Symbols**\n\n• `$\\infty$` → $\\infty$ (infinity)\n• `$\\pm$` → $\\pm$ (plus/minus)\n• `$\\times$` → $\\times$ (multiplication)\n• `$\\div$` → $\\div$ (division)\n• `$\\neq$` → $\\neq$ (not equal)\n• `$\\leq$` → $\\leq$ (less than or equal)\n• `$\\geq$` → $\\geq$ (greater than or equal)\n• `$\\approx$` → $\\approx$ (approximately equal)"
+            },
+            {
+              "type": "practice",
+              "question": "Please enter LaTeX code to represent the Greek letter: π (pi)",
+              "target_formula": "$\\pi$",
+              "hints": [
+                "The LaTeX command for Greek letter π is \\pi",
+                "Use it within math environment",
+                "Complete format: $\\pi$"
+              ],
+              "difficulty": "easy"
+            },
+            {
+              "type": "practice",
+              "question": "Please enter LaTeX code to represent: α + β",
+              "target_formula": "$\\alpha + \\beta$",
+              "hints": [
+                "α is \\alpha, β is \\beta",
+                "Greek letter commands start with backslash",
+                "Complete format: $\\alpha + \\beta$"
+              ],
+              "difficulty": "easy"
+            },
+            {
+              "type": "practice",
+              "question": "Please enter LaTeX code to represent: x ≠ ∞",
+              "target_formula": "$x \\neq \\infty$",
+              "hints": [
+                "Not equal symbol is \\neq",
+                "Infinity symbol is \\infty",
+                "Complete format: $x \\neq \\infty$"
+              ],
+              "difficulty": "medium"
+            },
+            {
+              "type": "practice",
+              "question": "Please enter LaTeX code to represent: Δx ≈ 0",
+              "target_formula": "$\\Delta x \\approx 0$",
+              "hints": [
+                "Capital Delta is \\Delta",
+                "Approximately equal symbol is \\approx",
+                "Complete format: $\\Delta x \\approx 0$"
+              ],
+              "difficulty": "medium"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "677f1a2b3c4d5e6f78901237",
+      "translations": {
+        "en-US": {
+          "title": "Lesson 4: Functions & Trigonometric Functions",
+          "description": "Learn LaTeX notation for function representation, trigonometric functions, logarithmic functions and other common mathematical functions.",
+          "cards": [
+            {
+              "type": "knowledge",
+              "content": "**Function Notation**\n\n• `$f(x)$` → $f(x)$ (function)\n• `$\\sin x$` → $\\sin x$ (sine)\n• `$\\cos x$` → $\\cos x$ (cosine)\n• `$\\tan x$` → $\\tan x$ (tangent)\n• `$\\log x$` → $\\log x$ (logarithm)\n• `$\\ln x$` → $\\ln x$ (natural logarithm)\n• `$\\exp x$` → $\\exp x$ (exponential function)"
+            },
+            {
+              "type": "knowledge",
+              "content": "**Composite Functions & Inverse Functions**\n\n• `$f(g(x))$` → $f(g(x))$ (composite function)\n• `$f^{-1}(x)$` → $f^{-1}(x)$ (inverse function)\n• `$\\sin^2 x$` → $\\sin^2 x$ (sine squared)\n• `$\\arcsin x$` → $\\arcsin x$ (arcsine)\n• `$\\arccos x$` → $\\arccos x$ (arccosine)\n• `$\\arctan x$` → $\\arctan x$ (arctangent)"
+            },
+            {
+              "type": "practice",
+              "question": "Please enter LaTeX code to represent: sin x",
+              "target_formula": "$\\sin x$",
+              "hints": [
+                "Trigonometric functions start with backslash",
+                "Sine function is \\sin",
+                "Complete format: $\\sin x$"
+              ],
+              "difficulty": "easy"
+            },
+            {
+              "type": "practice",
+              "question": "Please enter LaTeX code to represent: f(x) = x²",
+              "target_formula": "$f(x) = x^2$",
+              "hints": [
+                "Function name is written directly, variable in parentheses",
+                "x squared is represented as x^2",
+                "Complete format: $f(x) = x^2$"
+              ],
+              "difficulty": "easy"
+            },
+            {
+              "type": "practice",
+              "question": "Please enter LaTeX code to represent: sin²θ + cos²θ = 1",
+              "target_formula": "$\\sin^2 \\theta + \\cos^2 \\theta = 1$",
+              "hints": [
+                "Square is written after function name: \\sin^2",
+                "θ is Greek letter \\theta",
+                "Complete format: $\\sin^2 \\theta + \\cos^2 \\theta = 1$"
+              ],
+              "difficulty": "medium"
+            },
+            {
+              "type": "practice",
+              "question": "Please enter LaTeX code to represent: ln(e^x) = x",
+              "target_formula": "$\\ln(e^x) = x$",
+              "hints": [
+                "Natural logarithm is \\ln",
+                "e is the natural constant, write directly",
+                "Complete format: $\\ln(e^x) = x$"
+              ],
+              "difficulty": "medium"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "677f1a2b3c4d5e6f78901238",
+      "translations": {
+        "en-US": {
+          "title": "Lesson 5: Summation, Integration & Limits",
+          "description": "Learn LaTeX representation of summation symbols, integral symbols, limit symbols and other advanced mathematical notations.",
+          "cards": [
+            {
+              "type": "knowledge",
+              "content": "**Summation Symbols**\n\n• `$\\sum_{i=1}^{n} x_i$` → $\\sum_{i=1}^{n} x_i$ (finite sum)\n• `$\\sum_{k=0}^{\\infty} \\frac{1}{k!}$` → $\\sum_{k=0}^{\\infty} \\frac{1}{k!}$ (infinite series)\n• `$\\prod_{i=1}^{n} a_i$` → $\\prod_{i=1}^{n} a_i$ (product)"
+            },
+            {
+              "type": "knowledge",
+              "content": "**Integral Symbols**\n\n• `$\\int f(x) dx$` → $\\int f(x) dx$ (indefinite integral)\n• `$\\int_0^1 x^2 dx$` → $\\int_0^1 x^2 dx$ (definite integral)\n• `$\\iint f(x,y) dx dy$` → $\\iint f(x,y) dx dy$ (double integral)\n• `$\\oint f(x) dx$` → $\\oint f(x) dx$ (contour integral)"
+            },
+            {
+              "type": "knowledge",
+              "content": "**Limit Symbols**\n\n• `$\\lim_{x \\to 0} f(x)$` → $\\lim_{x \\to 0} f(x)$ (limit)\n• `$\\lim_{n \\to \\infty} a_n$` → $\\lim_{n \\to \\infty} a_n$ (sequence limit)\n• `$\\lim_{x \\to a^+} f(x)$` → $\\lim_{x \\to a^+} f(x)$ (right limit)\n• `$\\lim_{x \\to a^-} f(x)$` → $\\lim_{x \\to a^-} f(x)$ (left limit)"
+            },
+            {
+              "type": "practice",
+              "question": "Please enter LaTeX code to represent: summation from i=1 to n",
+              "target_formula": "$\\sum_{i=1}^{n}$",
+              "hints": [
+                "Summation symbol uses \\sum command",
+                "Use _ for subscript and ^ for superscript",
+                "Complete format: $\\sum_{i=1}^{n}$"
+              ],
+              "difficulty": "medium"
+            },
+            {
+              "type": "practice",
+              "question": "Please enter LaTeX code to represent: definite integral from 0 to 1",
+              "target_formula": "$\\int_0^1$",
+              "hints": [
+                "Integral symbol uses \\int command",
+                "Lower and upper limits use subscript and superscript",
+                "Complete format: $\\int_0^1$"
+              ],
+              "difficulty": "medium"
+            },
+            {
+              "type": "practice",
+              "question": "Please enter LaTeX code to represent: limit of f(x) as x approaches 0",
+              "target_formula": "$\\lim_{x \\to 0} f(x)$",
+              "hints": [
+                "Limit symbol uses \\lim command",
+                "Approaches symbol is \\to",
+                "Complete format: $\\lim_{x \\to 0} f(x)$"
+              ],
+              "difficulty": "medium"
+            },
+            {
+              "type": "practice",
+              "question": "Please enter LaTeX code to represent: ∫₀¹ x² dx = 1/3",
+              "target_formula": "$\\int_0^1 x^2 dx = \\frac{1}{3}$",
+              "hints": [
+                "Definite integral: \\int_0^1",
+                "x squared: x^2",
+                "One third: \\frac{1}{3}",
+                "Complete format: $\\int_0^1 x^2 dx = \\frac{1}{3}$"
+              ],
+              "difficulty": "hard"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "677f1a2b3c4d5e6f78901239",
+      "translations": {
+        "en-US": {
+          "title": "Lesson 6: Matrices & Vectors",
+          "description": "Learn LaTeX representation of matrices, vectors, determinants and other linear algebra symbols.",
+          "cards": [
+            {
+              "type": "knowledge",
+              "content": "**Matrix Notation**\n\n• `$$\\begin{matrix} a & b \\\\ c & d \\end{matrix}$$` → basic matrix\n• `$$\\begin{pmatrix} a & b \\\\ c & d \\end{pmatrix}$$` → parentheses matrix\n• `$$\\begin{bmatrix} a & b \\\\ c & d \\end{bmatrix}$$` → brackets matrix\n• `$$\\begin{vmatrix} a & b \\\\ c & d \\end{vmatrix}$$` → determinant"
+            },
+            {
+              "type": "knowledge",
+              "content": "**Vector Notation**\n\n• `$\\vec{v}$` → $\\vec{v}$ (vector arrow)\n• `$\\mathbf{v}$` → $\\mathbf{v}$ (bold vector)\n• `$\\overrightarrow{AB}$` → $\\overrightarrow{AB}$ (directed line segment)\n• `$\\hat{i}$` → $\\hat{i}$ (unit vector)\n• `$\\vec{a} \\cdot \\vec{b}$` → $\\vec{a} \\cdot \\vec{b}$ (dot product)\n• `$\\vec{a} \\times \\vec{b}$` → $\\vec{a} \\times \\vec{b}$ (cross product)"
+            },
+            {
+              "type": "practice",
+              "question": "Please enter LaTeX code to represent a 2×2 matrix (with parentheses)",
+              "target_formula": "$\\begin{pmatrix} a & b \\\\ c & d \\end{pmatrix}$",
+              "hints": [
+                "Use \\begin{pmatrix}...\\end{pmatrix} environment",
+                "Matrix elements separated by &, rows separated by \\\\\\\\",
+                "Complete format: $\\begin{pmatrix} a & b \\\\\\\\ c & d \\end{pmatrix}$"
+              ],
+              "difficulty": "hard"
+            },
+            {
+              "type": "practice",
+              "question": "Please enter LaTeX code to represent vector v (with arrow)",
+              "target_formula": "$\\vec{v}$",
+              "hints": [
+                "Vector arrow uses \\vec{} command",
+                "Vector name goes inside braces",
+                "Complete format: $\\vec{v}$"
+              ],
+              "difficulty": "easy"
+            },
+            {
+              "type": "practice",
+              "question": "Please enter LaTeX code to represent dot product of two vectors: a⃗ · b⃗",
+              "target_formula": "$\\vec{a} \\cdot \\vec{b}$",
+              "hints": [
+                "Vectors represented with \\vec{}",
+                "Dot product symbol is \\cdot",
+                "Complete format: $\\vec{a} \\cdot \\vec{b}$"
+              ],
+              "difficulty": "medium"
+            },
+            {
+              "type": "practice",
+              "question": "Please enter LaTeX code to represent 3×3 identity matrix",
+              "target_formula": "$\\begin{pmatrix} 1 & 0 & 0 \\\\ 0 & 1 & 0 \\\\ 0 & 0 & 1 \\end{pmatrix}$",
+              "hints": [
+                "Use pmatrix environment",
+                "Three rows, three columns, diagonal is 1, others are 0",
+                "Each row separated by \\\\\\\\, each column separated by &"
+              ],
+              "difficulty": "hard"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "677f1a2b3c4d5e6f7890123a",
+      "translations": {
+        "en-US": {
+          "title": "Lesson 7: Equation Systems & Inequalities",
+          "description": "Learn LaTeX representation of equation systems, inequality systems, conditional expressions and other complex mathematical structures.",
+          "cards": [
+            {
+              "type": "knowledge",
+              "content": "**Equation System Notation**\n\n• `$$\\begin{cases} x + y = 1 \\\\ x - y = 0 \\end{cases}$$` → binary equation system\n• `$$\\begin{align} x + y &= 1 \\\\ 2x - y &= 3 \\end{align}$$` → aligned equation system\n• `$$\\left\\{\\begin{array}{l} x > 0 \\\\ y > 0 \\end{array}\\right.$$` → condition group"
+            },
+            {
+              "type": "knowledge",
+              "content": "**Inequality Symbols**\n\n• `$<$` → $<$ (less than)\n• `$>$` → $>$ (greater than)\n• `$\\leq$` → $\\leq$ (less than or equal)\n• `$\\geq$` → $\\geq$ (greater than or equal)\n• `$\\ll$` → $\\ll$ (much less than)\n• `$\\gg$` → $\\gg$ (much greater than)\n• `$\\subset$` → $\\subset$ (subset)\n• `$\\supset$` → $\\supset$ (superset)"
+            },
+            {
+              "type": "practice",
+              "question": "Please enter LaTeX code to represent a simple binary equation system",
+              "target_formula": "$\\begin{cases} x + y = 1 \\\\ x - y = 0 \\end{cases}$",
+              "hints": [
+                "Use \\begin{cases}...\\end{cases} environment",
+                "Equations separated by \\\\\\\\",
+                "Complete format: $\\begin{cases} x + y = 1 \\\\\\\\ x - y = 0 \\end{cases}$"
+              ],
+              "difficulty": "hard"
+            },
+            {
+              "type": "practice",
+              "question": "Please enter LaTeX code to represent: 0 ≤ x ≤ 1",
+              "target_formula": "$0 \\leq x \\leq 1$",
+              "hints": [
+                "Less than or equal symbol is \\leq",
+                "Can use inequality symbols consecutively",
+                "Complete format: $0 \\leq x \\leq 1$"
+              ],
+              "difficulty": "easy"
+            },
+            {
+              "type": "practice",
+              "question": "Please enter LaTeX code to represent piecewise function: f(x) = {x² if x≥0; -x² if x<0}",
+              "target_formula": "$f(x) = \\begin{cases} x^2 & \\text{if } x \\geq 0 \\\\ -x^2 & \\text{if } x < 0 \\end{cases}$",
+              "hints": [
+                "Use cases environment",
+                "Conditions wrapped with \\text{}",
+                "& used for alignment",
+                "Complete format: $f(x) = \\begin{cases} x^2 & \\text{if } x \\geq 0 \\\\\\\\ -x^2 & \\text{if } x < 0 \\end{cases}$"
+              ],
+              "difficulty": "hard"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "677f1a2b3c4d5e6f7890123b",
+      "translations": {
+        "en-US": {
+          "title": "Lesson 8: Set Theory & Logic Symbols",
+          "description": "Learn LaTeX representation of set theory symbols, logical operators, quantifiers and other mathematical logic notations.",
+          "cards": [
+            {
+              "type": "knowledge",
+              "content": "**Set Symbols**\n\n• `$\\in$` → $\\in$ (belongs to)\n• `$\\notin$` → $\\notin$ (does not belong to)\n• `$\\subset$` → $\\subset$ (subset)\n• `$\\subseteq$` → $\\subseteq$ (subset or equal)\n• `$\\supset$` → $\\supset$ (superset)\n• `$\\cup$` → $\\cup$ (union)\n• `$\\cap$` → $\\cap$ (intersection)\n• `$\\emptyset$` → $\\emptyset$ (empty set)"
+            },
+            {
+              "type": "knowledge",
+              "content": "**Logic Symbols**\n\n• `$\\land$` → $\\land$ (logical and)\n• `$\\lor$` → $\\lor$ (logical or)\n• `$\\neg$` → $\\neg$ (logical not)\n• `$\\implies$` → $\\implies$ (implies)\n• `$\\iff$` → $\\iff$ (if and only if)\n• `$\\forall$` → $\\forall$ (universal quantifier)\n• `$\\exists$` → $\\exists$ (existential quantifier)\n• `$\\nexists$` → $\\nexists$ (does not exist)"
+            },
+            {
+              "type": "practice",
+              "question": "Please enter LaTeX code to represent: x belongs to A",
+              "target_formula": "$x \\in A$",
+              "hints": [
+                "Belongs to symbol is \\in",
+                "Format: element \\in set",
+                "Complete format: $x \\in A$"
+              ],
+              "difficulty": "easy"
+            },
+            {
+              "type": "practice",
+              "question": "Please enter LaTeX code to represent: A ∪ B (A union B)",
+              "target_formula": "$A \\cup B$",
+              "hints": [
+                "Union symbol is \\cup",
+                "Format: set \\cup set",
+                "Complete format: $A \\cup B$"
+              ],
+              "difficulty": "easy"
+            },
+            {
+              "type": "practice",
+              "question": "Please enter LaTeX code to represent: ∀x ∈ ℝ (for all real numbers x)",
+              "target_formula": "$\\forall x \\in \\mathbb{R}$",
+              "hints": [
+                "Universal quantifier is \\forall",
+                "Real number set is \\mathbb{R}",
+                "Complete format: $\\forall x \\in \\mathbb{R}$"
+              ],
+              "difficulty": "medium"
+            },
+            {
+              "type": "practice",
+              "question": "Please enter LaTeX code to represent: A ⊆ B ⇒ A ∩ B = A",
+              "target_formula": "$A \\subseteq B \\implies A \\cap B = A$",
+              "hints": [
+                "Subset or equal: \\subseteq",
+                "Implies: \\implies, intersection: \\cap",
+                "Complete format: $A \\subseteq B \\implies A \\cap B = A$"
+              ],
+              "difficulty": "hard"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "677f1a2b3c4d5e6f7890123c",
+      "translations": {
+        "en-US": {
+          "title": "Lesson 9: Number Theory & Special Operations",
+          "description": "Learn LaTeX representation of number theory symbols, congruence, Knuth's up-arrow notation, hyperoperations and other advanced mathematical operations.",
+          "cards": [
+            {
+              "type": "knowledge",
+              "content": "**Number Theory Symbols**\n\n• `$a \\mid b$` → $a \\mid b$ (a divides b)\n• `$a \\nmid b$` → $a \\nmid b$ (a does not divide b)\n• `$a \\equiv b \\pmod{n}$` → $a \\equiv b \\pmod{n}$ (congruence)\n• `$\\gcd(a,b)$` → $\\gcd(a,b)$ (greatest common divisor)\n• `$\\lcm(a,b)$` → $\\lcm(a,b)$ (least common multiple)\n• `$\\mathbb{Z}$` → $\\mathbb{Z}$ (integers)\n• `$\\mathbb{N}$` → $\\mathbb{N}$ (natural numbers)"
+            },
+            {
+              "type": "knowledge",
+              "content": "**Knuth's Up-Arrow & Hyperoperations**\n\n• `$a \\uparrow b = a^b$` → $a \\uparrow b = a^b$ (exponentiation, level 3 operation)\n• `$a \\uparrow\\uparrow b$` → $a \\uparrow\\uparrow b$ (tetration, level 4 operation)\n• `$a \\uparrow\\uparrow\\uparrow b$` → $a \\uparrow\\uparrow\\uparrow b$ (level 5 operation)\n• `${}^n a$` → ${}^n a$ (hyperpower)\n• `$a^{(n)} b$` → $a^{(n)} b$ (level n operation)\n• `$\\text{Ack}(m,n)$` → $\\text{Ack}(m,n)$ (Ackermann function)"
+            },
+            {
+              "type": "knowledge",
+              "content": "**Combinatorial Mathematics Symbols**\n\n• `$\\binom{n}{k}$` → $\\binom{n}{k}$ (binomial coefficient)\n• `$n!$` → $n!$ (factorial)\n• `$n!!$` → $n!!$ (double factorial)\n• `$P(n,k)$` → $P(n,k)$ (permutation)\n• `$C(n,k)$` → $C(n,k)$ (combination)\n• `$\\Gamma(n)$` → $\\Gamma(n)$ (gamma function)\n• `$\\zeta(s)$` → $\\zeta(s)$ (Riemann zeta function)"
+            },
+            {
+              "type": "practice",
+              "question": "Please enter LaTeX code to represent: a ≡ b (mod n) (a is congruent to b modulo n)",
+              "target_formula": "$a \\equiv b \\pmod{n}$",
+              "hints": [
+                "Congruence symbol is \\equiv",
+                "Modulo operation uses \\pmod{n}",
+                "Complete format: $a \\equiv b \\pmod{n}$"
+              ],
+              "difficulty": "medium"
+            },
+            {
+              "type": "practice",
+              "question": "Please enter LaTeX code to represent Knuth's up-arrow: 3↑↑4 (tetration of 3 with 4 levels)",
+              "target_formula": "$3 \\uparrow\\uparrow 4$",
+              "hints": [
+                "Knuth's up-arrow uses \\uparrow",
+                "Tetration is two arrows: \\uparrow\\uparrow",
+                "Complete format: $3 \\uparrow\\uparrow 4$"
+              ],
+              "difficulty": "hard"
+            },
+            {
+              "type": "practice",
+              "question": "Please enter LaTeX code to represent binomial coefficient: C(n,k) or \"n choose k\"",
+              "target_formula": "$\\binom{n}{k}$",
+              "hints": [
+                "Binomial coefficient uses \\binom{top}{bottom}",
+                "Also called combination number",
+                "Complete format: $\\binom{n}{k}$"
+              ],
+              "difficulty": "medium"
+            },
+            {
+              "type": "practice",
+              "question": "Please enter LaTeX code to represent: gcd(a,b) = 1 ⇒ a ⊥ b (coprime)",
+              "target_formula": "$\\gcd(a,b) = 1 \\implies a \\perp b$",
+              "hints": [
+                "Greatest common divisor: \\gcd(a,b)",
+                "Implies: \\implies, coprime: \\perp",
+                "Complete format: $\\gcd(a,b) = 1 \\implies a \\perp b$"
+              ],
+              "difficulty": "hard"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "677f1a2b3c4d5e6f7890123d",
+      "translations": {
+        "en-US": {
+          "title": "Lesson 10: Advanced Analysis & Topology",
+          "description": "Learn professional LaTeX symbols in advanced mathematical analysis, topology, functional analysis and other fields.",
+          "cards": [
+            {
+              "type": "knowledge",
+              "content": "**Advanced Integration & Differentiation**\n\n• `$\\partial f / \\partial x$` → $\\partial f / \\partial x$ (partial derivative)\n• `$\\nabla f$` → $\\nabla f$ (gradient)\n• `$\\Delta f$` → $\\Delta f$ (Laplacian)\n• `$\\oint_C f(z) dz$` → $\\oint_C f(z) dz$ (complex integral)\n• `$\\iint_D f(x,y) dx dy$` → $\\iint_D f(x,y) dx dy$ (double integral)\n• `$\\iiint_V f(x,y,z) dx dy dz$` → $\\iiint_V f(x,y,z) dx dy dz$ (triple integral)"
+            },
+            {
+              "type": "knowledge",
+              "content": "**Topology & Geometry Symbols**\n\n• `$\\mathcal{T}$` → $\\mathcal{T}$ (topology)\n• `$\\overline{A}$` → $\\overline{A}$ (closure)\n• `$A^\\circ$` → $A^\\circ$ (interior)\n• `$\\partial A$` → $\\partial A$ (boundary)\n• `$\\mathbb{S}^n$` → $\\mathbb{S}^n$ (n-dimensional sphere)\n• `$\\mathbb{R}^n$` → $\\mathbb{R}^n$ (n-dimensional Euclidean space)\n• `$\\mathbb{C}$` → $\\mathbb{C}$ (complex field)\n• `$\\mathbb{H}$` → $\\mathbb{H}$ (quaternions)"
+            },
+            {
+              "type": "knowledge",
+              "content": "**Functional Analysis Symbols**\n\n• `$\\|x\\|$` → $\\|x\\|$ (norm)\n• `$\\langle x, y \\rangle$` → $\\langle x, y \\rangle$ (inner product)\n• `$L^p(\\Omega)$` → $L^p(\\Omega)$ (Lp space)\n• `$C^\\infty(\\mathbb{R})$` → $C^\\infty(\\mathbb{R})$ (infinitely differentiable functions)\n• `$\\mathcal{H}$` → $\\mathcal{H}$ (Hilbert space)\n• `$\\mathcal{B}(X,Y)$` → $\\mathcal{B}(X,Y)$ (bounded linear operators)\n• `$\\sigma(T)$` → $\\sigma(T)$ (spectrum)"
+            },
+            {
+              "type": "practice",
+              "question": "Please enter LaTeX code to represent partial derivative: ∂f/∂x",
+              "target_formula": "$\\frac{\\partial f}{\\partial x}$",
+              "hints": [
+                "Partial derivative symbol is \\partial",
+                "Use fraction form: \\frac{\\partial f}{\\partial x}",
+                "Complete format: $\\frac{\\partial f}{\\partial x}$"
+              ],
+              "difficulty": "medium"
+            },
+            {
+              "type": "practice",
+              "question": "Please enter LaTeX code to represent gradient: ∇f",
+              "target_formula": "$\\nabla f$",
+              "hints": [
+                "Gradient symbol is \\nabla",
+                "Also called inverted triangle operator",
+                "Complete format: $\\nabla f$"
+              ],
+              "difficulty": "easy"
+            },
+            {
+              "type": "practice",
+              "question": "Please enter LaTeX code to represent inner product: ⟨x, y⟩",
+              "target_formula": "$\\langle x, y \\rangle$",
+              "hints": [
+                "Inner product uses angle brackets: \\langle and \\rangle",
+                "Separated by comma in the middle",
+                "Complete format: $\\langle x, y \\rangle$"
+              ],
+              "difficulty": "medium"
+            },
+            {
+              "type": "practice",
+              "question": "Please enter LaTeX code to represent norm: ‖x‖",
+              "target_formula": "$\\|x\\|$",
+              "hints": [
+                "Norm uses double vertical lines: \\| and \\|",
+                "Surrounds the object to calculate norm of",
+                "Complete format: $\\|x\\|$"
+              ],
+              "difficulty": "easy"
+            }
+          ]
+        }
+      }
+    }
+  ]
+}

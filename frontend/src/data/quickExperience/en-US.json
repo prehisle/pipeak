@@ -1,0 +1,151 @@
+{
+  "questions": [
+    {
+      "id": "qe_1",
+      "question": "Please enter LaTeX code to represent: x squared",
+      "target_formula": "$x^2$",
+      "hints": ["Use ^ symbol for superscript", "Superscript content is 2", "Complete format: $x^2$"],
+      "difficulty": "easy",
+      "lessonTitle": "Basic Syntax"
+    },
+    {
+      "id": "qe_2", 
+      "question": "Please enter LaTeX code to represent: a subscript 1",
+      "target_formula": "$a_1$",
+      "hints": ["Use _ symbol for subscript", "Subscript content is 1", "Complete format: $a_1$"],
+      "difficulty": "easy",
+      "lessonTitle": "Basic Syntax"
+    },
+    {
+      "id": "qe_3",
+      "question": "Please enter LaTeX code to represent: x subscript i squared",
+      "target_formula": "$x_i^2$",
+      "hints": ["First write subscript _i", "Then write superscript ^2", "Complete format: $x_i^2$"],
+      "difficulty": "medium",
+      "lessonTitle": "Basic Syntax"
+    },
+    {
+      "id": "qe_4",
+      "question": "Please enter LaTeX code to represent: one half",
+      "target_formula": "$\\frac{1}{2}$",
+      "hints": ["Use \\frac{numerator}{denominator}", "Numerator is 1, denominator is 2", "Complete format: $\\frac{1}{2}$"],
+      "difficulty": "easy",
+      "lessonTitle": "Fractions & Radicals"
+    },
+    {
+      "id": "qe_5",
+      "question": "Please enter LaTeX code to represent: square root of 2",
+      "target_formula": "$\\sqrt{2}$",
+      "hints": ["Use \\sqrt{} for square root", "Content inside is 2", "Complete format: $\\sqrt{2}$"],
+      "difficulty": "easy",
+      "lessonTitle": "Fractions & Radicals"
+    },
+    {
+      "id": "qe_6",
+      "question": "Please enter LaTeX code to represent: x plus y squared, divided by 2",
+      "target_formula": "$\\frac{(x+y)^2}{2}$",
+      "hints": ["First write numerator (x+y)^2", "Then write denominator 2", "Complete format: $\\frac{(x+y)^2}{2}$"],
+      "difficulty": "medium",
+      "lessonTitle": "Fractions & Radicals"
+    },
+    {
+      "id": "qe_7",
+      "question": "Please enter LaTeX code to represent: cube root of 8",
+      "target_formula": "$\\sqrt[3]{8}$",
+      "hints": ["Use \\sqrt[n]{} for nth root", "Here n is 3", "Complete format: $\\sqrt[3]{8}$"],
+      "difficulty": "medium",
+      "lessonTitle": "Fractions & Radicals"
+    },
+    {
+      "id": "qe_8",
+      "question": "Please enter LaTeX code to represent Greek letter: π (pi)",
+      "target_formula": "$\\pi$",
+      "hints": ["Greek letter π LaTeX command is \\pi", "Complete format: $\\pi$"],
+      "difficulty": "easy",
+      "lessonTitle": "Greek Letters"
+    },
+    {
+      "id": "qe_9",
+      "question": "Please enter LaTeX code to represent: α + β",
+      "target_formula": "$\\alpha + \\beta$",
+      "hints": ["α is \\alpha", "β is \\beta", "Complete format: $\\alpha + \\beta$"],
+      "difficulty": "easy",
+      "lessonTitle": "Greek Letters"
+    },
+    {
+      "id": "qe_10",
+      "question": "Please enter LaTeX code to represent: x ≠ ∞",
+      "target_formula": "$x \\neq \\infty$",
+      "hints": ["Not equal symbol is \\neq", "Infinity symbol is \\infty", "Complete format: $x \\neq \\infty$"],
+      "difficulty": "medium",
+      "lessonTitle": "Operators"
+    },
+    {
+      "id": "qe_11",
+      "question": "Please enter LaTeX code to represent: Δx ≈ 0",
+      "target_formula": "$\\Delta x \\approx 0$",
+      "hints": ["Capital delta is \\Delta", "Approximately equal symbol is \\approx", "Complete format: $\\Delta x \\approx 0$"],
+      "difficulty": "medium",
+      "lessonTitle": "Operators"
+    },
+    {
+      "id": "qe_12",
+      "question": "Please enter LaTeX code to represent: sin x",
+      "target_formula": "$\\sin x$",
+      "hints": ["Sine function is \\sin", "Complete format: $\\sin x$"],
+      "difficulty": "easy",
+      "lessonTitle": "Functions"
+    },
+    {
+      "id": "qe_13",
+      "question": "Please enter LaTeX code to represent: f(x) = x²",
+      "target_formula": "$f(x) = x^2$",
+      "hints": ["Function notation f(x)", "Equal sign and superscript", "Complete format: $f(x) = x^2$"],
+      "difficulty": "easy",
+      "lessonTitle": "Functions"
+    },
+    {
+      "id": "qe_14",
+      "question": "Please enter LaTeX code to represent: sin²θ + cos²θ = 1",
+      "target_formula": "$\\sin^2\\theta + \\cos^2\\theta = 1$",
+      "hints": ["sin² is \\sin^2", "θ is \\theta", "cos² is \\cos^2"],
+      "difficulty": "hard",
+      "lessonTitle": "Functions"
+    },
+    {
+      "id": "qe_15",
+      "question": "Please enter LaTeX code to represent: ln(e^x) = x",
+      "target_formula": "$\\ln(e^x) = x$",
+      "hints": ["Natural logarithm is \\ln", "Natural constant is e", "Complete format: $\\ln(e^x) = x$"],
+      "difficulty": "medium",
+      "lessonTitle": "Functions"
+    }
+  ],
+  "lessons": [
+    {
+      "id": "qe_lesson_1",
+      "title": "Basic Syntax",
+      "description": "Learn basic usage of superscripts and subscripts"
+    },
+    {
+      "id": "qe_lesson_2", 
+      "title": "Fractions & Radicals",
+      "description": "Master LaTeX representation of fractions and radicals"
+    },
+    {
+      "id": "qe_lesson_3",
+      "title": "Greek Letters",
+      "description": "Learn input of common Greek letters"
+    },
+    {
+      "id": "qe_lesson_4",
+      "title": "Operators",
+      "description": "Master representation of mathematical operators"
+    },
+    {
+      "id": "qe_lesson_5",
+      "title": "Functions",
+      "description": "Learn LaTeX syntax for mathematical functions"
+    }
+  ]
+}

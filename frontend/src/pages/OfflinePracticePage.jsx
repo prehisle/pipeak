@@ -5,7 +5,7 @@ import { useDocumentTitle, PAGE_TITLES } from '../hooks/useDocumentTitle'
 import MarkdownRenderer from '../components/MarkdownRenderer'
 import ThemeSwitcher from '../components/ThemeSwitcher'
 import LanguageSwitcher from '../components/LanguageSwitcher'
-import quickExperienceData from '../data/quickExperienceData'
+import { getQuickExperienceData } from '../data/quickExperience'
 import { translateHint, translateAllHintsShown } from '../utils/hintTranslator'
 import { checkAnswerEquivalence } from '../utils/answerValidation'
 
@@ -29,12 +29,12 @@ const OfflinePracticePage = () => {
   const [originalHint, setOriginalHint] = useState('') // 存储原始提示内容用于重新翻译
   const [answeredQuestions, setAnsweredQuestions] = useState(0)
 
-  // 从Quick Experience数据中加载练习题
+  // 从Quick Experience数据中加载练习题，根据当前语言动态加载对应数据文件
   useEffect(() => {
-    // 直接使用Quick Experience数据，无需初始化
-    setQuestions(quickExperienceData.questions)
-    console.log(`Quick Experience加载了 ${quickExperienceData.questions.length} 道练习题`)
-  }, [])
+    const data = getQuickExperienceData(i18n.language)
+    setQuestions(data.questions)
+    console.log(`Quick Experience加载了 ${data.questions.length} 道练习题 (${i18n.language})`)
+  }, [i18n.language])
 
   // 监听语言变化，重新翻译当前显示的提示
   useEffect(() => {

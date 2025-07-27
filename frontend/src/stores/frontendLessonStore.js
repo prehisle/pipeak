@@ -54,6 +54,7 @@ const useFrontendLessonStore = create(
       fetchLessons: async () => {
         if (!isRegisteredUser()) {
           console.log('未登录用户，跳过课程数据获取')
+          set({ lessons: [], error: null, isLoading: false })
           return
         }
 
@@ -61,11 +62,16 @@ const useFrontendLessonStore = create(
         try {
           const response = await lessonAPI.getLessons()
           const lessons = response.lessons || []
-          set({ lessons, isLoading: false })
-          console.log(`从API获取了 ${lessons.length} 个课程`)
+          set({ lessons, isLoading: false, error: null })
+          console.log(`从后端API获取了 ${lessons.length} 个课程`)
         } catch (error) {
           console.error('获取课程数据失败:', error)
-          set({ error: error.message, isLoading: false })
+          const errorMessage = error.message || '网络连接失败，请检查网络设置或稍后重试'
+          set({
+            lessons: [],
+            error: errorMessage,
+            isLoading: false
+          })
         }
       },
 
@@ -241,20 +247,19 @@ const useFrontendLessonStore = create(
           const response = await lessonAPI.getLessons()
           const lessons = response.lessons || []
 
-          // 提取已完成的课程ID - 转换为前端课程ID格式
+          // 提取已完成的课程ID - 使用后端真实ID
           const completedLessons = lessons
             .filter(lesson => lesson.is_completed)
-            .map(lesson => `lesson-${lesson.sequence}`)
+            .map(lesson => lesson._id)
 
-          // 构建课程进度对象 - 使用前端课程ID作为键
+          // 构建课程进度对象 - 使用后端真实ID作为键
           const lessonProgress = {}
           lessons.forEach(lesson => {
-            const frontendId = `lesson-${lesson.sequence}`
-            lessonProgress[frontendId] = {
+            lessonProgress[lesson._id] = {
               completed: lesson.is_completed || false,
               completedAt: lesson.completedAt || null,
               practiceProgress: lesson.practiceProgress || {},
-              backendId: lesson._id // 保存后端ID用于API调用
+              sequence: lesson.sequence // 保存序号用于排序
             }
           })
 

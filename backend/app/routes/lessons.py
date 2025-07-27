@@ -23,13 +23,17 @@ def get_lessons():
         if not user:
             return jsonify({'message': '用户不存在'}), 404
 
+        # 获取语言参数
+        lang = request.args.get('lang', 'zh-CN')
+
         # 获取所有课程
         lessons = Lesson.get_all_lessons()
 
         # 转换为字典格式并添加用户进度信息
         lessons_data = []
         for lesson in lessons:
-            lesson_dict = lesson.to_dict()
+            # 使用数据库中的翻译数据
+            lesson_dict = lesson.to_dict(language=lang)
             lesson_dict['is_completed'] = user.is_lesson_completed(lesson._id)
             lesson_dict['is_unlocked'] = True  # 暂时所有课程都解锁，后续可以实现线性解锁
             lessons_data.append(lesson_dict)
@@ -41,6 +45,9 @@ def get_lessons():
 
     except Exception as e:
         return jsonify({'message': f'服务器错误: {str(e)}'}), 500
+
+
+# 旧的硬编码翻译函数已移除，现在使用数据库中的翻译数据
 
 
 @lessons_bp.route('/<lesson_id>', methods=['GET'])

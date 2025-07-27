@@ -64,7 +64,11 @@ class RealApiAdapter {
   // 课程相关方法
   async getLessons() {
     try {
-      const response = await this.api.get('/lessons')
+      // 获取当前语言设置
+      const currentLang = i18n.language || 'zh-CN'
+      const response = await this.api.get('/lessons', {
+        params: { lang: currentLang }
+      })
       return {
         lessons: response.data.lessons || [],
         total_count: response.data.total_count || 0

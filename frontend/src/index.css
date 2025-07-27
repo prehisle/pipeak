@@ -137,6 +137,28 @@ body {
   -moz-osx-font-smoothing: grayscale;
 }
 
+/* 文本选择样式 - 明亮模式 */
+::selection {
+  background-color: #3b82f6;  /* 蓝色背景 */
+  color: #ffffff;             /* 白色文字 */
+}
+
+::-moz-selection {
+  background-color: #3b82f6;  /* 蓝色背景 */
+  color: #ffffff;             /* 白色文字 */
+}
+
+/* 文本选择样式 - 暗黑模式 */
+.dark ::selection {
+  background-color: #60a5fa;  /* 更亮的蓝色背景 */
+  color: #1f2937;             /* 深色文字 */
+}
+
+.dark ::-moz-selection {
+  background-color: #60a5fa;  /* 更亮的蓝色背景 */
+  color: #1f2937;             /* 深色文字 */
+}
+
 /* 通用组件样式 */
 .container {
   max-width: 1200px;

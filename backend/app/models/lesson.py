@@ -9,23 +9,110 @@ from app import get_db
 class Lesson:
     """课程模型类"""
     
-    def __init__(self, title=None, sequence=None, description=None, cards=None, _id=None, created_at=None):
+    def __init__(self, title=None, sequence=None, description=None, cards=None, _id=None, created_at=None,
+                 title_en=None, description_en=None, cards_en=None):
         self._id = _id or ObjectId()
         self.title = title
         self.sequence = sequence  # 课程顺序，用于线性学习
         self.description = description
         self.cards = cards or []  # 课程卡片列表
+        # 多语言支持
+        self.title_en = title_en
+        self.description_en = description_en
+        self.cards_en = cards_en or []
         self.created_at = created_at or datetime.utcnow()
     
-    def to_dict(self):
-        """转换为字典格式"""
+    def to_dict(self, language='zh-CN'):
+        """转换为字典格式，支持多语言"""
+        # 根据语言选择对应的字段
+        if language == 'en-US' and self.title_en:
+            title = self.title_en
+            description = self.description_en
+            cards = self.cards_en if self.cards_en else self.cards
+        else:
+            title = self.title
+            description = self.description
+            cards = self.cards
+
+        # 将cards转换为前端期望的格式
+        # 前端期望的是知识点和练习题混合的结构，每个卡片都是一个独立的知识点
+        knowledge_points = []
+        knowledge_point_counter = 0
+        practice_counter = 0
+
+        for i, card in enumerate(cards):
+            if card['type'] == 'knowledge':
+                knowledge_point_counter += 1
+                # 根据语言返回合适的标题
+                if language == 'en-US' and hasattr(self, 'cards_en') and self.cards_en and i < len(self.cards_en):
+                    en_card = self.cards_en[i]
+                    kp_title = en_card.get('title', f'Knowledge Point {knowledge_point_counter}')
+                    kp_content = en_card.get('content', '')
+                else:
+                    kp_title = card.get('title', f'知识点 {knowledge_point_counter}')
+                    kp_content = card.get('content', '')
+
+                knowledge_points.append({
+                    'id': f"{str(self._id)}_knowledge_{i}",
+                    'title': kp_title,
+                    'content': kp_content,
+                    'titleKey': card.get('titleKey'),
+                    'contentKey': card.get('contentKey'),
+                    'exercises': []  # 知识点类型没有练习题
+                })
+            elif card['type'] == 'practice':
+                practice_counter += 1
+                # 根据语言返回合适的练习题标题和内容
+                if language == 'en-US' and hasattr(self, 'cards_en') and self.cards_en and i < len(self.cards_en):
+                    en_card = self.cards_en[i]
+                    practice_title = f'Practice Exercise {practice_counter}'
+                    question = en_card.get('question', card.get('question', ''))
+                    hints = en_card.get('hints', card.get('hints', []))
+                else:
+                    practice_title = f'练习题 {practice_counter}'
+                    question = card.get('question', '')
+                    hints = card.get('hints', [])
+
+                # 练习题也作为一个知识点，但包含exercises数组
+                knowledge_points.append({
+                    'id': f"{str(self._id)}_practice_{i}",
+                    'title': practice_title,
+                    'content': '',
+                    'exercises': [{
+                        'id': f"{str(self._id)}_exercise_{i}",
+                        'question': question,
+                        'target_formula': card.get('target_formula', ''),
+                        'hints': hints,
+                        'difficulty': card.get('difficulty', 'easy')
+                    }]
+                })
+
+        # 为了向后兼容，也生成分离的exercises数组
+        exercises = []
+        for i, card in enumerate(cards):
+            if card['type'] == 'practice':
+                exercises.append({
+                    'id': f"{str(self._id)}_practice_{i}",
+                    'question': card.get('question', ''),
+                    'target_formula': card.get('target_formula', ''),
+                    'hints': card.get('hints', []),
+                    'difficulty': card.get('difficulty', 'easy')
+                })
+
         return {
-            '_id': str(self._id),
-            'title': self.title,
+            'id': str(self._id),  # 前端期望的字段名
+            '_id': str(self._id),  # 保留原字段名以兼容
+            'title': title,  # 课程主标题（根据语言选择）
             'sequence': self.sequence,
-            'description': self.description,
-            'cards': self.cards,
-            'created_at': self.created_at.isoformat()
+            'description': description,  # 课程描述（根据语言选择）
+            'cards': cards,  # 保留原始cards数据
+            'knowledgePoints': knowledge_points,  # 前端期望的格式
+            'exercises': exercises,  # 前端期望的格式
+            'created_at': self.created_at.isoformat(),
+            # 多语言字段
+            'title_en': self.title_en,
+            'description_en': self.description_en,
+            'has_translation': bool(self.title_en)
         }
     
     @classmethod
@@ -37,6 +124,10 @@ class Lesson:
         lesson.sequence = data.get('sequence')
         lesson.description = data.get('description')
         lesson.cards = data.get('cards', [])
+        # 多语言字段
+        lesson.title_en = data.get('title_en')
+        lesson.description_en = data.get('description_en')
+        lesson.cards_en = data.get('cards_en', [])
         lesson.created_at = data.get('created_at', datetime.utcnow())
         return lesson
     
@@ -48,6 +139,9 @@ class Lesson:
             'sequence': self.sequence,
             'description': self.description,
             'cards': self.cards,
+            'title_en': self.title_en,
+            'description_en': self.description_en,
+            'cards_en': self.cards_en,
             'created_at': self.created_at
         }
         

@@ -76,6 +76,7 @@ def reset_database():
     """强制重新初始化数据库 - 使用comprehensive_lessons.py中的完整课程数据"""
     try:
         from app import get_db
+        from bson import ObjectId
         import sys
         import os
 
@@ -103,6 +104,42 @@ def reset_database():
         # 插入课程数据
         result = db.lessons.insert_many(lessons)
 
+        # 自动导入英文翻译数据
+        translation_count = 0
+        try:
+            import json
+            with open('translations/lessons_en_US.json', 'r', encoding='utf-8') as f:
+                translation_data = json.load(f)
+
+            # 按照课程顺序匹配翻译数据，而不是依赖ID
+            for i, lesson_data in enumerate(translation_data['lessons']):
+                # 查找对应序号的课程
+                existing_lesson = db.lessons.find_one({'sequence': i + 1})
+                if existing_lesson:
+                    # 更新翻译数据
+                    update_data = {}
+                    translations = lesson_data.get('translations', {})
+
+                    for lang, trans_data in translations.items():
+                        if lang == 'en-US':
+                            if 'title' in trans_data:
+                                update_data['title_en'] = trans_data['title']
+                            if 'description' in trans_data:
+                                update_data['description_en'] = trans_data['description']
+                            if 'cards' in trans_data:
+                                update_data['cards_en'] = trans_data['cards']
+
+                    if update_data:
+                        update_result = db.lessons.update_one(
+                            {'_id': existing_lesson['_id']},
+                            {'$set': update_data}
+                        )
+                        if update_result.modified_count > 0:
+                            translation_count += 1
+                            print(f"导入第{i+1}课的英文翻译: {trans_data.get('title', 'Unknown')}")
+        except Exception as e:
+            print(f"导入翻译数据时出错: {str(e)}")
+
         # 创建管理员用户
         from datetime import datetime
         from bson import ObjectId
@@ -127,8 +164,9 @@ def reset_database():
         db.users.insert_one(admin_user)
 
         return {
-            'message': 'Database reset with comprehensive lessons successfully',
+            'message': 'Database reset with comprehensive lessons and translations successfully',
             'lesson_count': len(result.inserted_ids),
+            'translation_count': translation_count,
             'lessons': [lesson['title'] for lesson in lessons[:5]]  # 显示前5课标题
         }
 

@@ -23,7 +23,10 @@ class Config:
     
     # CORS 配置
     CORS_ORIGINS = os.environ.get('CORS_ORIGINS', 'http://localhost:5173').split(',')
-    
+
+    # 管理后台配置
+    ADMIN_PASSWORD = os.environ.get('ADMIN_PASSWORD', 'admin123')
+
     # 应用配置
     DEBUG = False
     TESTING = False
