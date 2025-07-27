@@ -3,6 +3,7 @@ import { useParams, useNavigate, Link } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { useDocumentTitle, PAGE_TITLES } from '../hooks/useDocumentTitle'
 import useFrontendLessonStore from '../stores/frontendLessonStore'
+import { useAuthStore } from '../stores/authStore'
 import LoadingSpinner from '../components/LoadingSpinner'
 import MarkdownRenderer from '../components/MarkdownRenderer'
 import PracticeCard from '../components/PracticeCard'
@@ -10,6 +11,7 @@ import { useToast } from '../components/Toast'
 import LessonCompleteModal from '../components/LessonCompleteModal'
 import LessonSkeleton from '../components/LessonSkeleton'
 import ResponsiveNavigation, { useDeviceType } from '../components/ResponsiveNavigation'
+import { learningAPI } from '../services/api'
 
 const LessonPage = () => {
   const { lessonId } = useParams()
@@ -28,17 +30,23 @@ const LessonPage = () => {
   // 设备类型检测
   const deviceType = useDeviceType()
 
+  // 认证状态
+  const { user } = useAuthStore()
+  const isLoggedIn = !!user
+
   const {
     currentLesson,
     currentKnowledgePointIndex,
-    initializeLessons,
+    fetchLessons,
     setCurrentLesson,
     setCurrentKnowledgePointIndex,
     completeKnowledgePoint,
     completeLesson,
     isLessonCompleted,
     isKnowledgePointCompleted,
-    getLessonProgress
+    getLessonProgress,
+    isLoading,
+    error
   } = useFrontendLessonStore()
 
   // 设置动态页面标题
@@ -48,8 +56,8 @@ const LessonPage = () => {
 
   // 初始化课程数据
   useEffect(() => {
-    initializeLessons(i18n.language)
-  }, [i18n.language, initializeLessons])
+    fetchLessons()
+  }, [fetchLessons])
 
   // 监听语言变化并更新课程内容
   useEffect(() => {
@@ -66,6 +74,26 @@ const LessonPage = () => {
 
   // 键盘导航支持
   useEffect(() => {
+    const handleNextKnowledgePoint = () => {
+      if (currentLesson && currentKnowledgePointIndex < currentLesson.knowledgePoints.length - 1 && !isTransitioning) {
+        setIsTransitioning(true)
+        setTimeout(() => {
+          setCurrentKnowledgePointIndex(currentKnowledgePointIndex + 1)
+          setIsTransitioning(false)
+        }, 150)
+      }
+    }
+
+    const handlePrevKnowledgePoint = () => {
+      if (currentKnowledgePointIndex > 0 && !isTransitioning) {
+        setIsTransitioning(true)
+        setTimeout(() => {
+          setCurrentKnowledgePointIndex(currentKnowledgePointIndex - 1)
+          setIsTransitioning(false)
+        }, 150)
+      }
+    }
+
     const handleKeyPress = (event) => {
       if (!currentLesson) return
 
@@ -105,7 +133,7 @@ const LessonPage = () => {
 
     window.addEventListener('keydown', handleKeyPress)
     return () => window.removeEventListener('keydown', handleKeyPress)
-  }, [currentLesson, currentKnowledgePointIndex, navigate])
+  }, [currentLesson, currentKnowledgePointIndex, isTransitioning, setCurrentKnowledgePointIndex, navigate])
 
   const handleNextKnowledgePoint = () => {
     if (currentLesson && currentKnowledgePointIndex < currentLesson.knowledgePoints.length - 1 && !isTransitioning) {
@@ -147,8 +175,8 @@ const LessonPage = () => {
         showSuccess(t('lessonPage.knowledgePointCompleted'))
 
         // 检查是否应该完成整个课程
-        setTimeout(() => {
-          checkAndCompleteLesson()
+        setTimeout(async () => {
+          await checkAndCompleteLesson()
         }, 500) // 稍微延迟以确保状态更新完成
       }
 
@@ -162,22 +190,25 @@ const LessonPage = () => {
   }
 
   // 检查并自动完成课程
-  const checkAndCompleteLesson = () => {
+  const checkAndCompleteLesson = async () => {
     if (!currentLesson) return
 
-    // 统计课程中的所有练习题
+    // 统计课程中的所有练习题（仅登录用户）
     let totalPractices = 0
     let completedPractices = 0
 
-    currentLesson.knowledgePoints.forEach((kp) => {
-      if (kp.exercises && kp.exercises.length > 0) {
-        totalPractices++
-        // 检查这个知识点是否已完成（前端状态）
-        if (isKnowledgePointCompleted(kp.id)) {
-          completedPractices++
-        }
-      }
-    })
+    try {
+      const response = await learningAPI.getCompletionStatus(currentLesson.id)
+      const completionStatus = response.data
+
+      // 使用后端返回的统计数据
+      totalPractices = completionStatus.total_practices || 0
+      completedPractices = completionStatus.completed_practices || 0
+    } catch (error) {
+      console.error('获取课程完成状态失败:', error)
+      showError('获取课程完成状态失败')
+      return
+    }
 
     console.log(`课程完成检查: ${completedPractices}/${totalPractices} 练习题已完成`)
 
@@ -203,23 +234,26 @@ const LessonPage = () => {
     }
   }
 
-  // 处理课程完成 - 基于前端状态检查所有练习题是否完成
+  // 处理课程完成 - 基于后端状态检查所有练习题是否完成
   const handleCompleteLesson = async () => {
     if (!currentLesson) return
 
-    // 统计课程中的所有练习题
+    // 统计课程中的所有练习题（仅登录用户）
     let totalPractices = 0
     let completedPractices = 0
 
-    currentLesson.knowledgePoints.forEach((kp, index) => {
-      if (kp.exercises && kp.exercises.length > 0) {
-        totalPractices++
-        // 检查这个知识点是否已完成（前端状态）
-        if (isKnowledgePointCompleted(kp.id)) {
-          completedPractices++
-        }
-      }
-    })
+    try {
+      const response = await learningAPI.getCompletionStatus(currentLesson.id)
+      const completionStatus = response.data
+
+      // 使用后端返回的统计数据
+      totalPractices = completionStatus.total_practices || 0
+      completedPractices = completionStatus.completed_practices || 0
+    } catch (error) {
+      console.error('获取课程完成状态失败:', error)
+      showError('获取课程完成状态失败')
+      return
+    }
 
     if (completedPractices === totalPractices) {
       // 所有练习题都已完成，可以完成课程
@@ -328,10 +362,10 @@ const LessonPage = () => {
                         {t('lessonPage.knowledgePoint', { index: currentKnowledgePointIndex + 1 })}
                       </h3>
                       <h4 className="text-lg font-medium text-blue-800 dark:text-blue-200 mb-4">
-                        {currentKnowledgePoint.title}
+                        {currentKnowledgePoint.titleKey ? t(currentKnowledgePoint.titleKey) : currentKnowledgePoint.title}
                       </h4>
                       <div className="text-blue-800 dark:text-blue-200 text-base leading-relaxed overflow-visible">
-                        <MarkdownRenderer content={currentKnowledgePoint.content} theme="default" />
+                        <MarkdownRenderer content={currentKnowledgePoint.contentKey ? t(currentKnowledgePoint.contentKey) : currentKnowledgePoint.content} theme="default" />
                       </div>
                     </div>
                   </div>
@@ -343,14 +377,14 @@ const LessonPage = () => {
             {currentKnowledgePoint.exercises && currentKnowledgePoint.exercises.length > 0 && (
               <div className="space-y-4">
                 {currentKnowledgePoint.exercises.map((exercise, index) => {
-                  // 计算当前练习题在整个课程中的序号（用于显示）
+                  // 计算当前练习题在整个课程中的序号（用于显示）- 与导航按钮逻辑保持一致
                   let practiceIndex = 0;
                   for (let i = 0; i < currentKnowledgePointIndex; i++) {
                     if (currentLesson.knowledgePoints[i].exercises && currentLesson.knowledgePoints[i].exercises.length > 0) {
-                      practiceIndex += currentLesson.knowledgePoints[i].exercises.length;
+                      practiceIndex++;
                     }
                   }
-                  practiceIndex += index + 1; // +1 因为练习题编号从1开始
+                  practiceIndex++; // 当前练习题的编号
 
                   // 计算当前练习题在后端课程卡片数组中的实际索引
                   // 前端knowledgePoints索引 = 后端cards索引（因为转换时保持了顺序）
@@ -364,6 +398,7 @@ const LessonPage = () => {
                       lessonId={currentLesson.id}
                       knowledgePointId={currentKnowledgePoint.id}
                       cardIndex={cardIndex}
+                      practiceIndex={practiceIndex}
                       onComplete={handlePracticeComplete}
                     />
                   );

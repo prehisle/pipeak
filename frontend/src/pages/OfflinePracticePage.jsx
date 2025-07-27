@@ -5,13 +5,13 @@ import { useDocumentTitle, PAGE_TITLES } from '../hooks/useDocumentTitle'
 import MarkdownRenderer from '../components/MarkdownRenderer'
 import ThemeSwitcher from '../components/ThemeSwitcher'
 import LanguageSwitcher from '../components/LanguageSwitcher'
-import useFrontendLessonStore from '../stores/frontendLessonStore'
+import quickExperienceData from '../data/quickExperienceData'
 import { translateHint, translateAllHintsShown } from '../utils/hintTranslator'
+import { checkAnswerEquivalence } from '../utils/answerValidation'
 
 const OfflinePracticePage = () => {
   const navigate = useNavigate()
   const { t, i18n } = useTranslation()
-  const { initializeLessons, lessons } = useFrontendLessonStore()
 
   // 设置动态页面标题
   useDocumentTitle(PAGE_TITLES.PRACTICE)
@@ -29,11 +29,12 @@ const OfflinePracticePage = () => {
   const [originalHint, setOriginalHint] = useState('') // 存储原始提示内容用于重新翻译
   const [answeredQuestions, setAnsweredQuestions] = useState(0)
 
-  // 从本地课程数据中提取所有练习题
+  // 从Quick Experience数据中加载练习题
   useEffect(() => {
-    // 初始化课程数据
-    initializeLessons(i18n.language)
-  }, [i18n.language, initializeLessons])
+    // 直接使用Quick Experience数据，无需初始化
+    setQuestions(quickExperienceData.questions)
+    console.log(`Quick Experience加载了 ${quickExperienceData.questions.length} 道练习题`)
+  }, [])
 
   // 监听语言变化，重新翻译当前显示的提示
   useEffect(() => {
@@ -54,72 +55,9 @@ const OfflinePracticePage = () => {
     }
   }, [i18n.language, showHint, originalHint, t])
 
-  useEffect(() => {
-    if (!lessons || lessons.length === 0) return
 
-    const loadQuestions = () => {
-      try {
-        const allQuestions = []
-
-        // 提取所有练习题
-        lessons.forEach((lesson) => {
-          lesson.knowledgePoints.forEach((kp) => {
-            if (kp.exercises) {
-              kp.exercises.forEach((exercise, exerciseIndex) => {
-                allQuestions.push({
-                  id: `${lesson.id}_${kp.id}_${exerciseIndex}`,
-                  lessonId: lesson.id,
-                  cardIndex: exerciseIndex,
-                  question: exercise.question,
-                  target_formula: exercise.target_formula || exercise.target || exercise.answer,
-                  // 统一处理提示数据：支持hints数组和单个hint字符串
-                  hints: exercise.hints || (exercise.hint ? [exercise.hint] : []),
-                  lessonTitle: lesson.title
-                })
-              })
-            }
-          })
-        })
-
-        // 限制为10道题（快速体验）
-        const limitedQuestions = allQuestions.slice(0, 10)
-        console.log(`总共加载了 ${allQuestions.length} 道练习题，限制为 ${limitedQuestions.length} 道`)
-        setQuestions(limitedQuestions)
-      } catch (error) {
-        console.error('加载练习题失败:', error)
-        console.error('错误详情:', error.stack)
-      }
-    }
-
-    loadQuestions()
-  }, [lessons])
 
   const currentQuestion = questions[currentQuestionIndex]
-
-  // 答案等价性检查函数
-  const checkAnswerEquivalence = (userAnswer, targetAnswer) => {
-    // 标准化函数：移除多余空格，统一格式
-    const normalize = (str) => {
-      return str
-        .replace(/\s+/g, '') // 移除所有空格
-        .toLowerCase() // 转换为小写
-        .replace(/^\$+|\$+$/g, '') // 移除开头和结尾的美元符号
-    }
-
-    const normalizedUser = normalize(userAnswer)
-    const normalizedTarget = normalize(targetAnswer)
-
-    // 直接比较标准化后的字符串
-    if (normalizedUser === normalizedTarget) {
-      return true
-    }
-
-    // 检查是否只是美元符号的差异
-    const userWithDollar = `$${normalizedUser}$`
-    const targetWithDollar = `$${normalizedTarget}$`
-
-    return normalize(userWithDollar) === normalize(targetWithDollar)
-  }
 
   const handleSubmit = async () => {
     if (!userAnswer.trim()) {
@@ -419,7 +357,7 @@ const OfflinePracticePage = () => {
                   )}
                   {!isCorrect && (
                     <p className="text-xs mt-1 opacity-80">
-                      💡 提示：检查LaTeX语法，或点击"获取提示"按钮
+                      {t('practice.incorrectHint')}
                     </p>
                   )}
                 </div>

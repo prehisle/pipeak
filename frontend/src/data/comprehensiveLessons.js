@@ -1,5 +1,12 @@
 // 完整的10课程体系 - 从后端comprehensive_lessons.py转换而来
 // 支持国际化的前端课程数据
+//
+// ⚠️ 已弃用：此文件已被重构，不再使用
+// 新的数据架构：
+// - 登录前：使用 quickExperienceData.js (Quick Experience)
+// - 登录后：从后端API获取所有课程数据
+//
+// 此文件保留作为参考，可以安全删除
 
 // 从后端数据转换为前端格式的函数
 function convertBackendToFrontend(backendLessons) {
@@ -13,8 +20,10 @@ function convertBackendToFrontend(backendLessons) {
         // 知识点卡片：转换为纯知识点（无练习题）
         knowledgePoints.push({
           id: `kp-${lesson.sequence}-${knowledgePointIndex}`,
-          title: card.title || extractTitleFromContent(card.content),
+          title: card.title || (card.content ? extractTitleFromContent(card.content) : '知识点'),
           content: card.content,
+          titleKey: card.titleKey, // 支持翻译键
+          contentKey: card.contentKey, // 支持翻译键
           exercises: [] // 纯知识点，无练习题
         })
         knowledgePointIndex++
@@ -49,6 +58,9 @@ function convertBackendToFrontend(backendLessons) {
 
 // 从内容中提取标题的辅助函数
 function extractTitleFromContent(content) {
+  if (!content || typeof content !== 'string') {
+    return '知识点'
+  }
   const match = content.match(/\*\*(.*?)\*\*/)
   return match ? match[1] : '知识点'
 }
@@ -63,13 +75,13 @@ const backendLessonsData = [
     cards: [
       {
         type: 'knowledge',
-        title: 'LaTeX数学环境',
-        content: 'LaTeX数学公式需要在特定环境中编写：\n\n• **行内公式**：使用 `$...$` 包围，如 `$x^2$` → $x^2$\n• **独立公式**：使用 `$$...$$` 包围，如 `$$E = mc^2$$` → $$E = mc^2$$'
+        titleKey: 'knowledgeContent.lesson1.mathEnvironment.title',
+        contentKey: 'knowledgeContent.lesson1.mathEnvironment.content'
       },
       {
         type: 'knowledge',
-        title: '上标和下标',
-        content: '• 上标使用 `^` 符号：`$x^2$` → $x^2$\n• 下标使用 `_` 符号：`$x_1$` → $x_1$\n• 同时使用：`$x_1^2$` → $x_1^2$'
+        titleKey: 'knowledgeContent.lesson1.superscriptSubscript.title',
+        contentKey: 'knowledgeContent.lesson1.superscriptSubscript.content'
       },
       {
         type: 'practice',
@@ -103,11 +115,13 @@ const backendLessonsData = [
     cards: [
       {
         type: 'knowledge',
-        content: '使用 `\\frac{分子}{分母}` 命令：\n\n• `$\\frac{1}{2}$` → $\\frac{1}{2}$\n• `$\\frac{a+b}{c-d}$` → $\\frac{a+b}{c-d}$\n• `$\\frac{x^2}{y^3}$` → $\\frac{x^2}{y^3}$'
+        titleKey: 'knowledgeContent.lesson2.fractions.title',
+        contentKey: 'knowledgeContent.lesson2.fractions.content'
       },
       {
         type: 'knowledge',
-        content: '使用 `\\sqrt{}` 命令：\n\n• `$\\sqrt{x}$` → $\\sqrt{x}$ (平方根)\n• `$\\sqrt[3]{x}$` → $\\sqrt[3]{x}$ (三次根)\n• `$\\sqrt{x^2 + y^2}$` → $\\sqrt{x^2 + y^2}$'
+        titleKey: 'knowledgeContent.lesson2.radicals.title',
+        contentKey: 'knowledgeContent.lesson2.radicals.content'
       },
       {
         type: 'practice',
@@ -148,15 +162,18 @@ const backendLessonsData = [
     cards: [
       {
         type: 'knowledge',
-        content: '• `$\\alpha$` → $\\alpha$ (阿尔法)\n• `$\\beta$` → $\\beta$ (贝塔)\n• `$\\gamma$` → $\\gamma$ (伽马)\n• `$\\delta$` → $\\delta$ (德尔塔)\n• `$\\pi$` → $\\pi$ (派)\n• `$\\theta$` → $\\theta$ (西塔)\n• `$\\lambda$` → $\\lambda$ (兰姆达)\n• `$\\mu$` → $\\mu$ (缪)'
+        titleKey: 'knowledgeContent.lesson3.greekLetters.title',
+        contentKey: 'knowledgeContent.lesson3.greekLetters.content'
       },
       {
         type: 'knowledge',
-        content: '• `$\\Gamma$` → $\\Gamma$ (大伽马)\n• `$\\Delta$` → $\\Delta$ (大德尔塔)\n• `$\\Theta$` → $\\Theta$ (大西塔)\n• `$\\Lambda$` → $\\Lambda$ (大兰姆达)\n• `$\\Pi$` → $\\Pi$ (大派)\n• `$\\Sigma$` → $\\Sigma$ (大西格马)\n• `$\\Omega$` → $\\Omega$ (大欧米伽)'
+        titleKey: 'knowledgeContent.lesson3.capitalGreekLetters.title',
+        contentKey: 'knowledgeContent.lesson3.capitalGreekLetters.content'
       },
       {
         type: 'knowledge',
-        content: '**常用数学符号**\n\n• `$\\infty$` → $\\infty$ (无穷)\n• `$\\pm$` → $\\pm$ (正负)\n• `$\\times$` → $\\times$ (乘号)\n• `$\\div$` → $\\div$ (除号)\n• `$\\neq$` → $\\neq$ (不等于)\n• `$\\leq$` → $\\leq$ (小于等于)\n• `$\\geq$` → $\\geq$ (大于等于)\n• `$\\approx$` → $\\approx$ (约等于)'
+        titleKey: 'knowledgeContent.lesson3.commonSymbols.title',
+        contentKey: 'knowledgeContent.lesson3.commonSymbols.content'
       },
       {
         type: 'practice',
@@ -559,53 +576,62 @@ const translateExercise = (exercise) => {
 
 // 翻译知识点的函数
 const translateKnowledgePoint = (kp) => {
+  // 如果知识点使用翻译键，直接返回（翻译将在渲染时处理）
+  if (kp.titleKey || kp.contentKey) {
+    return {
+      ...kp,
+      exercises: kp.exercises?.map(translateExercise) || []
+    }
+  }
+
+  // 对于旧的硬编码内容，进行翻译
   return {
     ...kp,
     title: kp.title
-      .replace('练习：', 'Exercise: ')
-      .replace('LaTeX数学环境', 'LaTeX Math Environment')
-      .replace('上标和下标', 'Superscripts and Subscripts')
-      .replace('分数表示法', 'Fraction Notation')
-      .replace('根号表示法', 'Radical Notation')
-      .replace('希腊字母', 'Greek Letters')
-      .replace('常用数学符号', 'Common Mathematical Symbols')
-      .replace('函数表示法', 'Function Notation')
-      .replace('三角函数', 'Trigonometric Functions')
-      .replace('求和符号', 'Summation Symbols')
-      .replace('积分符号', 'Integral Symbols')
-      .replace('极限符号', 'Limit Symbols')
-      .replace('矩阵表示法', 'Matrix Notation')
-      .replace('向量表示法', 'Vector Notation')
-      .replace('方程组表示法', 'Equation System Notation')
-      .replace('不等式表示法', 'Inequality Notation')
-      .replace('集合符号', 'Set Symbols')
-      .replace('逻辑符号', 'Logic Symbols')
-      .replace('数论符号', 'Number Theory Symbols')
-      .replace('特殊运算', 'Special Operations')
-      .replace('高级积分与微分', 'Advanced Integration & Differentiation')
-      .replace('拓扑符号', 'Topology Symbols')
+      ?.replace('练习：', 'Exercise: ')
+      ?.replace('LaTeX数学环境', 'LaTeX Math Environment')
+      ?.replace('上标和下标', 'Superscripts and Subscripts')
+      ?.replace('分数表示法', 'Fraction Notation')
+      ?.replace('根号表示法', 'Radical Notation')
+      ?.replace('希腊字母', 'Greek Letters')
+      ?.replace('常用数学符号', 'Common Mathematical Symbols')
+      ?.replace('函数表示法', 'Function Notation')
+      ?.replace('三角函数', 'Trigonometric Functions')
+      ?.replace('求和符号', 'Summation Symbols')
+      ?.replace('积分符号', 'Integral Symbols')
+      ?.replace('极限符号', 'Limit Symbols')
+      ?.replace('矩阵表示法', 'Matrix Notation')
+      ?.replace('向量表示法', 'Vector Notation')
+      ?.replace('方程组表示法', 'Equation System Notation')
+      ?.replace('不等式表示法', 'Inequality Notation')
+      ?.replace('集合符号', 'Set Symbols')
+      ?.replace('逻辑符号', 'Logic Symbols')
+      ?.replace('数论符号', 'Number Theory Symbols')
+      ?.replace('特殊运算', 'Special Operations')
+      ?.replace('高级积分与微分', 'Advanced Integration & Differentiation')
+      ?.replace('拓扑符号', 'Topology Symbols')
       // 练习题标题翻译
-      .replace('x 的平方', 'x squared')
-      .replace('a 下标 1', 'a subscript 1')
-      .replace('x 下标 n 的平方', 'x subscript n squared')
-      .replace('分数 a 分之 b', 'fraction b over a')
-      .replace('根号 x', 'square root of x')
-      .replace('x 加 y 的平方，除以 2', 'x plus y squared, divided by 2')
-      .replace('8 的立方根', 'cube root of 8')
-      .replace('正弦 x', 'sine of x')
-      .replace('x 加 1 的自然对数', 'natural logarithm of x plus 1')
-      .replace('从 0 到 1 对 x 的积分', 'integral from 0 to 1 of x dx')
-      .replace('实数集', 'real numbers set'),
+      ?.replace('x 的平方', 'x squared')
+      ?.replace('a 下标 1', 'a subscript 1')
+      ?.replace('x 下标 n 的平方', 'x subscript n squared')
+      ?.replace('分数 a 分之 b', 'fraction b over a')
+      ?.replace('根号 x', 'square root of x')
+      ?.replace('x 加 y 的平方，除以 2', 'x plus y squared, divided by 2')
+      ?.replace('8 的立方根', 'cube root of 8')
+      ?.replace('正弦 x', 'sine of x')
+      ?.replace('x 加 1 的自然对数', 'natural logarithm of x plus 1')
+      ?.replace('从 0 到 1 对 x 的积分', 'integral from 0 to 1 of x dx')
+      ?.replace('实数集', 'real numbers set') || kp.title,
     content: kp.content
-      .replace('现在让我们通过练习来巩固刚学到的知识。请根据题目要求输入正确的 LaTeX 代码。',
+      ?.replace('现在让我们通过练习来巩固刚学到的知识。请根据题目要求输入正确的 LaTeX 代码。',
                'Now let\'s practice to consolidate what we\'ve learned. Please enter the correct LaTeX code according to the question.')
-      .replace('LaTeX数学公式需要在特定环境中编写', 'LaTeX mathematical formulas need to be written in specific environments')
-      .replace('使用 ^ 符号表示上标', 'Use ^ symbol for superscript')
-      .replace('使用 _ 符号表示下标', 'Use _ symbol for subscript')
-      .replace('使用 \\frac{分子}{分母} 命令', 'Use \\frac{numerator}{denominator} command')
-      .replace('使用 \\sqrt{} 表示平方根', 'Use \\sqrt{} for square root')
-      .replace('使用 \\sqrt[n]{} 表示 n 次方根', 'Use \\sqrt[n]{} for nth root'),
-    exercises: kp.exercises.map(translateExercise)
+      ?.replace('LaTeX数学公式需要在特定环境中编写', 'LaTeX mathematical formulas need to be written in specific environments')
+      ?.replace('使用 ^ 符号表示上标', 'Use ^ symbol for superscript')
+      ?.replace('使用 _ 符号表示下标', 'Use _ symbol for subscript')
+      ?.replace('使用 \\frac{分子}{分母} 命令', 'Use \\frac{numerator}{denominator} command')
+      ?.replace('使用 \\sqrt{} 表示平方根', 'Use \\sqrt{} for square root')
+      ?.replace('使用 \\sqrt[n]{} 表示 n 次方根', 'Use \\sqrt[n]{} for nth root') || kp.content,
+    exercises: kp.exercises?.map(translateExercise) || []
   }
 }
 

@@ -1,7 +1,7 @@
 import { create } from 'zustand'
 import { persist } from 'zustand/middleware'
-import { comprehensiveLessonsData } from '../data/comprehensiveLessons'
 import i18n from '../i18n'
+import { lessonAPI } from '../services/api'
 
 // 获取当前用户ID用于数据隔离
 const getCurrentUserId = () => {
@@ -17,16 +17,31 @@ const getCurrentUserId = () => {
   return 'anonymous'
 }
 
-// 前端课程存储 - 管理课程数据和学习进度
+// 检查是否为注册用户
+const isRegisteredUser = () => {
+  try {
+    const authStorage = localStorage.getItem('auth-storage')
+    if (!authStorage) return false
+
+    const authData = JSON.parse(authStorage)
+    return !!(authData.state?.accessToken && authData.state?.user)
+  } catch (e) {
+    return false
+  }
+}
+
+// 课程进度存储 - 仅管理学习进度，课程数据从API获取
 const useFrontendLessonStore = create(
   persist(
     (set, get) => ({
       // 状态
       currentLanguage: 'zh-CN',
-      lessons: [],
+      lessons: [], // 从API获取的课程数据
       currentLesson: null,
       currentKnowledgePointIndex: 0,
-      
+      isLoading: false,
+      error: null,
+
       // 学习进度 - 存储在本地
       progress: {
         completedLessons: [], // 已完成的课程ID列表
@@ -35,36 +50,32 @@ const useFrontendLessonStore = create(
       },
 
       // 动作
-      // 获取课程数据的辅助函数
-      getLessonsData: (language) => {
-        // 统一使用comprehensiveLessonsData，确保中英文版本题目一致
-        return comprehensiveLessonsData[language] || comprehensiveLessonsData['zh-CN']
+      // 从API获取课程数据
+      fetchLessons: async () => {
+        if (!isRegisteredUser()) {
+          console.log('未登录用户，跳过课程数据获取')
+          return
+        }
+
+        set({ isLoading: true, error: null })
+        try {
+          const response = await lessonAPI.getLessons()
+          const lessons = response.lessons || []
+          set({ lessons, isLoading: false })
+          console.log(`从API获取了 ${lessons.length} 个课程`)
+        } catch (error) {
+          console.error('获取课程数据失败:', error)
+          set({ error: error.message, isLoading: false })
+        }
       },
 
-      // 设置语言并重新加载课程数据
+      // 设置语言
       setLanguage: (language) => {
-        const { getLessonsData } = get()
-        const lessons = getLessonsData(language)
-        const state = get()
-        const currentLessonId = state.currentLesson?.id
-        set({
-          currentLanguage: language,
-          lessons: lessons,
-          currentLesson: currentLessonId ? lessons.find(l => l.id === currentLessonId) : null
-        })
-      },
-
-      // 初始化课程数据
-      initializeLessons: (language) => {
-        const { getLessonsData } = get()
-        // 如果没有指定语言，使用i18n的当前语言
-        const currentLang = language || i18n.language || 'zh-CN'
-        const lessons = getLessonsData(currentLang)
-        console.log('初始化课程数据，语言:', currentLang, '课程数量:', lessons.length)
-        set({
-          currentLanguage: currentLang,
-          lessons: lessons
-        })
+        set({ currentLanguage: language })
+        // 如果是注册用户，重新获取课程数据
+        if (isRegisteredUser()) {
+          get().fetchLessons()
+        }
       },
 
       // 设置当前课程
@@ -110,7 +121,8 @@ const useFrontendLessonStore = create(
       },
 
       // 标记课程为已完成
-      completeLesson: (lessonId) => {
+      completeLesson: async (lessonId) => {
+        // 先更新本地状态
         set((state) => {
           const newCompletedLessons = [...state.progress.completedLessons]
           if (!newCompletedLessons.includes(lessonId)) {
@@ -133,6 +145,18 @@ const useFrontendLessonStore = create(
             }
           }
         })
+
+        // 注册用户同步到后端API
+        if (isRegisteredUser()) {
+          try {
+            console.log('同步课程完成状态到后端:', lessonId)
+            await lessonAPI.completeLesson(lessonId)
+            console.log('课程完成状态同步成功')
+          } catch (error) {
+            console.error('同步课程完成状态到后端失败:', error)
+            // 可以考虑显示错误提示或重试机制
+          }
+        }
       },
 
       // 获取学习统计
@@ -203,24 +227,80 @@ const useFrontendLessonStore = create(
             lessonProgress: {},
           }
         })
+      },
+
+      // 从后端API加载进度数据（注册用户）
+      loadProgressFromAPI: async () => {
+        if (!isRegisteredUser()) {
+          console.log('非注册用户，跳过API加载')
+          return
+        }
+
+        try {
+          console.log('正在从后端API加载进度数据...')
+          const response = await lessonAPI.getLessons()
+          const lessons = response.lessons || []
+
+          // 提取已完成的课程ID - 转换为前端课程ID格式
+          const completedLessons = lessons
+            .filter(lesson => lesson.is_completed)
+            .map(lesson => `lesson-${lesson.sequence}`)
+
+          // 构建课程进度对象 - 使用前端课程ID作为键
+          const lessonProgress = {}
+          lessons.forEach(lesson => {
+            const frontendId = `lesson-${lesson.sequence}`
+            lessonProgress[frontendId] = {
+              completed: lesson.is_completed || false,
+              completedAt: lesson.completedAt || null,
+              practiceProgress: lesson.practiceProgress || {},
+              backendId: lesson._id // 保存后端ID用于API调用
+            }
+          })
+
+          // 更新store状态
+          set(state => ({
+            ...state,
+            progress: {
+              ...state.progress,
+              completedLessons,
+              lessonProgress
+            }
+          }))
+
+          console.log('后端进度数据加载完成:', { completedLessons, lessonProgress })
+        } catch (error) {
+          console.error('从后端API加载进度失败:', error)
+        }
       }
     }),
     {
       name: 'frontend-lesson-storage',
-      partialize: (state) => ({
-        progress: state.progress,
-        currentLanguage: state.currentLanguage
-      }),
+      partialize: (state) => {
+        // 注册用户不持久化progress到localStorage，只持久化语言设置
+        if (isRegisteredUser()) {
+          return {
+            currentLanguage: state.currentLanguage
+          }
+        }
+        // 游客用户持久化所有数据到localStorage
+        return {
+          progress: state.progress,
+          currentLanguage: state.currentLanguage
+        }
+      },
       // 自定义存储，支持用户隔离
       storage: {
         getItem: (name) => {
           const userId = getCurrentUserId()
           const key = `${name}-${userId}`
-          return localStorage.getItem(key)
+          const item = localStorage.getItem(key)
+          return item
         },
         setItem: (name, value) => {
           const userId = getCurrentUserId()
           const key = `${name}-${userId}`
+          // value已经是JSON字符串，直接存储
           localStorage.setItem(key, value)
         },
         removeItem: (name) => {

@@ -15,33 +15,63 @@ const resources = {
   }
 }
 
+// 支持的语言列表
+const SUPPORTED_LANGUAGES = ['zh-CN', 'en-US']
+const DEFAULT_LANGUAGE = 'en-US'
+
 // 智能语言检测函数
 const detectUserLanguage = () => {
-  // 首先检查localStorage中是否有用户手动设置的语言
-  const savedLanguage = localStorage.getItem('i18nextLng')
-  if (savedLanguage && resources[savedLanguage]) {
-    return savedLanguage
-  }
+  try {
+    // 首先检查localStorage中是否有用户手动设置的语言
+    const savedLanguage = localStorage.getItem('i18nextLng')
+    if (savedLanguage && SUPPORTED_LANGUAGES.includes(savedLanguage)) {
+      return savedLanguage
+    }
 
-  // 检查URL参数中是否有测试语言设置
-  const urlParams = new URLSearchParams(window.location.search)
-  const testLang = urlParams.get('testLang')
-  if (testLang) {
-    return testLang === 'en' ? 'en-US' : 'zh-CN'
-  }
+    // 检查URL参数中是否有测试语言设置
+    const urlParams = new URLSearchParams(window.location.search)
+    const testLang = urlParams.get('testLang')
+    if (testLang) {
+      // 标准化测试语言参数
+      const normalizedTestLang = testLang.toLowerCase()
+      if (normalizedTestLang === 'en' || normalizedTestLang === 'en-us') {
+        return 'en-US'
+      } else if (normalizedTestLang === 'zh' || normalizedTestLang === 'zh-cn' || normalizedTestLang === 'cn') {
+        return 'zh-CN'
+      }
+    }
 
-  // 获取浏览器语言
-  const browserLanguage = navigator.language || navigator.userLanguage
+    // 获取浏览器语言列表（按优先级排序）
+    const browserLanguages = navigator.languages || [navigator.language || navigator.userLanguage]
 
-  // 检查是否为中文相关语言
-  const isChineseLanguage = browserLanguage.toLowerCase().includes('zh') ||
-                           browserLanguage.toLowerCase().includes('cn') ||
-                           browserLanguage.toLowerCase().includes('chinese')
+    // 遍历浏览器语言列表，寻找最佳匹配
+    for (const browserLang of browserLanguages) {
+      if (!browserLang) continue
 
-  if (isChineseLanguage) {
-    return 'zh-CN'
-  } else {
-    return 'en-US'
+      const normalizedLang = browserLang.toLowerCase()
+
+      // 精确匹配
+      if (SUPPORTED_LANGUAGES.includes(browserLang)) {
+        return browserLang
+      }
+
+      // 中文语言检测（更精确的匹配）
+      if (normalizedLang.startsWith('zh')) {
+        // zh, zh-CN, zh-TW, zh-HK 等都映射到 zh-CN
+        return 'zh-CN'
+      }
+
+      // 英文语言检测
+      if (normalizedLang.startsWith('en')) {
+        return 'en-US'
+      }
+    }
+
+    // 如果没有匹配到任何语言，返回默认语言
+    return DEFAULT_LANGUAGE
+  } catch (error) {
+    console.warn('Language detection failed, using default language:', error)
+    return DEFAULT_LANGUAGE
   }
 }
 

@@ -4,22 +4,75 @@ import MarkdownRenderer from './MarkdownRenderer'
 import { learningAPI } from '../services/api'
 import { translateHint, translateAllHintsShown } from '../utils/hintTranslator'
 
+// 练习题翻译映射
+const practiceTranslations = {
+  '请输入 LaTeX 代码来表示：x 的平方': 'Please enter LaTeX code to represent: x squared',
+  '请输入 LaTeX 代码来表示：a 下标 1': 'Please enter LaTeX code to represent: a subscript 1',
+  '请输入 LaTeX 代码来表示：x 下标 n 的平方': 'Please enter LaTeX code to represent: x subscript n squared',
+  '请输入 LaTeX 代码来表示分数：二分之一': 'Please enter LaTeX code to represent fraction: one half',
+  '请输入 LaTeX 代码来表示：根号 2': 'Please enter LaTeX code to represent: square root of 2',
+  '请输入 LaTeX 代码来表示：x 加 y 的平方，除以 2': 'Please enter LaTeX code to represent: x plus y squared, divided by 2',
+  '请输入 LaTeX 代码来表示：三次根号下 8': 'Please enter LaTeX code to represent: cube root of 8',
+  '请输入 LaTeX 代码来表示希腊字母：π (圆周率)': 'Please enter LaTeX code to represent Greek letter: π (pi)',
+  '请输入 LaTeX 代码来表示：α + β': 'Please enter LaTeX code to represent: α + β',
+  '请输入 LaTeX 代码来表示：x ≠ ∞': 'Please enter LaTeX code to represent: x ≠ ∞',
+  '请输入 LaTeX 代码来表示：Δx ≈ 0': 'Please enter LaTeX code to represent: Δx ≈ 0',
+  '请输入 LaTeX 代码来表示：sin x': 'Please enter LaTeX code to represent: sin x',
+  '请输入 LaTeX 代码来表示：f(x) = x²': 'Please enter LaTeX code to represent: f(x) = x²',
+  '请输入 LaTeX 代码来表示：sin²θ + cos²θ = 1': 'Please enter LaTeX code to represent: sin²θ + cos²θ = 1',
+  '请输入 LaTeX 代码来表示：ln(e^x) = x': 'Please enter LaTeX code to represent: ln(e^x) = x',
+  '请输入 LaTeX 代码来表示：从 i=1 到 n 的求和': 'Please enter LaTeX code to represent: summation from i=1 to n',
+  '请输入 LaTeX 代码来表示：从 0 到 1 的定积分': 'Please enter LaTeX code to represent: definite integral from 0 to 1',
+  '请输入 LaTeX 代码来表示：当 x 趋向于 0 时 f(x) 的极限': 'Please enter LaTeX code to represent: limit of f(x) as x approaches 0',
+  '请输入 LaTeX 代码来表示：∫₀¹ x² dx = 1/3': 'Please enter LaTeX code to represent: ∫₀¹ x² dx = 1/3',
+  '请输入 LaTeX 代码来表示一个 2×2 矩阵（带圆括号）': 'Please enter LaTeX code to represent a 2×2 matrix (with parentheses)',
+  '请输入 LaTeX 代码来表示向量 v（带箭头）': 'Please enter LaTeX code to represent vector v (with arrow)',
+  '请输入 LaTeX 代码来表示两个向量的点积：a⃗ · b⃗': 'Please enter LaTeX code to represent dot product of two vectors: a⃗ · b⃗',
+  '请输入 LaTeX 代码来表示 3×3 单位矩阵': 'Please enter LaTeX code to represent 3×3 identity matrix'
+}
+
+// 成功提示翻译
+const successMessages = {
+  '🎉 太棒了！答案完全正确！': '🎉 Excellent! Your answer is completely correct!',
+  '🎉 恭喜答对了！': '🎉 Congratulations on getting it right!'
+}
+
 const PracticeCard = forwardRef(({
   card,
   exercise,
   lessonId,
   knowledgePointId,
   cardIndex,
-  onComplete
+  practiceIndex,
+  onComplete,
+  isReviewMode = false // 新增：是否为复习模式
 }, ref) => {
-  const { t } = useTranslation()
+  const { t, i18n } = useTranslation()
 
   // 数据适配器：支持新旧两种数据格式
   const practiceData = exercise || card
   const targetFormula = practiceData?.answer || practiceData?.target_formula || ''
-  const questionText = practiceData?.question || ''
+  const rawQuestionText = practiceData?.question || ''
   const hintText = practiceData?.hint || practiceData?.hints?.[0] || ''
   const difficulty = practiceData?.difficulty || 'easy'
+
+  // 翻译练习题描述
+  const translateQuestionText = (text) => {
+    if (i18n.language === 'en-US' && practiceTranslations[text]) {
+      return practiceTranslations[text]
+    }
+    return text
+  }
+
+  // 翻译成功提示
+  const translateSuccessMessage = (message) => {
+    if (i18n.language === 'en-US' && successMessages[message]) {
+      return successMessages[message]
+    }
+    return message
+  }
+
+  const questionText = translateQuestionText(rawQuestionText)
 
   const [userAnswer, setUserAnswer] = useState('')
   const [isSubmitting, setIsSubmitting] = useState(false)
@@ -212,30 +265,47 @@ const PracticeCard = forwardRef(({
 
     setIsSubmitting(true)
 
+    console.log('=== 调试答案验证 ===')
+    console.log('用户答案:', userAnswer.trim())
+    console.log('目标答案:', targetFormula.trim())
+    console.log('练习数据:', practiceData)
+
     // 使用改进的答案检查逻辑，支持多种正确格式
     const isAnswerCorrect = checkAnswerEquivalence(userAnswer.trim(), targetFormula.trim())
+
+    console.log('答案是否正确:', isAnswerCorrect)
 
     if (isAnswerCorrect) {
       setIsCorrect(true)
       setFeedback(t('practiceCard.correctAnswer'))
 
       // 提交答案到后端API
-      try {
-        await learningAPI.submitAnswer({
-          lesson_id: lessonId,
-          card_index: cardIndex, // cardIndex现在是正确的后端卡片索引
-          user_answer: userAnswer.trim()
-        })
-        console.log('练习答案已提交到后端')
-      } catch (error) {
-        console.error('提交练习答案失败:', error)
-        // 即使提交失败，也继续本地流程
+      if (!isReviewMode) {
+        // 学习模式：提交到学习API
+        try {
+          await learningAPI.submitAnswer({
+            lesson_id: lessonId,
+            card_index: cardIndex, // cardIndex现在是正确的后端卡片索引
+            user_answer: userAnswer.trim()
+          })
+          console.log('练习答案已提交到后端')
+        } catch (error) {
+          console.error('提交练习答案失败:', error)
+          // 即使提交失败，也继续本地流程
+        }
       }
+      // 复习模式：不在这里提交，由父组件的onComplete回调处理
 
       // 调用父组件的完成回调
       if (onComplete) {
         setTimeout(() => {
-          onComplete(true, false) // false 表示非立即执行
+          if (isReviewMode) {
+            // 复习模式：传递练习数据、用户答案、是否正确
+            onComplete(practiceData, userAnswer.trim(), true)
+          } else {
+            // 学习模式：传递原有参数
+            onComplete(true, false) // false 表示非立即执行
+          }
         }, 2000)
       }
     } else {
@@ -344,7 +414,13 @@ const PracticeCard = forwardRef(({
       e.preventDefault()
       console.log('触发Enter键进入下一题')
       // 立即触发完成回调，不等待2秒延迟
-      onComplete && onComplete(true, true) // true 表示立即执行
+      if (onComplete) {
+        if (isReviewMode) {
+          onComplete(practiceData, userAnswer.trim(), true)
+        } else {
+          onComplete(true, true) // true 表示立即执行
+        }
+      }
       return
     }
 
@@ -380,7 +456,7 @@ const PracticeCard = forwardRef(({
         </div>
         <div className="ml-3 flex-1">
           <h3 className="text-lg font-semibold text-green-900 dark:text-green-100 mb-3">
-            {t('practice.practiceTitle')} {cardIndex}
+            {t('practice.practiceTitle')} {practiceIndex || cardIndex}
           </h3>
 
           {/* 题目描述 */}
@@ -452,7 +528,7 @@ const PracticeCard = forwardRef(({
                 ? 'bg-green-100 dark:bg-green-900/30 border border-green-300 dark:border-green-700 text-green-800 dark:text-green-200'
                 : 'bg-red-100 dark:bg-red-900/30 border border-red-300 dark:border-red-700 text-red-800 dark:text-red-200'
             }`}>
-              <p className="font-medium text-sm">{typeof feedback === 'string' ? feedback : '反馈信息'}</p>
+              <p className="font-medium text-sm">{typeof feedback === 'string' ? feedback : t('practiceCard.feedback')}</p>
               {isCorrect && (
                 <div className="text-xs mt-2 text-green-600 dark:text-green-400 space-y-1">
                   <p>{t('practiceCard.congratulations')}</p>
@@ -469,8 +545,8 @@ const PracticeCard = forwardRef(({
           {showHint && currentHint && (
             <div className="mb-3 p-3 bg-yellow-100 dark:bg-yellow-900/30 border border-yellow-300 dark:border-yellow-700 rounded-lg">
               <p className="text-yellow-800 dark:text-yellow-200 text-sm">
-                <span className="font-medium">💡 提示：</span>
-                {typeof currentHint === 'string' ? currentHint : '提示信息'}
+                <span className="font-medium">{t('practice.hintPrefix')}</span>
+                {typeof currentHint === 'string' ? currentHint : t('practice.noHint')}
               </p>
             </div>
           )}
@@ -508,7 +584,15 @@ const PracticeCard = forwardRef(({
 
             {isCorrect && (
               <button
-                onClick={() => onComplete && onComplete(true, true)}
+                onClick={() => {
+                  if (onComplete) {
+                    if (isReviewMode) {
+                      onComplete(practiceData, userAnswer.trim(), true)
+                    } else {
+                      onComplete(true, true)
+                    }
+                  }
+                }}
                 className="px-3 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors text-sm"
                 title={t('practiceCard.nextQuestionTooltip')}
               >

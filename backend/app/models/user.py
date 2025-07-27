@@ -85,7 +85,8 @@ class User:
                 {'_id': self._id},
                 {'$set': user_data}
             )
-            return result.modified_count > 0
+            # 如果匹配到了文档，就认为操作成功（即使数据没有改变）
+            return result.matched_count > 0
         else:
             # 创建新用户
             result = db.users.insert_one(user_data)

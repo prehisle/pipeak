@@ -20,30 +20,42 @@ const DashboardPage = () => {
 
   const {
     lessons,
-    initializeLessons,
+    fetchLessons,
     getStats,
     getNextLesson,
     isLessonCompleted,
-    setLanguage
+    setLanguage,
+    loadProgressFromAPI,
+    isLoading: lessonsLoading,
+    error: lessonsError
   } = useFrontendLessonStore()
-
-
 
   const [reviewStats, setReviewStats] = useState(null)
 
   useEffect(() => {
-    // 初始化前端课程数据（用于显示）
-    initializeLessons(i18n.language || 'zh-CN')
+    // 只有登录用户才获取课程数据
+    const initializeData = async () => {
+      try {
+        // 登录用户：从API获取课程数据
+        await fetchLessons()
 
-    // 只在需要时调用API获取复习数据
-    // 避免重复调用fetchLessons，因为前端课程数据已足够
+        // 注册用户从后端API加载进度数据
+        await loadProgressFromAPI()
+      } catch (error) {
+        console.log('用户未登录，跳过课程数据获取:', error.message)
+      }
+    }
+
+    initializeData()
+
+    // 获取复习数据
     loadReviewStats()
 
     // 初始化存储监听器
     const cleanupStorageListener = initializeStorageListener()
 
     return cleanupStorageListener
-  }, [initializeStorageListener, initializeLessons, t.language])
+  }, [initializeStorageListener, fetchLessons, loadProgressFromAPI])
 
   // 监听语言变化
   useEffect(() => {

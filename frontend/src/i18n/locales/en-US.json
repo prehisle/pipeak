@@ -108,6 +108,7 @@
     "example": "Example: $x^2$",
     "perfectAnswer": "🎉 Excellent! Your answer is completely correct!",
     "incorrectAnswer": "Answer is incorrect, please try again",
+    "incorrectHint": "💡 Hint: Check LaTeX syntax, or click \"Get Hint\" button",
     "allHintsShown": "All hints shown",
     "difficulty": {
       "easy": "Easy",
@@ -135,7 +136,6 @@
     "loadingCourses": "Loading courses...",
     "noCourses": "No course data available",
     "review": "Review",
-    "startLearning": "Start Learning",
     "tryAgainLater": "Please try again later or contact administrator",
     "loadingError": "Server connection failed, using local course data",
     "offlineMode": "Currently in offline mode, some features may be limited",
@@ -173,7 +173,6 @@
     "courseProgress": "Completed {{completed}}/{{total}} courses",
     "theoryPractice": "📚 Theory + Practice",
     "duration": "⏱️ About {{minutes}} minutes",
-    "unlockPrevious": "Complete previous lesson to unlock",
     "unlockPrevious": "Complete previous lesson to unlock",
     "mastered": "✅ Mastered"
   },
@@ -340,7 +339,8 @@
     "submitShortcut": "Ctrl+Enter Submit",
     "hintShortcut": "Tab Get Hint",
     "getHintTooltip": "Get solving hint",
-    "nextQuestionTooltip": "Go to next question"
+    "nextQuestionTooltip": "Go to next question",
+    "feedback": "Feedback"
   },
   "reviewPage": {
     "pleaseEnterAnswer": "Please enter your answer",
@@ -364,6 +364,63 @@
     "completed": "Completed ✓",
     "submitAnswer": "Submit Answer",
     "repeated": "Repeated {{count}} times",
-    "memoryStrength": "Memory Strength"
+    "memoryStrength": "Memory Strength",
+    "backToDashboard": "Back to Dashboard"
+  },
+  "errorBoundary": {
+    "title": "Page Error",
+    "message": "Sorry, the page encountered some problems. Please refresh the page and try again.",
+    "refreshPage": "Refresh Page",
+    "backToHome": "Back to Home",
+    "viewDetails": "View Error Details",
+    "errorMessage": "Error Message:",
+    "errorStack": "Error Stack:"
+  },
+  "contentRenderer": {
+    "latexError": "LaTeX Error: {{content}}",
+    "noContent": "No content available"
+  },
+  "lessonCompleteModal": {
+    "title": "Congratulations on Completing the Course!",
+    "description": "You have mastered all knowledge points and can continue to the next lesson!",
+    "viewStats": "View Statistics",
+    "continueNext": "Continue Learning",
+    "escHint": "Press ESC to close"
+  },
+  "knowledgeContent": {
+    "lesson1": {
+      "mathEnvironment": {
+        "title": "LaTeX Math Environment",
+        "content": "LaTeX mathematical formulas need to be written in specific environments:\n\n• **Inline Formula**: Use `$...$` to wrap, such as `$x^2$` → $x^2$\n• **Display Formula**: Use `$$...$$` to wrap, such as `$$E = mc^2$$` → $$E = mc^2$$"
+      },
+      "superscriptSubscript": {
+        "title": "Superscripts and Subscripts",
+        "content": "• Use `^` for superscripts: `$x^2$` → $x^2$\n• Use `_` for subscripts: `$x_1$` → $x_1$\n• Use both together: `$x_1^2$` → $x_1^2$"
+      }
+    },
+    "lesson2": {
+      "fractions": {
+        "title": "Fractions",
+        "content": "Use `\\frac{numerator}{denominator}` command:\n\n• `$\\frac{1}{2}$` → $\\frac{1}{2}$\n• `$\\frac{a+b}{c-d}$` → $\\frac{a+b}{c-d}$\n• `$\\frac{x^2}{y^3}$` → $\\frac{x^2}{y^3}$"
+      },
+      "radicals": {
+        "title": "Radicals",
+        "content": "Use `\\sqrt{}` command:\n\n• `$\\sqrt{x}$` → $\\sqrt{x}$ (square root)\n• `$\\sqrt[3]{x}$` → $\\sqrt[3]{x}$ (cube root)\n• `$\\sqrt{x^2 + y^2}$` → $\\sqrt{x^2 + y^2}$"
+      }
+    },
+    "lesson3": {
+      "greekLetters": {
+        "title": "Greek Letters",
+        "content": "• `$\\alpha$` → $\\alpha$ (alpha)\n• `$\\beta$` → $\\beta$ (beta)\n• `$\\gamma$` → $\\gamma$ (gamma)\n• `$\\delta$` → $\\delta$ (delta)\n• `$\\pi$` → $\\pi$ (pi)\n• `$\\theta$` → $\\theta$ (theta)\n• `$\\lambda$` → $\\lambda$ (lambda)\n• `$\\mu$` → $\\mu$ (mu)"
+      },
+      "capitalGreekLetters": {
+        "title": "Capital Greek Letters",
+        "content": "• `$\\Gamma$` → $\\Gamma$ (Gamma)\n• `$\\Delta$` → $\\Delta$ (Delta)\n• `$\\Theta$` → $\\Theta$ (Theta)\n• `$\\Lambda$` → $\\Lambda$ (Lambda)\n• `$\\Pi$` → $\\Pi$ (Pi)\n• `$\\Sigma$` → $\\Sigma$ (Sigma)\n• `$\\Omega$` → $\\Omega$ (Omega)"
+      },
+      "commonSymbols": {
+        "title": "Common Mathematical Symbols",
+        "content": "• `$\\infty$` → $\\infty$ (infinity)\n• `$\\pm$` → $\\pm$ (plus-minus)\n• `$\\times$` → $\\times$ (times)\n• `$\\div$` → $\\div$ (division)\n• `$\\neq$` → $\\neq$ (not equal)\n• `$\\leq$` → $\\leq$ (less than or equal)\n• `$\\geq$` → $\\geq$ (greater than or equal)\n• `$\\approx$` → $\\approx$ (approximately equal)"
+      }
+    }
   }
 }

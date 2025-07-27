@@ -20,10 +20,11 @@ const Toast = ({ message, type = 'info', duration = 3000, onClose }) => {
   }, [duration, onClose])
 
   const getToastStyles = () => {
-    const baseStyles = "fixed top-4 right-4 z-50 max-w-md p-4 rounded-lg shadow-lg transition-all duration-300 transform"
-    
+    // 所有类型的Toast都在顶部居中显示，增加最小宽度和最大宽度
+    const baseStyles = "fixed top-4 left-1/2 transform -translate-x-1/2 z-50 min-w-96 max-w-3xl w-auto p-4 rounded-lg shadow-lg transition-all duration-300"
+
     if (!isVisible) {
-      return `${baseStyles} translate-x-full opacity-0`
+      return `${baseStyles} -translate-y-full opacity-0`
     }
 
     switch (type) {
@@ -54,7 +55,7 @@ const Toast = ({ message, type = 'info', duration = 3000, onClose }) => {
   return (
     <div className={getToastStyles()}>
       <div className="flex items-start">
-        <span className="text-xl mr-3 flex-shrink-0">{getIcon()}</span>
+        <span className="text-xl mr-3 flex-shrink-0 filter drop-shadow-lg" style={{ textShadow: '0 0 3px rgba(0,0,0,0.8), 0 0 6px rgba(255,255,255,0.8)' }}>{getIcon()}</span>
         <div className="flex-1">
           <p className="font-medium whitespace-pre-line">{message}</p>
         </div>
@@ -75,7 +76,7 @@ const Toast = ({ message, type = 'info', duration = 3000, onClose }) => {
 // Toast管理器组件
 const ToastContainer = ({ toasts, removeToast }) => {
   return (
-    <div className="fixed top-0 right-0 z-50 p-4 space-y-2">
+    <div className="fixed top-0 left-1/2 transform -translate-x-1/2 z-50 p-4 space-y-2">
       {toasts.map((toast) => (
         <Toast
           key={toast.id}

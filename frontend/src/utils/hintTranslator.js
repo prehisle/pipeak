@@ -1,48 +1,43 @@
 import { useTranslation } from 'react-i18next'
 
 /**
- * 提示内容翻译工具
- * 将中文提示内容翻译为当前语言
+ * 简化的提示内容翻译工具
+ * 使用预定义的翻译映射表，避免复杂的正则表达式匹配
  */
 
-// 提示内容模式匹配规则
-const HINT_PATTERNS = {
-  // 上标相关
-  superscript: /使用\s*\^\s*符号表示上标|Use\s*\^\s*symbol\s*for\s*superscript/i,
-  superscriptContent: /上标内容是\s*(.+)|Superscript\s*content\s*is\s*(.+)/i,
+// 常见提示内容的直接翻译映射
+const HINT_TRANSLATIONS = {
+  // 中文提示 -> 翻译键
+  '使用 ^ 符号表示上标': 'practice.hintPatterns.superscript',
+  '使用 _ 符号表示下标': 'practice.hintPatterns.subscript',
+  '使用 \\frac{分子}{分母} 表示分数': 'practice.hintPatterns.fraction',
+  '使用 \\sqrt{内容} 表示根号': 'practice.hintPatterns.sqrt',
+  '不等于符号是 \\neq': 'practice.hintPatterns.neq',
+  '无穷符号是 \\infty': 'practice.hintPatterns.infty',
+  'α 是 \\alpha': 'practice.hintPatterns.alpha',
+  'β 是 \\beta': 'practice.hintPatterns.beta',
+  '希腊字母 π 的 LaTeX 命令是 \\pi': 'practice.hintPatterns.pi',
+  '大德尔塔是 \\Delta': 'practice.hintPatterns.delta',
+  '约等于符号是 \\approx': 'practice.hintPatterns.approx',
 
-  // 下标相关
-  subscript: /使用\s*_\s*符号表示下标|Use\s*_\s*symbol\s*for\s*subscript/i,
+  // 英文提示也映射到相同的翻译键（保持兼容性）
+  'Use ^ symbol for superscript': 'practice.hintPatterns.superscript',
+  'Use _ symbol for subscript': 'practice.hintPatterns.subscript',
+  'Use \\frac{numerator}{denominator} for fractions': 'practice.hintPatterns.fraction',
+  'Use \\sqrt{content} for square root': 'practice.hintPatterns.sqrt',
+  'Not equal symbol is \\neq': 'practice.hintPatterns.neq',
+  'Infinity symbol is \\infty': 'practice.hintPatterns.infty',
+  'α is \\alpha': 'practice.hintPatterns.alpha',
+  'β is \\beta': 'practice.hintPatterns.beta',
+  'Greek letter π LaTeX command is \\pi': 'practice.hintPatterns.pi',
+  'Capital delta is \\Delta': 'practice.hintPatterns.delta',
+  'Approximately equal symbol is \\approx': 'practice.hintPatterns.approx'
+}
+
+// 动态内容的正则表达式（仅保留必要的）
+const DYNAMIC_PATTERNS = {
+  superscriptContent: /上标内容是\s*(.+)|Superscript\s*content\s*is\s*(.+)/i,
   subscriptContent: /下标内容是\s*(.+)|Subscript\s*content\s*is\s*(.+)/i,
-  
-  // 分数相关
-  fraction: /使用\s*\\frac\{.*?\}\{.*?\}\s*表示分数|Use\s*\\frac\{.*?\}\{.*?\}\s*for\s*fractions/i,
-  
-  // 根号相关
-  sqrt: /使用\s*\\sqrt\{.*?\}\s*表示根号|Use\s*\\sqrt\{.*?\}\s*for\s*square\s*root/i,
-  
-  // 不等于符号
-  neq: /不等于符号是\s*\\neq|Not\s*equal\s*symbol\s*is\s*\\neq/i,
-  
-  // 无穷符号
-  infty: /无穷符号是\s*\\infty|Infinity\s*symbol\s*is\s*\\infty/i,
-  
-  // 希腊字母 α
-  alpha: /α\s*是\s*\\alpha|α\s*is\s*\\alpha/i,
-  
-  // 希腊字母 β
-  beta: /β\s*是\s*\\beta|β\s*is\s*\\beta/i,
-  
-  // 希腊字母 π
-  pi: /希腊字母\s*π\s*的\s*LaTeX\s*命令是\s*\\pi|Greek\s*letter\s*π\s*LaTeX\s*command\s*is\s*\\pi/i,
-  
-  // 大德尔塔
-  delta: /大德尔塔是\s*\\Delta|Capital\s*delta\s*is\s*\\Delta/i,
-  
-  // 约等于符号
-  approx: /约等于符号是\s*\\approx|Approximately\s*equal\s*symbol\s*is\s*\\approx/i,
-  
-  // 完整格式
   completeFormat: /完整格式[：:]\s*(.+)|Complete\s*format[：:]\s*(.+)/i
 }
 
@@ -57,9 +52,17 @@ export function translateHint(hint, t) {
     return hint
   }
 
-  // 检查每个模式
-  for (const [patternKey, regex] of Object.entries(HINT_PATTERNS)) {
-    const match = hint.match(regex)
+  const trimmedHint = hint.trim()
+
+  // 首先检查直接翻译映射
+  const translationKey = HINT_TRANSLATIONS[trimmedHint]
+  if (translationKey) {
+    return t(translationKey)
+  }
+
+  // 检查动态内容模式
+  for (const [patternKey, regex] of Object.entries(DYNAMIC_PATTERNS)) {
+    const match = trimmedHint.match(regex)
     if (match) {
       if (patternKey === 'completeFormat') {
         // 完整格式需要提取公式部分
@@ -73,14 +76,11 @@ export function translateHint(hint, t) {
         // 下标内容
         const content = match[1] || match[2] || ''
         return t('practice.hintPatterns.subscriptContent', { content: content.trim() })
-      } else {
-        // 其他模式直接翻译
-        return t(`practice.hintPatterns.${patternKey}`)
       }
     }
   }
 
-  // 如果没有匹配到模式，返回原始内容
+  // 如果没有匹配到任何模式，返回原始内容
   return hint
 }
 

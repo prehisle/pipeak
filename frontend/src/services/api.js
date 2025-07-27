@@ -1,5 +1,4 @@
 import axios from 'axios'
-import localDataAdapter from './localDataAdapter'
 import realApiAdapter from './realApiAdapter'
 import { useUserModeStore } from '../stores/userModeStore'
 
@@ -42,7 +41,8 @@ const getApiAdapter = () => {
     // 注册用户使用真实API适配器（后端已启动）
     return realApiAdapter // 真实API适配器
   } else {
-    return localDataAdapter // 本地数据（仅用于离线练习）
+    // 未登录用户不应该访问课程API，只能使用Quick Experience
+    throw new Error('未登录用户无法访问课程数据，请先登录或使用Quick Experience')
   }
 }
 
@@ -171,6 +171,16 @@ export const learningAPI = {
       return { data: result }
     }
     return { data: { completed_practice_details: [], pending_practice_details: [] } }
+  },
+
+  // 完成课程
+  completeLesson: async (lessonId) => {
+    const adapter = getApiAdapter()
+    if (adapter.completeLesson) {
+      return adapter.completeLesson(lessonId)
+    }
+    // 降级方案：如果适配器不支持，返回成功状态
+    return { message: '课程已完成（前端状态）', completed: true }
   }
 }
 
@@ -206,7 +216,8 @@ export const reviewAPI = {
   // 提交复习答案（包含遗忘曲线计算）
   submitReview: async (data) => {
     const adapter = getApiAdapter()
-    return adapter.submitReview(data.practice_id, data.answer, data.quality || 3)
+    // 支持新的对象参数格式
+    return adapter.submitReview(data)
   },
 
   // 获取复习统计

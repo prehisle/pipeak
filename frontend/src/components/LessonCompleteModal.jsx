@@ -1,11 +1,13 @@
 import { useEffect } from 'react'
+import { useTranslation } from 'react-i18next'
 
-const LessonCompleteModal = ({ 
-  isOpen, 
-  onClose, 
-  lessonTitle, 
-  onContinue 
+const LessonCompleteModal = ({
+  isOpen,
+  onClose,
+  lessonTitle,
+  onContinue
 }) => {
+  const { t } = useTranslation()
   // 处理ESC键关闭
   useEffect(() => {
     const handleEsc = (event) => {
@@ -38,15 +40,15 @@ const LessonCompleteModal = ({
           </div>
           
           <h2 className="text-2xl font-bold text-gray-900 mb-3">
-            恭喜完成课程！
+            {t('lessonCompleteModal.title')}
           </h2>
-          
+
           <p className="text-lg text-gray-600 mb-2">
             《{lessonTitle}》
           </p>
-          
+
           <p className="text-gray-500">
-            您已掌握所有知识点，可以继续学习下一课了！
+            {t('lessonCompleteModal.description')}
           </p>
         </div>
 
@@ -57,18 +59,18 @@ const LessonCompleteModal = ({
               onClick={onClose}
               className="flex-1 px-4 py-3 bg-gray-100 hover:bg-gray-200 text-gray-700 font-medium rounded-lg transition-colors duration-200"
             >
-              查看统计
+              {t('lessonCompleteModal.viewStats')}
             </button>
             <button
               onClick={onContinue}
               className="flex-1 px-4 py-3 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-lg transition-colors duration-200"
             >
-              继续学习
+              {t('lessonCompleteModal.continueNext')}
             </button>
           </div>
           
           <p className="text-center text-sm text-gray-400 mt-4">
-            按 ESC 键关闭
+            {t('lessonCompleteModal.escHint')}
           </p>
         </div>
       </div>

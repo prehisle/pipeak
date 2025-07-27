@@ -53,7 +53,7 @@ const LanguageSwitcher = ({ className = '' }) => {
                   onClick={() => handleLanguageChange(language.code)}
                   className={`w-full flex items-center space-x-3 px-4 py-2 text-sm text-left hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors ${
                     currentLanguage.code === language.code
-                      ? 'bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400'
+                      ? 'bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 font-medium'
                       : 'text-gray-700 dark:text-gray-300'
                   }`}
                 >

@@ -91,6 +91,7 @@
     "example": "例如：$x^2$",
     "perfectAnswer": "🎉 太棒了！答案完全正确！",
     "incorrectAnswer": "答案不正确，请再试一次",
+    "incorrectHint": "💡 提示：检查LaTeX语法，或点击\"获取提示\"按钮",
     "allHintsShown": "已显示所有提示",
     "difficulty": {
       "easy": "简单",
@@ -339,7 +340,8 @@
     "submitShortcut": "Ctrl+Enter 提交",
     "hintShortcut": "Tab 获取提示",
     "getHintTooltip": "获取解题提示",
-    "nextQuestionTooltip": "进入下一题"
+    "nextQuestionTooltip": "进入下一题",
+    "feedback": "反馈信息"
   },
   "reviewPage": {
     "pleaseEnterAnswer": "请输入你的答案",
@@ -363,6 +365,63 @@
     "completed": "已完成 ✓",
     "submitAnswer": "提交答案",
     "repeated": "已重复 {{count}} 次",
-    "memoryStrength": "记忆强度"
+    "memoryStrength": "记忆强度",
+    "backToDashboard": "返回学习面板"
+  },
+  "errorBoundary": {
+    "title": "页面出现错误",
+    "message": "抱歉，页面遇到了一些问题。请刷新页面重试。",
+    "refreshPage": "刷新页面",
+    "backToHome": "返回首页",
+    "viewDetails": "查看错误详情",
+    "errorMessage": "错误信息:",
+    "errorStack": "错误堆栈:"
+  },
+  "contentRenderer": {
+    "latexError": "LaTeX错误: {{content}}",
+    "noContent": "暂无内容"
+  },
+  "lessonCompleteModal": {
+    "title": "恭喜完成课程！",
+    "description": "您已掌握所有知识点，可以继续学习下一课了！",
+    "viewStats": "查看统计",
+    "continueNext": "继续学习",
+    "escHint": "按 ESC 键关闭"
+  },
+  "knowledgeContent": {
+    "lesson1": {
+      "mathEnvironment": {
+        "title": "LaTeX数学环境",
+        "content": "LaTeX数学公式需要在特定环境中编写：\n\n• **行内公式**：使用 `$...$` 包围，如 `$x^2$` → $x^2$\n• **独立公式**：使用 `$$...$$` 包围，如 `$$E = mc^2$$` → $$E = mc^2$$"
+      },
+      "superscriptSubscript": {
+        "title": "上标和下标",
+        "content": "• 上标使用 `^` 符号：`$x^2$` → $x^2$\n• 下标使用 `_` 符号：`$x_1$` → $x_1$\n• 同时使用：`$x_1^2$` → $x_1^2$"
+      }
+    },
+    "lesson2": {
+      "fractions": {
+        "title": "分数",
+        "content": "使用 `\\frac{分子}{分母}` 命令：\n\n• `$\\frac{1}{2}$` → $\\frac{1}{2}$\n• `$\\frac{a+b}{c-d}$` → $\\frac{a+b}{c-d}$\n• `$\\frac{x^2}{y^3}$` → $\\frac{x^2}{y^3}$"
+      },
+      "radicals": {
+        "title": "根号",
+        "content": "使用 `\\sqrt{}` 命令：\n\n• `$\\sqrt{x}$` → $\\sqrt{x}$ (平方根)\n• `$\\sqrt[3]{x}$` → $\\sqrt[3]{x}$ (三次根)\n• `$\\sqrt{x^2 + y^2}$` → $\\sqrt{x^2 + y^2}$"
+      }
+    },
+    "lesson3": {
+      "greekLetters": {
+        "title": "希腊字母",
+        "content": "• `$\\alpha$` → $\\alpha$ (阿尔法)\n• `$\\beta$` → $\\beta$ (贝塔)\n• `$\\gamma$` → $\\gamma$ (伽马)\n• `$\\delta$` → $\\delta$ (德尔塔)\n• `$\\pi$` → $\\pi$ (派)\n• `$\\theta$` → $\\theta$ (西塔)\n• `$\\lambda$` → $\\lambda$ (兰姆达)\n• `$\\mu$` → $\\mu$ (缪)"
+      },
+      "capitalGreekLetters": {
+        "title": "大写希腊字母",
+        "content": "• `$\\Gamma$` → $\\Gamma$ (大伽马)\n• `$\\Delta$` → $\\Delta$ (大德尔塔)\n• `$\\Theta$` → $\\Theta$ (大西塔)\n• `$\\Lambda$` → $\\Lambda$ (大兰姆达)\n• `$\\Pi$` → $\\Pi$ (大派)\n• `$\\Sigma$` → $\\Sigma$ (大西格马)\n• `$\\Omega$` → $\\Omega$ (大欧米伽)"
+      },
+      "commonSymbols": {
+        "title": "常用数学符号",
+        "content": "• `$\\infty$` → $\\infty$ (无穷)\n• `$\\pm$` → $\\pm$ (正负)\n• `$\\times$` → $\\times$ (乘号)\n• `$\\div$` → $\\div$ (除号)\n• `$\\neq$` → $\\neq$ (不等于)\n• `$\\leq$` → $\\leq$ (小于等于)\n• `$\\geq$` → $\\geq$ (大于等于)\n• `$\\approx$` → $\\approx$ (约等于)"
+      }
+    }
   }
 }

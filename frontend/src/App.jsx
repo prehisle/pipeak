@@ -16,6 +16,7 @@ import ReviewPage from './pages/ReviewPage'
 import OfflinePracticePage from './pages/OfflinePracticePage'
 import TestPage from './pages/TestPage'
 import RenderTestPage from './pages/RenderTestPage'
+import ToastTestPage from './pages/ToastTestPage'
 
 // 布局组件
 import Layout from './components/Layout'
@@ -84,6 +85,7 @@ function App() {
           <Route path="lesson/:lessonId" element={<LessonPage />} />
           {/* 移除练习中心相关路由 - 精简为核心学习路径 */}
           <Route path="review" element={<ReviewPage />} />
+          <Route path="toast-test" element={<ToastTestPage />} />
 
         </Route>
 

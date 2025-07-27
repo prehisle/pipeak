@@ -1,4 +1,5 @@
 import { useEffect, useRef } from 'react'
+import { useTranslation } from 'react-i18next'
 import katex from 'katex'
 import 'katex/dist/katex.min.css'
 
@@ -7,6 +8,7 @@ const ContentRenderer = ({
   className = '',
   errorColor = '#dc2626'
 }) => {
+  const { t } = useTranslation()
   const containerRef = useRef(null)
 
   // 解析内容为结构化数据
@@ -188,8 +190,8 @@ const ContentRenderer = ({
             trust: false
           })
         } catch (e) {
-          element.textContent = `[LaTeX错误: ${part.content}]`
-          element.className = 'text-red-500 block my-3 text-center'
+          element.textContent = `[${t('contentRenderer.latexError', { content: part.content })}]`
+          element.className = 'text-red-500 dark:text-red-400 block my-3 text-center'
         }
         break
 
@@ -207,7 +209,7 @@ const ContentRenderer = ({
     container.innerHTML = ''
 
     if (!content || content.trim() === '') {
-      container.innerHTML = '<div class="text-gray-400 italic">暂无内容</div>'
+      container.innerHTML = `<div class="text-gray-400 dark:text-gray-500 italic">${t('contentRenderer.noContent')}</div>`
       return
     }
 
