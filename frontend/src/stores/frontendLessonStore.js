@@ -206,11 +206,29 @@ const useFrontendLessonStore = create(
       }
     }),
     {
-      name: () => `frontend-lesson-storage-${getCurrentUserId()}`,
+      name: 'frontend-lesson-storage',
       partialize: (state) => ({
         progress: state.progress,
         currentLanguage: state.currentLanguage
-      })
+      }),
+      // 自定义存储，支持用户隔离
+      storage: {
+        getItem: (name) => {
+          const userId = getCurrentUserId()
+          const key = `${name}-${userId}`
+          return localStorage.getItem(key)
+        },
+        setItem: (name, value) => {
+          const userId = getCurrentUserId()
+          const key = `${name}-${userId}`
+          localStorage.setItem(key, value)
+        },
+        removeItem: (name) => {
+          const userId = getCurrentUserId()
+          const key = `${name}-${userId}`
+          localStorage.removeItem(key)
+        }
+      }
     }
   )
 )

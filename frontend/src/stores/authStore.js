@@ -210,6 +210,10 @@ const useAuthStore = create(
 
         // 清理用户特定的lesson数据
         localStorage.removeItem(`frontend-lesson-storage-${currentUserId}`)
+
+        // 清理旧的存储键（如果存在）
+        localStorage.removeItem('frontend-lesson-storage')
+        localStorage.removeItem('() => `frontend-lesson-storage-${getCurrentUserId()}`')
       },
 
       // 清理测试数据（开发用）

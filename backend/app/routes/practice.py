@@ -35,8 +35,24 @@ def submit_practice():
         from app import get_db
         db = get_db()
 
-        # 获取课程和练习题
-        lesson = db.lessons.find_one({'_id': ObjectId(lesson_id)})
+        # 获取课程和练习题 - 支持两种格式的lesson_id
+        lesson = None
+        try:
+            # 首先尝试作为ObjectId查找
+            if ObjectId.is_valid(lesson_id):
+                lesson = db.lessons.find_one({'_id': ObjectId(lesson_id)})
+        except:
+            pass
+
+        if not lesson:
+            # 如果ObjectId查找失败，尝试按sequence查找（如lesson-1 -> sequence=1）
+            if lesson_id.startswith('lesson-'):
+                try:
+                    sequence = int(lesson_id.split('-')[1])
+                    lesson = db.lessons.find_one({'sequence': sequence})
+                except (ValueError, IndexError):
+                    pass
+
         if not lesson:
             return jsonify({'error': '课程不存在'}), 404
 
@@ -54,7 +70,7 @@ def submit_practice():
         # 保存练习记录
         practice_record = {
             'user_id': ObjectId(user_id),
-            'lesson_id': ObjectId(lesson_id),
+            'lesson_id': lesson['_id'],  # 使用lesson的实际ObjectId
             'card_index': card_index,
             'user_answer': user_answer,
             'target_answer': target_formula,
@@ -66,7 +82,7 @@ def submit_practice():
         practice_record_id = result.inserted_id
 
         # 更新用户进度
-        update_user_progress(db, user_id, lesson_id, card_index, is_correct)
+        update_user_progress(db, user_id, str(lesson['_id']), card_index, is_correct)
 
         # 集成复习系统：创建或更新复习记录
         from app.models.review import Review

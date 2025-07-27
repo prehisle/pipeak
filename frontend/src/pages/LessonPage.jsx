@@ -156,13 +156,8 @@ const LessonPage = () => {
         // 立即进入下一个知识点（用户按Enter键触发）
         console.log('立即进入下一个知识点')
         handleNextKnowledgePoint()
-      } else {
-        // 延迟进入下一个知识点（自动触发）
-        console.log('2秒后自动进入下一个知识点')
-        setTimeout(() => {
-          handleNextKnowledgePoint()
-        }, 2000)
       }
+      // 移除自动跳转逻辑，让用户主动控制学习进度
     }
   }
 
