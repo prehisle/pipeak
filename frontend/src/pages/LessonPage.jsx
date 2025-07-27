@@ -254,7 +254,7 @@ const LessonPage = () => {
         </p>
 
         {/* 进度条 */}
-        <div className="w-full bg-gray-200 rounded-full h-1.5">
+        <div className="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-1.5">
           <div
             className="bg-blue-600 h-1.5 rounded-full transition-all duration-300"
             style={{
@@ -262,7 +262,7 @@ const LessonPage = () => {
             }}
           ></div>
         </div>
-        <p className="text-sm text-gray-500 mt-1">
+        <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
           {t('lessonPage.progress', { current: currentKnowledgePointIndex + 1, total: currentLesson.knowledgePoints.length })}
         </p>
       </div>
@@ -274,21 +274,21 @@ const LessonPage = () => {
             {/* 只对非练习题类型显示蓝色知识点区域 */}
             {!(currentKnowledgePoint.exercises && currentKnowledgePoint.exercises.length > 0) && (
               <div className="prose max-w-none">
-                <div className="bg-blue-50 border-l-4 border-blue-400 p-6 rounded-r-lg">
+                <div className="bg-blue-50 dark:bg-blue-900/20 border-l-4 border-blue-400 dark:border-blue-600 p-6 rounded-r-lg">
                   <div className="flex items-start">
                     <div className="flex-shrink-0">
-                      <div className="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center">
-                        <span className="text-blue-600 font-semibold text-sm">💡</span>
+                      <div className="w-8 h-8 bg-blue-100 dark:bg-blue-800 rounded-full flex items-center justify-center">
+                        <span className="text-blue-600 dark:text-blue-400 font-semibold text-sm">💡</span>
                       </div>
                     </div>
                     <div className="ml-4 flex-1 min-w-0">
-                      <h3 className="text-lg font-semibold text-blue-900 mb-6">
+                      <h3 className="text-lg font-semibold text-blue-900 dark:text-blue-100 mb-6">
                         {t('lessonPage.knowledgePoint', { index: currentKnowledgePointIndex + 1 })}
                       </h3>
-                      <h4 className="text-lg font-medium text-blue-800 mb-4">
+                      <h4 className="text-lg font-medium text-blue-800 dark:text-blue-200 mb-4">
                         {currentKnowledgePoint.title}
                       </h4>
-                      <div className="text-blue-800 text-base leading-relaxed overflow-visible">
+                      <div className="text-blue-800 dark:text-blue-200 text-base leading-relaxed overflow-visible">
                         <MarkdownRenderer content={currentKnowledgePoint.content} theme="default" />
                       </div>
                     </div>

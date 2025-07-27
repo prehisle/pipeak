@@ -371,27 +371,27 @@ const PracticeCard = forwardRef(({
   }
 
   return (
-    <div className="bg-green-50 border-l-4 border-green-400 p-4 rounded-r-lg">
+    <div className="bg-green-50 dark:bg-green-900/20 border-l-4 border-green-400 dark:border-green-600 p-4 rounded-r-lg">
       <div className="flex items-start">
         <div className="flex-shrink-0">
-          <div className="w-6 h-6 bg-green-100 rounded-full flex items-center justify-center">
-            <span className="text-green-600 font-semibold text-xs">✏️</span>
+          <div className="w-6 h-6 bg-green-100 dark:bg-green-800 rounded-full flex items-center justify-center">
+            <span className="text-green-600 dark:text-green-400 font-semibold text-xs">✏️</span>
           </div>
         </div>
         <div className="ml-3 flex-1">
-          <h3 className="text-lg font-semibold text-green-900 mb-3">
+          <h3 className="text-lg font-semibold text-green-900 dark:text-green-100 mb-3">
             {t('practice.practiceTitle')} {cardIndex}
           </h3>
 
           {/* 题目描述 */}
           <div className="mb-4">
-            <p id="practice-question" className="text-green-800 text-base mb-3">
+            <p id="practice-question" className="text-green-800 dark:text-green-200 text-base mb-3">
               {questionText || t('practice.practiceTitle')}
             </p>
 
             {/* 目标效果预览 */}
-            <div className="bg-white p-3 rounded-lg border border-green-200 mb-3">
-              <p className="text-sm text-gray-600 mb-2">{t('practice.targetEffect')}</p>
+            <div className="bg-white dark:bg-gray-800 p-3 rounded-lg border border-green-200 dark:border-green-700 mb-3">
+              <p className="text-sm text-gray-600 dark:text-gray-400 mb-2">{t('practice.targetEffect')}</p>
               <div className="text-center">
                 <MarkdownRenderer content={targetFormula} />
               </div>
@@ -400,13 +400,13 @@ const PracticeCard = forwardRef(({
 
           {/* 实时预览 */}
           <div className="mb-3">
-            <p className="text-base font-medium text-green-800 mb-2">{t('practice.livePreview')}</p>
-            <div className="bg-gray-50 p-3 rounded-lg border border-gray-200 min-h-[50px] flex items-center justify-center">
+            <p className="text-base font-medium text-green-800 dark:text-green-200 mb-2">{t('practice.livePreview')}</p>
+            <div className="bg-gray-50 dark:bg-gray-800 p-3 rounded-lg border border-gray-200 dark:border-gray-700 min-h-[50px] flex items-center justify-center">
               <div className="text-center w-full">
                 {userAnswer.trim() ? (
                   <MarkdownRenderer content={userAnswer} />
                 ) : (
-                  <span className="text-gray-400 text-xs">{t('practice.enterLatex')}</span>
+                  <span className="text-gray-400 dark:text-gray-500 text-xs">{t('practice.enterLatex')}</span>
                 )}
               </div>
             </div>
@@ -414,7 +414,7 @@ const PracticeCard = forwardRef(({
 
           {/* 答案输入区域 */}
           <div className="mb-3">
-            <label className="block text-base font-medium text-green-800 mb-2">
+            <label className="block text-base font-medium text-green-800 dark:text-green-200 mb-2">
               {t('practice.enterLatex')}
             </label>
             <div className="relative">
@@ -426,8 +426,8 @@ const PracticeCard = forwardRef(({
                 placeholder={t('practice.example')}
                 className={`w-full px-3 py-2 rounded-lg focus:ring-2 focus:ring-blue-500/20 focus:outline-none transition-all duration-200 font-mono text-base resize-none border-0 ${
                   isCorrect
-                    ? 'bg-green-50 text-green-800 cursor-default'
-                    : 'bg-gray-50 focus:bg-white hover:bg-gray-100'
+                    ? 'bg-green-50 dark:bg-green-900/30 text-green-800 dark:text-green-200 cursor-default'
+                    : 'bg-gray-50 dark:bg-gray-800 text-gray-900 dark:text-gray-100 focus:bg-white dark:focus:bg-gray-700 hover:bg-gray-100 dark:hover:bg-gray-700'
                 }`}
                 rows="2"
                 readOnly={isCorrect}
@@ -438,7 +438,7 @@ const PracticeCard = forwardRef(({
                 aria-label="LaTeX代码输入框"
                 aria-describedby="practice-question"
               />
-              <div className="absolute bottom-2 right-2 text-xs text-gray-400 bg-gray-50 px-1 py-0.5 rounded text-xs">
+              <div className="absolute bottom-2 right-2 text-xs text-gray-400 dark:text-gray-500 bg-gray-50 dark:bg-gray-800 px-1 py-0.5 rounded text-xs">
                 <div>{t('practiceCard.submitShortcut')}</div>
                 {!isCorrect && <div>{t('practiceCard.hintShortcut')}</div>}
               </div>
@@ -449,12 +449,12 @@ const PracticeCard = forwardRef(({
           {feedback && (
             <div className={`mb-3 p-3 rounded-lg ${
               isCorrect
-                ? 'bg-green-100 border border-green-300 text-green-800'
-                : 'bg-red-100 border border-red-300 text-red-800'
+                ? 'bg-green-100 dark:bg-green-900/30 border border-green-300 dark:border-green-700 text-green-800 dark:text-green-200'
+                : 'bg-red-100 dark:bg-red-900/30 border border-red-300 dark:border-red-700 text-red-800 dark:text-red-200'
             }`}>
               <p className="font-medium text-sm">{typeof feedback === 'string' ? feedback : '反馈信息'}</p>
               {isCorrect && (
-                <div className="text-xs mt-2 text-green-600 space-y-1">
+                <div className="text-xs mt-2 text-green-600 dark:text-green-400 space-y-1">
                   <p>{t('practiceCard.congratulations')}</p>
                   <p>{t('practiceCard.continueHint', {
                     key: t('practiceCard.enterKey'),
@@ -467,8 +467,8 @@ const PracticeCard = forwardRef(({
 
           {/* 提示信息 */}
           {showHint && currentHint && (
-            <div className="mb-3 p-3 bg-yellow-100 border border-yellow-300 rounded-lg">
-              <p className="text-yellow-800 text-sm">
+            <div className="mb-3 p-3 bg-yellow-100 dark:bg-yellow-900/30 border border-yellow-300 dark:border-yellow-700 rounded-lg">
+              <p className="text-yellow-800 dark:text-yellow-200 text-sm">
                 <span className="font-medium">💡 提示：</span>
                 {typeof currentHint === 'string' ? currentHint : '提示信息'}
               </p>
@@ -519,13 +519,13 @@ const PracticeCard = forwardRef(({
 
           {/* 难度标识 */}
           <div className="mt-3 flex items-center gap-2">
-            <span className="text-sm text-gray-600">{t('practiceCard.difficulty')}</span>
+            <span className="text-sm text-gray-600 dark:text-gray-400">{t('practiceCard.difficulty')}</span>
             <span className={`px-2 py-1 rounded text-xs font-medium ${
               difficulty === 'easy'
-                ? 'bg-green-100 text-green-800'
+                ? 'bg-green-100 dark:bg-green-900/30 text-green-800 dark:text-green-200'
                 : difficulty === 'medium'
-                ? 'bg-yellow-100 text-yellow-800'
-                : 'bg-red-100 text-red-800'
+                ? 'bg-yellow-100 dark:bg-yellow-900/30 text-yellow-800 dark:text-yellow-200'
+                : 'bg-red-100 dark:bg-red-900/30 text-red-800 dark:text-red-200'
             }`}>
               {difficulty === 'easy' ? t('practiceCard.difficultyEasy') :
                difficulty === 'medium' ? t('practiceCard.difficultyMedium') :

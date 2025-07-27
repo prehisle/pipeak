@@ -45,7 +45,7 @@ const MarkdownRenderer = ({
           if (line.startsWith('**') && line.endsWith('**')) {
             // 标题行
             const title = line.slice(2, -2)
-            lineDiv.className = 'text-lg font-semibold text-gray-900 mb-3'
+            lineDiv.className = 'text-lg font-semibold text-gray-900 dark:text-gray-100 mb-3'
             lineDiv.textContent = title
           } else if (line.startsWith('• ')) {
             // 列表项
@@ -54,7 +54,7 @@ const MarkdownRenderer = ({
 
             // 创建列表标记
             const bullet = document.createElement('span')
-            bullet.className = 'text-blue-500 mr-3 mt-1 flex-shrink-0'
+            bullet.className = 'text-blue-500 dark:text-blue-400 mr-3 mt-1 flex-shrink-0'
             bullet.textContent = '•'
             lineDiv.appendChild(bullet)
 
@@ -190,12 +190,12 @@ const MarkdownRenderer = ({
 
       switch (match.type) {
         case 'code':
-          element.className = 'bg-gray-100 text-gray-800 px-3 py-2 rounded text-lg font-mono border border-gray-300'  // 改为text-lg，增加内边距
+          element.className = 'bg-gray-100 dark:bg-gray-800 text-gray-800 dark:text-gray-200 px-3 py-2 rounded text-lg font-mono border border-gray-300 dark:border-gray-600'  // 添加暗黑模式支持
           element.textContent = match.content
           break
 
         case 'bold':
-          element.innerHTML = `<strong class="font-bold text-gray-900 text-lg">${match.content}</strong>`  // 增大粗体字体
+          element.innerHTML = `<strong class="font-bold text-gray-900 dark:text-gray-100 text-lg">${match.content}</strong>`  // 增大粗体字体，添加暗黑模式支持
           break
 
         case 'inline-math':
