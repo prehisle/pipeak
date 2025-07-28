@@ -58,7 +58,7 @@ const LessonPage = () => {
   // 初始化课程数据
   useEffect(() => {
     fetchLessons()
-  }, [fetchLessons])
+  }, []) // 移除fetchLessons依赖，避免重复执行
 
   // 监听语言变化并更新课程内容
   useEffect(() => {

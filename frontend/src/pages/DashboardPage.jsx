@@ -36,11 +36,8 @@ const DashboardPage = () => {
     // 只有登录用户才获取课程数据
     const initializeData = async () => {
       try {
-        // 登录用户：从API获取课程数据
+        // 登录用户：从API获取课程数据（已包含进度数据）
         await fetchLessons()
-
-        // 注册用户从后端API加载进度数据
-        await loadProgressFromAPI()
       } catch (error) {
         console.log('用户未登录，跳过课程数据获取:', error.message)
       }
@@ -55,12 +52,12 @@ const DashboardPage = () => {
     const cleanupStorageListener = initializeStorageListener()
 
     return cleanupStorageListener
-  }, [initializeStorageListener, fetchLessons, loadProgressFromAPI])
+  }, []) // 移除函数依赖，避免重复执行
 
   // 监听语言变化
   useEffect(() => {
     setLanguage(i18n.language || 'zh-CN')
-  }, [i18n.language, setLanguage])
+  }, [i18n.language]) // 移除setLanguage依赖，避免重复执行
 
 
 

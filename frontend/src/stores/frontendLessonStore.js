@@ -1,6 +1,5 @@
 import { create } from 'zustand'
 import { persist } from 'zustand/middleware'
-import i18n from '../i18n'
 import { lessonAPI } from '../services/api'
 
 // 获取当前用户ID用于数据隔离
@@ -41,6 +40,8 @@ const useFrontendLessonStore = create(
       currentKnowledgePointIndex: 0,
       isLoading: false,
       error: null,
+      lastFetchTime: null, // 添加缓存时间戳
+      cacheTimeout: 5 * 60 * 1000, // 5分钟缓存
 
       // 学习进度 - 存储在本地
       progress: {
@@ -50,20 +51,60 @@ const useFrontendLessonStore = create(
       },
 
       // 动作
-      // 从API获取课程数据
-      fetchLessons: async () => {
+      // 从API获取课程数据（带缓存机制）
+      fetchLessons: async (forceRefresh = false) => {
         if (!isRegisteredUser()) {
-          console.log('未登录用户，跳过课程数据获取')
           set({ lessons: [], error: null, isLoading: false })
           return
+        }
+
+        const { isLoading, lessons, lastFetchTime, cacheTimeout } = get()
+
+        // 防止重复调用
+        if (isLoading) {
+          return
+        }
+
+        // 缓存检查（除非强制刷新）
+        if (!forceRefresh && lessons.length > 0 && lastFetchTime) {
+          const now = Date.now()
+          if (now - lastFetchTime < cacheTimeout) {
+            return // 使用缓存数据
+          }
         }
 
         set({ isLoading: true, error: null })
         try {
           const response = await lessonAPI.getLessons()
           const lessons = response.lessons || []
-          set({ lessons, isLoading: false, error: null })
-          console.log(`从后端API获取了 ${lessons.length} 个课程`)
+
+          // 提取已完成的课程ID和进度数据
+          const completedLessons = lessons
+            .filter(lesson => lesson.is_completed)
+            .map(lesson => lesson._id)
+
+          // 构建课程进度对象
+          const lessonProgress = {}
+          lessons.forEach(lesson => {
+            lessonProgress[lesson._id] = {
+              completed: lesson.is_completed || false,
+              completedAt: lesson.completedAt || null,
+              practiceProgress: lesson.practiceProgress || {},
+              sequence: lesson.sequence
+            }
+          })
+
+          set({
+            lessons,
+            isLoading: false,
+            error: null,
+            lastFetchTime: Date.now(),
+            progress: {
+              ...get().progress,
+              completedLessons,
+              lessonProgress
+            }
+          })
         } catch (error) {
           console.error('获取课程数据失败:', error)
           const errorMessage = error.message || '网络连接失败，请检查网络设置或稍后重试'
@@ -78,9 +119,9 @@ const useFrontendLessonStore = create(
       // 设置语言
       setLanguage: (language) => {
         set({ currentLanguage: language })
-        // 如果是注册用户，重新获取课程数据
+        // 如果是注册用户，强制刷新课程数据以获取新语言内容
         if (isRegisteredUser()) {
-          get().fetchLessons()
+          get().fetchLessons(true) // 强制刷新
         }
       },
 
@@ -166,9 +207,9 @@ const useFrontendLessonStore = create(
         // 注册用户同步到后端API
         if (isRegisteredUser()) {
           try {
-            console.log('同步课程完成状态到后端:', lessonId)
             await lessonAPI.completeLesson(lessonId)
-            console.log('课程完成状态同步成功')
+            // 同步成功后刷新课程数据
+            get().fetchLessons(true)
           } catch (error) {
             console.error('同步课程完成状态到后端失败:', error)
             // 可以考虑显示错误提示或重试机制
@@ -246,48 +287,10 @@ const useFrontendLessonStore = create(
         })
       },
 
-      // 从后端API加载进度数据（注册用户）
+      // 从后端API加载进度数据（注册用户）- 已合并到fetchLessons中
       loadProgressFromAPI: async () => {
-        if (!isRegisteredUser()) {
-          console.log('非注册用户，跳过API加载')
-          return
-        }
-
-        try {
-          console.log('正在从后端API加载进度数据...')
-          const response = await lessonAPI.getLessons()
-          const lessons = response.lessons || []
-
-          // 提取已完成的课程ID - 使用后端真实ID
-          const completedLessons = lessons
-            .filter(lesson => lesson.is_completed)
-            .map(lesson => lesson._id)
-
-          // 构建课程进度对象 - 使用后端真实ID作为键
-          const lessonProgress = {}
-          lessons.forEach(lesson => {
-            lessonProgress[lesson._id] = {
-              completed: lesson.is_completed || false,
-              completedAt: lesson.completedAt || null,
-              practiceProgress: lesson.practiceProgress || {},
-              sequence: lesson.sequence // 保存序号用于排序
-            }
-          })
-
-          // 更新store状态
-          set(state => ({
-            ...state,
-            progress: {
-              ...state.progress,
-              completedLessons,
-              lessonProgress
-            }
-          }))
-
-          console.log('后端进度数据加载完成:', { completedLessons, lessonProgress })
-        } catch (error) {
-          console.error('从后端API加载进度失败:', error)
-        }
+        // 直接调用fetchLessons，避免重复API调用
+        return get().fetchLessons()
       }
     }),
     {

@@ -25,7 +25,7 @@ const LearningPage = () => {
       setIsLoading(true)
       setError(null)
 
-      // 1. 获取课程列表
+      // 1. 获取课程列表（使用缓存机制）
       await fetchLessons()
 
       // 2. 获取所有复习项目（如果API不可用，使用空数组）
@@ -34,13 +34,12 @@ const LearningPage = () => {
         const reviewItemsResponse = await reviewAPI.getAllReviewItems()
         allReviewItems = reviewItemsResponse.items || []
       } catch (err) {
-        console.warn('复习API不可用，使用降级方案:', err)
         // 降级方案：从今日复习API获取数据
         try {
           const todayReviews = await reviewAPI.getTodayReviews()
           allReviewItems = todayReviews.reviews || []
         } catch (err2) {
-          console.warn('今日复习API也不可用，继续使用空数组')
+          // 静默处理，使用空数组
         }
       }
       setReviewItems(allReviewItems)
