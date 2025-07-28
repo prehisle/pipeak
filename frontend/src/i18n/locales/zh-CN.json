@@ -372,7 +372,7 @@
     "completed": "已完成 ✓",
     "submitAnswer": "提交答案",
     "repeated": "已重复 {{count}} 次",
-    "memoryStrength": "记忆强度",
+    "memoryStrength": "记忆强度: {{strength}}",
     "backToDashboard": "返回学习面板"
   },
   "errorBoundary": {

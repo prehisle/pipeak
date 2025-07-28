@@ -295,14 +295,14 @@ const ReviewPage = () => {
                     ? 'bg-yellow-100 dark:bg-yellow-800 text-yellow-800 dark:text-yellow-200'
                     : 'bg-red-100 dark:bg-red-800 text-red-800 dark:text-red-200'
                 }`}>
-                  {currentReview.difficulty === 'easy' ? '简单' :
-                   currentReview.difficulty === 'medium' ? '中等' : '困难'}
+                  {currentReview.difficulty === 'easy' ? t('practice.difficulty.easy') :
+                   currentReview.difficulty === 'medium' ? t('practice.difficulty.medium') : t('practice.difficulty.hard')}
                 </span>
               </div>
             </div>
             <div className="text-right text-sm text-gray-600 dark:text-gray-400">
-              <p>📊 已重复 {currentReview.repetitions || 1} 次</p>
-              <p>🧠 记忆强度: {currentReview.easiness_factor || 2.5}</p>
+              <p>📊 {t('reviewPage.repeated', { count: currentReview.repetitions || 1 })}</p>
+              <p>🧠 {t('reviewPage.memoryStrength', { strength: currentReview.easiness_factor || 2.5 })}</p>
             </div>
           </div>
         </div>

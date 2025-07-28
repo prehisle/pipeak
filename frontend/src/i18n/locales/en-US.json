@@ -370,8 +370,8 @@
     "submitting": "Submitting...",
     "completed": "Completed ✓",
     "submitAnswer": "Submit Answer",
-    "repeated": "Repeated {{count}} times",
-    "memoryStrength": "Memory Strength",
+    "repeated": "Repeated {{count}} time(s)",
+    "memoryStrength": "Memory Strength: {{strength}}",
     "backToDashboard": "Back to Dashboard"
   },
   "errorBoundary": {
