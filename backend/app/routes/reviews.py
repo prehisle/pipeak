@@ -33,9 +33,12 @@ def get_today_reviews():
 
         for review in due_reviews:
             # 通过practice记录找到对应的课程和卡片
+            # 尝试两种user_id格式：字符串和ObjectId
             practice_record = db.practice_records.find_one({
-                'user_id': ObjectId(user_id),
-                '_id': ObjectId(review.practice_id)
+                '$or': [
+                    {'user_id': user_id, '_id': ObjectId(review.practice_id)},
+                    {'user_id': ObjectId(user_id), '_id': ObjectId(review.practice_id)}
+                ]
             })
 
             if practice_record:
@@ -163,9 +166,12 @@ def get_review_items():
 
         for review in reviews:
             # 通过practice记录找到对应的课程和卡片
+            # 尝试两种user_id格式：字符串和ObjectId
             practice_record = db.practice_records.find_one({
-                'user_id': ObjectId(user_id),
-                '_id': ObjectId(review.practice_id)
+                '$or': [
+                    {'user_id': user_id, '_id': ObjectId(review.practice_id)},
+                    {'user_id': ObjectId(user_id), '_id': ObjectId(review.practice_id)}
+                ]
             })
 
             if practice_record:
