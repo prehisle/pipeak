@@ -14,9 +14,6 @@ import LearningPage from './pages/LearningPage'
 // 移除练习中心相关页面 - 精简为核心学习路径
 import ReviewPage from './pages/ReviewPage'
 import OfflinePracticePage from './pages/OfflinePracticePage'
-import TestPage from './pages/TestPage'
-import RenderTestPage from './pages/RenderTestPage'
-import ToastTestPage from './pages/ToastTestPage'
 
 // 布局组件
 import Layout from './components/Layout'
@@ -69,9 +66,7 @@ function App() {
           element={isAuthenticated() ? <Navigate to="/app/dashboard" replace /> : <RegisterPage />}
         />
 
-        {/* 测试路由 */}
-        <Route path="/test" element={<TestPage />} />
-        <Route path="/render-test" element={<RenderTestPage />} />
+
 
         {/* 受保护的路由 - 仅限注册用户 */}
         <Route
@@ -85,7 +80,6 @@ function App() {
           <Route path="lesson/:lessonId" element={<LessonPage />} />
           {/* 移除练习中心相关路由 - 精简为核心学习路径 */}
           <Route path="review" element={<ReviewPage />} />
-          <Route path="toast-test" element={<ToastTestPage />} />
 
         </Route>
 
