@@ -50,6 +50,7 @@ def get_today_reviews():
                         'question': card.get('question', ''),
                         'target_formula': card.get('target_formula', ''),
                         'difficulty': card.get('difficulty', 'medium'),
+                        'hints': card.get('hints', []),  # 添加提示数组
                         'next_review_date': review.next_review_date.isoformat(),
                         'repetitions': review.repetitions,
                         'easiness_factor': review.easiness_factor
@@ -171,6 +172,7 @@ def get_review_items():
                         'question': card.get('question', ''),
                         'target_formula': card.get('target_formula', ''),
                         'difficulty': card.get('difficulty', 'medium'),
+                        'hints': card.get('hints', []),  # 添加提示数组
                         'nextReviewDate': review.next_review_date.isoformat(),
                         'easeFactor': review.easiness_factor,
                         'repetitions': review.repetitions,

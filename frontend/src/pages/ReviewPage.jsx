@@ -29,6 +29,7 @@ const ReviewPage = () => {
       answer: reviewData.target_formula,
       target_formula: reviewData.target_formula,
       difficulty: reviewData.difficulty,
+      hints: reviewData.hints || [], // 添加提示数组
       // 添加复习特有的字段
       review_id: reviewData.review_id,
       lesson_title: reviewData.lesson_title,
