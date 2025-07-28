@@ -54,6 +54,7 @@ const PracticeCard = forwardRef(({
   const targetFormula = practiceData?.answer || practiceData?.target_formula || ''
   const rawQuestionText = practiceData?.question || ''
   const hintText = practiceData?.hint || practiceData?.hints?.[0] || ''
+  const hints = practiceData?.hints || [] // 添加 hints 数组定义
   const difficulty = practiceData?.difficulty || 'easy'
 
   // 翻译练习题描述
