@@ -5,7 +5,8 @@ from flask import Blueprint, request, session, redirect, url_for, flash, render_
 from bson import ObjectId
 from datetime import datetime
 import json
-from .auth import admin_required, ADMIN_PASSWORD
+from .auth import admin_required, verify_admin_password, get_current_admin
+from app.models.admin import Admin
 from app import get_db
 
 admin_bp = Blueprint('admin', __name__)
@@ -24,8 +25,10 @@ def login():
     """管理员登录"""
     if request.method == 'POST':
         password = request.form.get('password')
-        if password == ADMIN_PASSWORD:
+        is_valid, admin = verify_admin_password(password)
+        if is_valid:
             session['admin_logged_in'] = True
+            session['admin_id'] = str(admin._id)
             flash('登录成功！', 'success')
             return redirect(url_for('admin.dashboard'))
         else:
@@ -89,6 +92,7 @@ def login():
 def logout():
     """管理员登出"""
     session.pop('admin_logged_in', None)
+    session.pop('admin_id', None)
     flash('已退出登录', 'success')
     return redirect(url_for('admin.login'))
 
@@ -194,7 +198,8 @@ def dashboard():
                             </a><br>
                             <a href="/admin/users" class="btn btn-primary mb-2">👤 用户管理</a><br>
                             <a href="/admin/lessons" class="btn btn-success mb-2">📚 课程管理</a><br>
-                            <a href="/admin/translations/import" class="btn btn-info mb-2">🌐 导入翻译数据</a>
+                            <a href="/admin/translations/import" class="btn btn-info mb-2">🌐 导入翻译数据</a><br>
+                            <a href="/admin/change-password" class="btn btn-secondary mb-2">🔑 修改密码</a>
                         </div>
                     </div>
                 </div>
@@ -1974,3 +1979,133 @@ def import_translations():
     '''
 
     return render_template_string(import_html)
+
+
+@admin_bp.route('/change-password', methods=['GET', 'POST'])
+@admin_required
+def change_password():
+    """修改管理员密码"""
+    if request.method == 'POST':
+        current_password = request.form.get('current_password', '')
+        new_password = request.form.get('new_password', '')
+        confirm_password = request.form.get('confirm_password', '')
+
+        # 验证输入
+        if not current_password or not new_password or not confirm_password:
+            flash('请填写所有字段', 'error')
+        elif new_password != confirm_password:
+            flash('新密码和确认密码不匹配', 'error')
+        elif len(new_password) < 6:
+            flash('新密码长度至少6位', 'error')
+        elif len(new_password) > 128:
+            flash('新密码长度不能超过128位', 'error')
+        else:
+            # 获取当前管理员
+            admin = get_current_admin()
+            if admin:
+                success, message = admin.change_password(current_password, new_password)
+                if success:
+                    flash(message, 'success')
+                    return redirect(url_for('admin.dashboard'))
+                else:
+                    flash(message, 'error')
+            else:
+                flash('获取管理员信息失败', 'error')
+
+    # 显示密码修改表单
+    change_password_html = '''
+    <!DOCTYPE html>
+    <html>
+    <head>
+        <title>修改密码 - 管理后台</title>
+        <meta charset="utf-8">
+        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    </head>
+    <body>
+        <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+            <div class="container">
+                <a class="navbar-brand" href="/admin/dashboard">LaTeX训练器管理后台</a>
+                <div class="navbar-nav ms-auto">
+                    <a class="nav-link" href="/admin/dashboard">仪表板</a>
+                    <a class="nav-link" href="/admin/logout">退出登录</a>
+                </div>
+            </div>
+        </nav>
+
+        <div class="container mt-4">
+            <div class="row justify-content-center">
+                <div class="col-md-6">
+                    <div class="card">
+                        <div class="card-header">
+                            <h5 class="mb-0">🔑 修改管理员密码</h5>
+                        </div>
+                        <div class="card-body">
+                            {% with messages = get_flashed_messages(with_categories=true) %}
+                                {% if messages %}
+                                    {% for category, message in messages %}
+                                        <div class="alert alert-{{ 'danger' if category == 'error' else 'success' }} alert-dismissible fade show">
+                                            {{ message }}
+                                            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                                        </div>
+                                    {% endfor %}
+                                {% endif %}
+                            {% endwith %}
+
+                            <div class="alert alert-info">
+                                <strong>安全提示：</strong>
+                                <ul class="mb-0">
+                                    <li>密码长度至少6位，最多128位</li>
+                                    <li>建议使用包含字母、数字和特殊字符的强密码</li>
+                                    <li>修改密码后需要重新登录</li>
+                                </ul>
+                            </div>
+
+                            <form method="post">
+                                <div class="mb-3">
+                                    <label for="current_password" class="form-label">当前密码 *</label>
+                                    <input type="password" class="form-control" id="current_password"
+                                           name="current_password" required>
+                                </div>
+
+                                <div class="mb-3">
+                                    <label for="new_password" class="form-label">新密码 *</label>
+                                    <input type="password" class="form-control" id="new_password"
+                                           name="new_password" required minlength="6" maxlength="128">
+                                </div>
+
+                                <div class="mb-3">
+                                    <label for="confirm_password" class="form-label">确认新密码 *</label>
+                                    <input type="password" class="form-control" id="confirm_password"
+                                           name="confirm_password" required minlength="6" maxlength="128">
+                                </div>
+
+                                <div class="d-flex gap-2">
+                                    <button type="submit" class="btn btn-primary">修改密码</button>
+                                    <a href="/admin/dashboard" class="btn btn-secondary">取消</a>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+        <script>
+            // 密码确认验证
+            document.getElementById('confirm_password').addEventListener('input', function() {
+                const newPassword = document.getElementById('new_password').value;
+                const confirmPassword = this.value;
+
+                if (newPassword !== confirmPassword) {
+                    this.setCustomValidity('密码不匹配');
+                } else {
+                    this.setCustomValidity('');
+                }
+            });
+        </script>
+    </body>
+    </html>
+    '''
+
+    return render_template_string(change_password_html)

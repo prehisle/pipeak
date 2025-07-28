@@ -5,5 +5,6 @@ from .user import User
 from .lesson import Lesson
 from .practice import Practice
 from .review import Review
+from .admin import Admin
 
-__all__ = ['User', 'Lesson', 'Practice', 'Review']
+__all__ = ['User', 'Lesson', 'Practice', 'Review', 'Admin']

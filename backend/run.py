@@ -97,12 +97,19 @@ def reset_database():
         db.users.delete_many({})
         db.practice_records.delete_many({})
         db.user_progress.delete_many({})
+        db.admins.delete_many({})
 
         # 使用comprehensive_lessons.py中的完整课程数据
         lessons = create_comprehensive_lessons()
 
         # 插入课程数据
         result = db.lessons.insert_many(lessons)
+
+        # 初始化默认管理员
+        from app.models.admin import Admin
+        default_admin = Admin(username='admin', password='admin123')
+        default_admin.save()
+        print("已创建默认管理员账户: admin / admin123")
 
         # 自动导入英文翻译数据
         translation_count = 0
@@ -167,6 +174,8 @@ def reset_database():
             'message': 'Database reset with comprehensive lessons and translations successfully',
             'lesson_count': len(result.inserted_ids),
             'translation_count': translation_count,
+            'admin_created': True,
+            'admin_credentials': 'admin / admin123',
             'lessons': [lesson['title'] for lesson in lessons[:5]]  # 显示前5课标题
         }
 
