@@ -130,6 +130,16 @@ const PracticeCard = forwardRef(({
   // 检查当前练习是否已完成并加载状态
   useEffect(() => {
     const checkPracticeStatus = async () => {
+      // 复习模式下跳过完成状态检查
+      if (isReviewMode) {
+        // 重置其他状态
+        setShowHint(false)
+        setCurrentHint('')
+        setHintLevel(0)
+        setSyntaxSuggestions([])
+        return
+      }
+
       try {
         // 获取当前课程的完成状态
         const response = await learningAPI.getCompletionStatus(lessonId)
@@ -175,7 +185,7 @@ const PracticeCard = forwardRef(({
     }
 
     checkPracticeStatus()
-  }, [cardIndex, lessonId, targetFormula])
+  }, [cardIndex, lessonId, targetFormula, isReviewMode, t])
 
   // 智能语法检查和建议
   const checkSyntax = (input) => {
