@@ -102,16 +102,27 @@ const useFrontendLessonStore = create(
       // 标记知识点为已完成
       completeKnowledgePoint: (lessonId, knowledgePointId) => {
         set((state) => {
-          const newCompletedKnowledgePoints = [...state.progress.completedKnowledgePoints]
+          // 确保 progress 对象和其属性存在
+          const progress = state.progress || {}
+          const completedKnowledgePoints = progress.completedKnowledgePoints || []
+          const lessonProgress = progress.lessonProgress || {}
+
+          const newCompletedKnowledgePoints = [...completedKnowledgePoints]
           if (!newCompletedKnowledgePoints.includes(knowledgePointId)) {
             newCompletedKnowledgePoints.push(knowledgePointId)
           }
 
           // 更新课程进度
-          const newLessonProgress = { ...state.progress.lessonProgress }
+          const newLessonProgress = { ...lessonProgress }
           if (!newLessonProgress[lessonId]) {
             newLessonProgress[lessonId] = { completed: false, knowledgePoints: [] }
           }
+
+          // 确保 knowledgePoints 数组存在
+          if (!newLessonProgress[lessonId].knowledgePoints) {
+            newLessonProgress[lessonId].knowledgePoints = []
+          }
+
           if (!newLessonProgress[lessonId].knowledgePoints.includes(knowledgePointId)) {
             newLessonProgress[lessonId].knowledgePoints.push(knowledgePointId)
           }
