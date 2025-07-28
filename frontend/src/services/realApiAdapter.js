@@ -163,7 +163,11 @@ class RealApiAdapter {
   // 复习相关方法
   async getTodayReviews() {
     try {
-      const response = await this.api.get('/reviews/today')
+      // 获取当前语言设置
+      const language = localStorage.getItem('i18nextLng') || 'zh-CN'
+      const response = await this.api.get('/reviews/today', {
+        params: { language }
+      })
       return response.data
     } catch (error) {
       console.error('获取今日复习失败:', error)
@@ -234,7 +238,11 @@ class RealApiAdapter {
 
   async getAllReviewItems() {
     try {
-      const response = await this.api.get('/reviews/items')
+      // 获取当前语言设置
+      const language = localStorage.getItem('i18nextLng') || 'zh-CN'
+      const response = await this.api.get('/reviews/items', {
+        params: { language }
+      })
       return response.data.items || []
     } catch (error) {
       console.error('获取复习项目失败:', error)

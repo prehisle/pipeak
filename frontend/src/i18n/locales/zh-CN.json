@@ -112,7 +112,15 @@
       "pi": "希腊字母 π 的 LaTeX 命令是 \\pi",
       "delta": "大德尔塔是 \\Delta",
       "approx": "约等于符号是 \\approx",
-      "completeFormat": "完整格式：{{formula}}"
+      "completeFormat": "完整格式：{{formula}}",
+      "fractionParts": "分子是 1，分母是 2",
+      "subscriptFirst": "先写下标 _i",
+      "superscriptSecond": "再写上标 ^2",
+      "subscriptThenSuperscript": "先写下标 _n，再写上标 ^2",
+      "alternativeFormat": "或者写成 x_{n}^{2}",
+      "multiCharSubscript": "多字符下标需要用花括号包围",
+      "sumSymbol": "求和符号使用 \\sum 命令",
+      "subscriptSuperscript": "下标用 _ 表示，上标用 ^ 表示"
     }
   },
   "dashboard": {

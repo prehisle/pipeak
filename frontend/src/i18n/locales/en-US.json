@@ -129,7 +129,15 @@
       "pi": "Greek letter π LaTeX command is \\pi",
       "delta": "Capital delta is \\Delta",
       "approx": "Approximately equal symbol is \\approx",
-      "completeFormat": "Complete format: {{formula}}"
+      "completeFormat": "Complete format: {{formula}}",
+      "fractionParts": "Numerator is 1, denominator is 2",
+      "subscriptFirst": "Write subscript _i first",
+      "superscriptSecond": "Then write superscript ^2",
+      "subscriptThenSuperscript": "Write subscript _n first, then superscript ^2",
+      "alternativeFormat": "Or write as x_{n}^{2}",
+      "multiCharSubscript": "Multi-character subscripts need braces",
+      "sumSymbol": "Sum symbol uses \\sum command",
+      "subscriptSuperscript": "Use _ for subscript, ^ for superscript"
     }
   },
   "dashboard": {

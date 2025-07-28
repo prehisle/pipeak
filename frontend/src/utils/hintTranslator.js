@@ -11,6 +11,7 @@ const HINT_TRANSLATIONS = {
   '使用 ^ 符号表示上标': 'practice.hintPatterns.superscript',
   '使用 _ 符号表示下标': 'practice.hintPatterns.subscript',
   '使用 \\frac{分子}{分母} 表示分数': 'practice.hintPatterns.fraction',
+  '使用 \\frac{分子}{分母}': 'practice.hintPatterns.fraction',
   '使用 \\sqrt{内容} 表示根号': 'practice.hintPatterns.sqrt',
   '不等于符号是 \\neq': 'practice.hintPatterns.neq',
   '无穷符号是 \\infty': 'practice.hintPatterns.infty',
@@ -20,10 +21,23 @@ const HINT_TRANSLATIONS = {
   '大德尔塔是 \\Delta': 'practice.hintPatterns.delta',
   '约等于符号是 \\approx': 'practice.hintPatterns.approx',
 
+  // 更多常见提示
+  '上标内容是 2': 'practice.hintPatterns.superscriptContent',
+  '下标内容是 1': 'practice.hintPatterns.subscriptContent',
+  '分子是 1，分母是 2': 'practice.hintPatterns.fractionParts',
+  '先写下标 _i': 'practice.hintPatterns.subscriptFirst',
+  '再写上标 ^2': 'practice.hintPatterns.superscriptSecond',
+  '先写下标 _n，再写上标 ^2': 'practice.hintPatterns.subscriptThenSuperscript',
+  '或者写成 x_{n}^{2}': 'practice.hintPatterns.alternativeFormat',
+  '多字符下标需要用花括号包围': 'practice.hintPatterns.multiCharSubscript',
+  '求和符号使用 \\sum 命令': 'practice.hintPatterns.sumSymbol',
+  '下标用 _ 表示，上标用 ^ 表示': 'practice.hintPatterns.subscriptSuperscript',
+
   // 英文提示也映射到相同的翻译键（保持兼容性）
   'Use ^ symbol for superscript': 'practice.hintPatterns.superscript',
   'Use _ symbol for subscript': 'practice.hintPatterns.subscript',
   'Use \\frac{numerator}{denominator} for fractions': 'practice.hintPatterns.fraction',
+  'Use \\frac{numerator}{denominator}': 'practice.hintPatterns.fraction',
   'Use \\sqrt{content} for square root': 'practice.hintPatterns.sqrt',
   'Not equal symbol is \\neq': 'practice.hintPatterns.neq',
   'Infinity symbol is \\infty': 'practice.hintPatterns.infty',
@@ -31,7 +45,19 @@ const HINT_TRANSLATIONS = {
   'β is \\beta': 'practice.hintPatterns.beta',
   'Greek letter π LaTeX command is \\pi': 'practice.hintPatterns.pi',
   'Capital delta is \\Delta': 'practice.hintPatterns.delta',
-  'Approximately equal symbol is \\approx': 'practice.hintPatterns.approx'
+  'Approximately equal symbol is \\approx': 'practice.hintPatterns.approx',
+
+  // 英文版本的更多提示
+  'The superscript content is 2': 'practice.hintPatterns.superscriptContent',
+  'The subscript content is 1': 'practice.hintPatterns.subscriptContent',
+  'Numerator is 1, denominator is 2': 'practice.hintPatterns.fractionParts',
+  'Write subscript _i first': 'practice.hintPatterns.subscriptFirst',
+  'Then write superscript ^2': 'practice.hintPatterns.superscriptSecond',
+  'Write subscript _n first, then superscript ^2': 'practice.hintPatterns.subscriptThenSuperscript',
+  'Or write as x_{n}^{2}': 'practice.hintPatterns.alternativeFormat',
+  'Multi-character subscripts need braces': 'practice.hintPatterns.multiCharSubscript',
+  'Sum symbol uses \\sum command': 'practice.hintPatterns.sumSymbol',
+  'Use _ for subscript, ^ for superscript': 'practice.hintPatterns.subscriptSuperscript'
 }
 
 // 动态内容的正则表达式（仅保留必要的）

@@ -20,6 +20,9 @@ def get_today_reviews():
     try:
         user_id = get_jwt_identity()
 
+        # 获取语言参数
+        language = request.args.get('language', 'zh-CN')
+
         # 获取到期的复习任务
         due_reviews = Review.get_due_reviews(user_id)
 
@@ -41,11 +44,16 @@ def get_today_reviews():
                 if lesson and practice_record['card_index'] < len(lesson['cards']):
                     card = lesson['cards'][practice_record['card_index']]
 
+                    # 根据语言选择课程标题
+                    lesson_title = lesson['title']
+                    if language == 'en-US' and lesson.get('title_en'):
+                        lesson_title = lesson['title_en']
+
                     reviews_data.append({
                         'review_id': str(review._id),
                         'practice_id': review.practice_id,
                         'lesson_id': str(lesson['_id']),
-                        'lesson_title': lesson['title'],
+                        'lesson_title': lesson_title,
                         'card_index': practice_record['card_index'],
                         'question': card.get('question', ''),
                         'target_formula': card.get('target_formula', ''),
@@ -142,6 +150,9 @@ def get_review_items():
     try:
         user_id = get_jwt_identity()
 
+        # 获取语言参数
+        language = request.args.get('language', 'zh-CN')
+
         # 获取用户的所有复习记录
         reviews = Review.get_user_reviews(user_id)
 
@@ -163,11 +174,16 @@ def get_review_items():
                 if lesson and practice_record['card_index'] < len(lesson['cards']):
                     card = lesson['cards'][practice_record['card_index']]
 
+                    # 根据语言选择课程标题
+                    lesson_title = lesson['title']
+                    if language == 'en-US' and lesson.get('title_en'):
+                        lesson_title = lesson['title_en']
+
                     items_data.append({
                         'id': str(review._id),
                         'practice_id': review.practice_id,
                         'lesson_id': str(lesson['_id']),
-                        'lesson_title': lesson['title'],
+                        'lesson_title': lesson_title,
                         'card_index': practice_record['card_index'],
                         'question': card.get('question', ''),
                         'target_formula': card.get('target_formula', ''),
