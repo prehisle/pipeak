@@ -36,6 +36,27 @@ def check_env():
         'TOKEN_ENCRYPTION_KEY': 'SET' if os.environ.get('TOKEN_ENCRYPTION_KEY') else 'NOT SET'
     }
 
+# 添加OAuth配置调试端点
+@app.route('/api/debug/oauth')
+def check_oauth():
+    """检查OAuth配置详情（仅开发环境）"""
+    import os
+
+    # 只在开发环境显示详细信息
+    if os.environ.get('FLASK_ENV') != 'development':
+        return jsonify({'error': 'Only available in development mode'}), 403
+
+    oauth_config = {
+        'GOOGLE_CLIENT_ID': os.environ.get('GOOGLE_CLIENT_ID', 'NOT SET')[:20] + '...' if os.environ.get('GOOGLE_CLIENT_ID') else 'NOT SET',
+        'GOOGLE_CLIENT_SECRET': 'SET' if os.environ.get('GOOGLE_CLIENT_SECRET') else 'NOT SET',
+        'OAUTH_REDIRECT_URI': os.environ.get('OAUTH_REDIRECT_URI', 'NOT SET'),
+        'TOKEN_ENCRYPTION_KEY': 'SET' if os.environ.get('TOKEN_ENCRYPTION_KEY') else 'NOT SET',
+        'current_domain': request.host_url,
+        'expected_redirect': f"{request.host_url}auth/callback"
+    }
+
+    return jsonify(oauth_config)
+
     # 如果MONGODB_URI设置了，显示前缀（不显示完整URI以保护安全）
     if os.environ.get('MONGODB_URI'):
         uri = os.environ.get('MONGODB_URI')
