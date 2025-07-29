@@ -23,6 +23,9 @@ class OAuthSecurity:
             client_id = os.environ.get('GOOGLE_CLIENT_ID') or current_app.config.get('GOOGLE_CLIENT_ID')
             client_secret = os.environ.get('GOOGLE_CLIENT_SECRET') or current_app.config.get('GOOGLE_CLIENT_SECRET')
             redirect_uri = os.environ.get('OAUTH_REDIRECT_URI') or current_app.config.get('OAUTH_REDIRECT_URI')
+            # 清理URL中的双斜杠（除了协议部分）
+            if redirect_uri:
+                redirect_uri = redirect_uri.replace('://', '|||PROTOCOL|||').replace('//', '/').replace('|||PROTOCOL|||', '://')
 
             if not client_id or not client_secret:
                 current_app.logger.error(f"Missing Google OAuth config: client_id={bool(client_id)}, client_secret={bool(client_secret)}")
