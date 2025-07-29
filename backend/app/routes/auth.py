@@ -7,6 +7,7 @@ from flask_jwt_extended import create_access_token, create_refresh_token, jwt_re
 import re
 import time
 import hashlib
+import os
 from app.models.user import User
 
 auth_bp = Blueprint('auth', __name__)
@@ -275,8 +276,13 @@ def google_login():
                 return cached_response
 
         # 交换授权码获取访问令牌
+        print(f"[OAuth] Attempting to exchange code: {code[:20]}...")
+        print(f"[OAuth] Using redirect URI: {os.environ.get('OAUTH_REDIRECT_URI', 'NOT SET')}")
+        print(f"[OAuth] Using client ID: {os.environ.get('GOOGLE_CLIENT_ID', 'NOT SET')[:20]}...")
+
         access_token = OAuthSecurity.exchange_google_code(code)
         if not access_token:
+            print(f"[OAuth] Failed to exchange authorization code")
             return jsonify({'error': 'Failed to exchange authorization code'}), 401
 
         # 使用访问令牌获取用户信息

@@ -47,7 +47,10 @@ class OAuthSecurity:
                 current_app.logger.info(f"Google OAuth token exchange successful")
                 return token_data.get('access_token')
             else:
-                current_app.logger.error(f"Google OAuth token exchange failed: {response.status_code} - {response.text}")
+                error_text = response.text
+                current_app.logger.error(f"Google OAuth token exchange failed: {response.status_code}")
+                current_app.logger.error(f"Response body: {error_text}")
+                current_app.logger.error(f"Request data: {data}")
                 return None
         except Exception as e:
             current_app.logger.error(f"Google code exchange failed: {e}")
