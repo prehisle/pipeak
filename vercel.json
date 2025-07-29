@@ -11,6 +11,12 @@
       }
     },
     {
+      "src": "/manifest.json",
+      "headers": {
+        "Content-Type": "application/manifest+json"
+      }
+    },
+    {
       "src": "/(.*)",
       "dest": "/index.html"
     }
