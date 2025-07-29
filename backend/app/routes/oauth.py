@@ -27,6 +27,15 @@ def _get_request_key(code):
     """生成请求的唯一标识"""
     return hashlib.md5(code.encode()).hexdigest()
 
+@oauth_bp.route('/test', methods=['GET'])
+def test_oauth_route():
+    """测试OAuth路由是否正常工作"""
+    return jsonify({
+        'message': 'OAuth routes are working',
+        'blueprint': 'oauth_bp',
+        'timestamp': time.time()
+    })
+
 @oauth_bp.route('/google', methods=['POST'])
 def google_login():
     """Google OAuth 登录"""

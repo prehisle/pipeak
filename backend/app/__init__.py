@@ -154,13 +154,9 @@ def create_indexes():
 def register_blueprints(app):
     """注册蓝图"""
 
-    # 导入并注册认证蓝图
+    # 导入并注册认证蓝图（包含OAuth路由）
     from app.routes.auth import auth_bp
     app.register_blueprint(auth_bp, url_prefix='/api/auth')
-
-    # 导入并注册OAuth蓝图
-    from app.routes.oauth import oauth_bp
-    app.register_blueprint(oauth_bp, url_prefix='/api/auth/oauth')
 
     # 导入并注册课程蓝图
     from app.routes.lessons import lessons_bp

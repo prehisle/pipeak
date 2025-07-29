@@ -5,6 +5,8 @@
 from flask import Blueprint, request, jsonify
 from flask_jwt_extended import create_access_token, create_refresh_token, jwt_required, get_jwt_identity
 import re
+import time
+import hashlib
 from app.models.user import User
 
 auth_bp = Blueprint('auth', __name__)
@@ -218,3 +220,108 @@ def get_current_user():
         
     except Exception as e:
         return jsonify({'message': f'服务器错误: {str(e)}'}), 500
+
+
+# ==================== OAuth 路由 ====================
+
+# 简单的请求去重缓存（生产环境应使用Redis）
+_request_cache = {}
+_cache_timeout = 30  # 30秒超时
+
+
+def _clean_cache():
+    """清理过期的缓存条目"""
+    current_time = time.time()
+    expired_keys = [key for key, (timestamp, _) in _request_cache.items()
+                   if current_time - timestamp > _cache_timeout]
+    for key in expired_keys:
+        del _request_cache[key]
+
+def _get_request_key(code):
+    """生成请求的唯一标识"""
+    return hashlib.md5(code.encode()).hexdigest()
+
+@auth_bp.route('/oauth/test', methods=['GET'])
+def test_oauth_route():
+    """测试OAuth路由是否正常工作"""
+    return jsonify({
+        'message': 'OAuth routes are working',
+        'blueprint': 'auth_bp',
+        'timestamp': time.time()
+    })
+
+@auth_bp.route('/oauth/google', methods=['POST'])
+def google_login():
+    """Google OAuth 登录"""
+    try:
+        from app.utils.oauth_security import OAuthSecurity, AccountLinkingStrategy
+
+        data = request.get_json()
+        code = data.get('code')
+
+        if not code:
+            return jsonify({'error': 'Missing authorization code'}), 400
+
+        # 清理过期缓存
+        _clean_cache()
+
+        # 检查是否是重复请求
+        request_key = _get_request_key(code)
+        current_time = time.time()
+
+        if request_key in _request_cache:
+            timestamp, cached_response = _request_cache[request_key]
+            if current_time - timestamp < _cache_timeout:
+                return cached_response
+
+        # 交换授权码获取访问令牌
+        access_token = OAuthSecurity.exchange_google_code(code)
+        if not access_token:
+            return jsonify({'error': 'Failed to exchange authorization code'}), 401
+
+        # 使用访问令牌获取用户信息
+        user_info = OAuthSecurity.validate_google_access_token(access_token)
+        if not user_info:
+            return jsonify({'error': 'Failed to get user information'}), 401
+
+        # 查找或创建用户
+        email = user_info.get('email')
+        name = user_info.get('name', email.split('@')[0])
+
+        user = User.find_by_email(email)
+        action = 'login'
+
+        if not user:
+            # 创建新用户
+            user = User(
+                email=email,
+                display_name=name,
+                password_hash='',  # OAuth用户不需要密码
+                oauth_provider='google',
+                oauth_id=user_info.get('id'),
+                is_verified=True  # Google账号默认已验证
+            )
+            if user.save():
+                action = 'created'
+            else:
+                return jsonify({'error': 'Failed to create user'}), 500
+
+        # 生成JWT token
+        access_token_jwt = create_access_token(identity=str(user._id))
+        refresh_token = create_refresh_token(identity=str(user._id))
+
+        response_data = {
+            'access_token': access_token_jwt,
+            'refresh_token': refresh_token,
+            'user': user.to_dict(),
+            'action': action,  # 'login', 'linked', 'created'
+            'message': f'Google OAuth {action} successful'
+        }
+
+        # 缓存成功的响应
+        _request_cache[request_key] = (current_time, (jsonify(response_data), 200))
+
+        return jsonify(response_data), 200
+
+    except Exception as e:
+        return jsonify({'error': 'OAuth authentication failed', 'details': str(e)}), 500
