@@ -83,10 +83,6 @@ class ProductionConfig(Config):
         self.MONGODB_URI = MONGODB_URI
 
 
-# 导入生产环境配置
-from config_production import ProductionConfig
-from config_development import DevelopmentConfig
-
 # 配置字典
 config = {
     'development': DevelopmentConfig,
