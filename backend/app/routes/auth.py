@@ -242,14 +242,7 @@ def _get_request_key(code):
     """生成请求的唯一标识"""
     return hashlib.md5(code.encode()).hexdigest()
 
-@auth_bp.route('/oauth/test', methods=['GET'])
-def test_oauth_route():
-    """测试OAuth路由是否正常工作"""
-    return jsonify({
-        'message': 'OAuth routes are working',
-        'blueprint': 'auth_bp',
-        'timestamp': time.time()
-    })
+
 
 @auth_bp.route('/oauth/google', methods=['POST'])
 def google_login():
@@ -276,13 +269,8 @@ def google_login():
                 return cached_response
 
         # 交换授权码获取访问令牌
-        print(f"[OAuth] Attempting to exchange code: {code[:20]}...")
-        print(f"[OAuth] Using redirect URI: {os.environ.get('OAUTH_REDIRECT_URI', 'NOT SET')}")
-        print(f"[OAuth] Using client ID: {os.environ.get('GOOGLE_CLIENT_ID', 'NOT SET')[:20]}...")
-
         access_token = OAuthSecurity.exchange_google_code(code)
         if not access_token:
-            print(f"[OAuth] Failed to exchange authorization code")
             return jsonify({'error': 'Failed to exchange authorization code'}), 401
 
         # 使用访问令牌获取用户信息

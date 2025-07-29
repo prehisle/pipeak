@@ -71,7 +71,6 @@ const OAuthCallbackPage = () => {
 
         // 发送授权码到后端
         const apiUrl = `${getApiBaseUrl()}/auth/oauth/${provider}`
-        console.log('OAuth API URL:', apiUrl)
 
         const response = await fetch(apiUrl, {
           method: 'POST',
@@ -83,9 +82,7 @@ const OAuthCallbackPage = () => {
 
         const data = await response.json();
 
-        // 添加详细的响应日志
-        console.log('OAuth response status:', response.status);
-        console.log('OAuth response data:', data);
+
 
         if (response.ok) {
           // OAuth登录成功

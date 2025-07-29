@@ -229,6 +229,9 @@ Icon
 .nfs*
 
 # ===== 项目特定 =====
+# 废弃的后端
+backend-ts/
+
 # 课程数据备份
 backup_lessons.py
 lessons_backup_*.json
@@ -247,6 +250,10 @@ docs/draft/
 # 本地开发脚本
 local_*.py
 local_*.js
+
+# 测试文件
+*test*.js
+*test*.py
 
 # SSL证书（如果有）
 *.pem
