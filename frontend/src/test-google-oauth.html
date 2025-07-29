@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Google OAuth 测试</title>
+    <script src="https://accounts.google.com/gsi/client" async defer></script>
+</head>
+<body>
+    <h1>Google OAuth 配置测试</h1>
+    
+    <div id="g_id_onload"
+         data-client_id="961714282899-usp2nsu8gdi8mlr9vl6pihh4upvghetn.apps.googleusercontent.com"
+         data-callback="handleCredentialResponse"
+         data-auto_prompt="false">
+    </div>
+    
+    <div class="g_id_signin" data-type="standard"></div>
+    
+    <button onclick="testGoogleLogin()">测试 Google 登录</button>
+    
+    <div id="result"></div>
+
+    <script>
+        function handleCredentialResponse(response) {
+            console.log("Encoded JWT ID token: " + response.credential);
+            document.getElementById('result').innerHTML = 
+                '<h3>登录成功！</h3><p>Token: ' + response.credential.substring(0, 50) + '...</p>';
+        }
+
+        function testGoogleLogin() {
+            if (window.google) {
+                window.google.accounts.id.initialize({
+                    client_id: "961714282899-usp2nsu8gdi8mlr9vl6pihh4upvghetn.apps.googleusercontent.com",
+                    callback: handleCredentialResponse
+                });
+                window.google.accounts.id.prompt();
+            } else {
+                document.getElementById('result').innerHTML = 
+                    '<p style="color: red;">Google Identity Services 未加载</p>';
+            }
+        }
+
+        // 页面加载完成后初始化
+        window.onload = function() {
+            if (window.google) {
+                window.google.accounts.id.initialize({
+                    client_id: "961714282899-usp2nsu8gdi8mlr9vl6pihh4upvghetn.apps.googleusercontent.com",
+                    callback: handleCredentialResponse
+                });
+                console.log('Google Identity Services 初始化完成');
+            }
+        };
+    </script>
+</body>
+</html>

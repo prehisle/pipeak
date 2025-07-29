@@ -118,20 +118,44 @@ const useFrontendLessonStore = create(
 
       // 设置语言
       setLanguage: (language) => {
+        const { currentLesson, currentKnowledgePointIndex } = get()
         set({ currentLanguage: language })
+
         // 如果是注册用户，强制刷新课程数据以获取新语言内容
         if (isRegisteredUser()) {
-          get().fetchLessons(true) // 强制刷新
+          // 保存当前状态
+          const currentLessonId = currentLesson?.id
+          const savedKnowledgePointIndex = currentKnowledgePointIndex
+
+          console.log('语言切换前保存状态:', { currentLessonId, savedKnowledgePointIndex })
+
+          // 强制刷新课程数据
+          get().fetchLessons(true).then(() => {
+            // 在数据刷新完成后恢复状态
+            if (currentLessonId) {
+              console.log('恢复课程状态:', { currentLessonId, savedKnowledgePointIndex })
+              get().setCurrentLesson(currentLessonId, true) // 保持知识点索引
+            }
+          }).catch((error) => {
+            console.error('刷新课程数据失败:', error)
+          })
         }
       },
 
       // 设置当前课程
-      setCurrentLesson: (lessonId) => {
-        const { lessons } = get()
+      setCurrentLesson: (lessonId, preserveKnowledgePointIndex = false) => {
+        const { lessons, currentKnowledgePointIndex } = get()
         const lesson = lessons ? lessons.find(l => l.id === lessonId) : null
+
+        // 如果需要保持当前知识点索引，且新课程有足够的知识点，则保持当前索引
+        const newIndex = preserveKnowledgePointIndex && lesson && lesson.knowledgePoints &&
+                        currentKnowledgePointIndex < lesson.knowledgePoints.length
+                        ? currentKnowledgePointIndex
+                        : 0
+
         set({
           currentLesson: lesson,
-          currentKnowledgePointIndex: 0
+          currentKnowledgePointIndex: newIndex
         })
       },
 

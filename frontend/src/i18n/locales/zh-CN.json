@@ -67,7 +67,18 @@
     "emailAlreadyExists": "该邮箱已被注册",
     "invalidCredentials": "邮箱或密码错误",
     "networkError": "网络错误，请稍后重试",
-    "backToHome": "返回首页"
+    "backToHome": "返回首页",
+    "continueWithGoogle": "使用 Google 继续",
+    "continueWithGitHub": "使用 GitHub 继续",
+    "orContinueWith": "或者使用以下方式继续",
+    "processing": "处理中",
+    "success": "成功",
+    "error": "错误",
+    "processingOAuth": "正在处理 {{provider}} 登录...",
+    "oauthSuccess": "OAuth 登录成功",
+    "oauthError": "OAuth 登录失败",
+    "redirecting": "正在跳转...",
+    "redirectingToLogin": "3秒后跳转到登录页面..."
   },
   "practice": {
     "enterAnswer": "请输入你的答案",

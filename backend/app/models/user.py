@@ -10,7 +10,8 @@ from app import get_db
 class User:
     """用户模型类"""
     
-    def __init__(self, email=None, password=None, _id=None, created_at=None, progress=None):
+    def __init__(self, email=None, password=None, _id=None, created_at=None, progress=None,
+                 oauth_providers=None, display_name=None, avatar_url=None):
         self._id = _id or ObjectId()
         self.email = email
         self.password_hash = None
@@ -21,6 +22,10 @@ class User:
             'current_lesson_id': None,
             'completed_lessons': []
         }
+        # OAuth 相关字段
+        self.oauth_providers = oauth_providers or []  # OAuth提供商列表
+        self.display_name = display_name or email  # 显示名称
+        self.avatar_url = avatar_url  # 头像URL
     
     def set_password(self, password):
         """设置密码（加密存储）"""
@@ -46,12 +51,15 @@ class User:
             '_id': str(self._id),
             'email': self.email,
             'created_at': self.created_at.isoformat(),
-            'progress': self.progress
+            'progress': self.progress,
+            'oauth_providers': self.oauth_providers,
+            'display_name': self.display_name,
+            'avatar_url': self.avatar_url
         }
-        
+
         if include_sensitive:
             data['password_hash'] = self.password_hash
-        
+
         return data
     
     @classmethod
@@ -66,6 +74,9 @@ class User:
             'current_lesson_id': None,
             'completed_lessons': []
         })
+        user.oauth_providers = data.get('oauth_providers', [])
+        user.display_name = data.get('display_name', data.get('email'))
+        user.avatar_url = data.get('avatar_url')
         return user
     
     def save(self):
@@ -75,7 +86,10 @@ class User:
             'email': self.email,
             'password_hash': self.password_hash,
             'created_at': self.created_at,
-            'progress': self.progress
+            'progress': self.progress,
+            'oauth_providers': self.oauth_providers,
+            'display_name': self.display_name,
+            'avatar_url': self.avatar_url
         }
         
         # 检查是否是更新操作（_id存在且在数据库中存在）
@@ -129,3 +143,64 @@ class User:
     def is_lesson_completed(self, lesson_id):
         """检查课程是否已完成"""
         return str(lesson_id) in self.progress['completed_lessons']
+
+    # OAuth 相关方法
+    def add_oauth_provider(self, provider_data):
+        """添加OAuth提供商"""
+        # 检查是否已经存在该提供商
+        for provider in self.oauth_providers:
+            if provider['provider'] == provider_data['provider']:
+                # 更新现有提供商信息
+                provider.update(provider_data)
+                return self.save()
+
+        # 添加新的提供商
+        self.oauth_providers.append(provider_data)
+        return self.save()
+
+    def remove_oauth_provider(self, provider_name):
+        """移除OAuth提供商"""
+        self.oauth_providers = [p for p in self.oauth_providers if p['provider'] != provider_name]
+        return self.save()
+
+    def get_oauth_provider(self, provider_name):
+        """获取指定的OAuth提供商信息"""
+        for provider in self.oauth_providers:
+            if provider['provider'] == provider_name:
+                return provider
+        return None
+
+    def has_oauth_provider(self, provider_name):
+        """检查是否绑定了指定的OAuth提供商"""
+        return any(p['provider'] == provider_name for p in self.oauth_providers)
+
+    def has_password(self):
+        """检查用户是否设置了密码"""
+        return self.password_hash is not None
+
+    @classmethod
+    def find_by_oauth_id(cls, provider, provider_id):
+        """根据OAuth提供商ID查找用户"""
+        db = get_db()
+        user_data = db.users.find_one({
+            'oauth_providers': {
+                '$elemMatch': {
+                    'provider': provider,
+                    'provider_id': str(provider_id)
+                }
+            }
+        })
+        if user_data:
+            return cls.from_dict(user_data)
+        return None
+
+    @classmethod
+    def create_from_oauth(cls, email, oauth_data):
+        """从OAuth数据创建新用户"""
+        user = cls(
+            email=email,
+            display_name=oauth_data.get('name', email),
+            avatar_url=oauth_data.get('avatar_url')
+        )
+        user.add_oauth_provider(oauth_data)
+        return user

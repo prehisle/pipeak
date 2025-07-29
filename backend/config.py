@@ -8,24 +8,39 @@ from datetime import timedelta
 
 class Config:
     """基础配置类"""
-    
+
     # Flask 基础配置
     SECRET_KEY = os.environ.get('SECRET_KEY') or 'dev-secret-key-change-in-production'
-    
+
     # MongoDB 配置
     MONGODB_URI = os.environ.get('MONGODB_URI') or 'mongodb://user:password@192.168.1.4:27017/latex_trainer?authSource=admin'
     MONGODB_DB = os.environ.get('MONGODB_DB') or 'latex_trainer'
-    
+
     # JWT 配置
     JWT_SECRET_KEY = os.environ.get('JWT_SECRET_KEY') or 'jwt-secret-change-in-production'
     JWT_ACCESS_TOKEN_EXPIRES = timedelta(hours=24)
     JWT_REFRESH_TOKEN_EXPIRES = timedelta(days=30)
-    
+
     # CORS 配置
     CORS_ORIGINS = os.environ.get('CORS_ORIGINS', 'http://localhost:5173').split(',')
 
     # 管理后台配置
     ADMIN_PASSWORD = os.environ.get('ADMIN_PASSWORD', 'admin123')
+
+    # OAuth 配置
+    # Google OAuth
+    GOOGLE_CLIENT_ID = os.environ.get('GOOGLE_CLIENT_ID')
+    GOOGLE_CLIENT_SECRET = os.environ.get('GOOGLE_CLIENT_SECRET')
+
+    # GitHub OAuth
+    GITHUB_CLIENT_ID = os.environ.get('GITHUB_CLIENT_ID')
+    GITHUB_CLIENT_SECRET = os.environ.get('GITHUB_CLIENT_SECRET')
+
+    # OAuth回调URL
+    OAUTH_REDIRECT_URI = os.environ.get('OAUTH_REDIRECT_URI', 'http://localhost:5173/auth/callback')
+
+    # Token加密密钥
+    TOKEN_ENCRYPTION_KEY = os.environ.get('TOKEN_ENCRYPTION_KEY') or 'dev-encryption-key-change-in-production'
 
     # 应用配置
     DEBUG = False

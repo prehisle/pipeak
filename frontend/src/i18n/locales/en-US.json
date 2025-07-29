@@ -84,7 +84,18 @@
     "emailAlreadyExists": "This email is already registered",
     "invalidCredentials": "Invalid email or password",
     "networkError": "Network error, please try again later",
-    "backToHome": "Back to Home"
+    "backToHome": "Back to Home",
+    "continueWithGoogle": "Continue with Google",
+    "continueWithGitHub": "Continue with GitHub",
+    "orContinueWith": "Or continue with",
+    "processing": "Processing",
+    "success": "Success",
+    "error": "Error",
+    "processingOAuth": "Processing {{provider}} login...",
+    "oauthSuccess": "OAuth login successful",
+    "oauthError": "OAuth login failed",
+    "redirecting": "Redirecting...",
+    "redirectingToLogin": "Redirecting to login page in 3 seconds..."
   },
   "practice": {
     "enterAnswer": "Please enter your answer",

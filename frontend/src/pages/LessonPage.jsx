@@ -69,9 +69,11 @@ const LessonPage = () => {
   // 设置当前课程 - 确保课程数据加载完成后再查找
   useEffect(() => {
     if (lessonId && lessons && lessons.length > 0) {
-      setCurrentLesson(lessonId)
+      // 检查是否是同一个课程的数据刷新（如语言切换）
+      const isSameLessonRefresh = currentLesson && currentLesson.id === lessonId
+      setCurrentLesson(lessonId, isSameLessonRefresh) // 如果是同一课程刷新，保持知识点索引
     }
-  }, [lessonId, lessons, setCurrentLesson])
+  }, [lessonId, lessons, setCurrentLesson, currentLesson])
 
   // 键盘导航支持
   useEffect(() => {

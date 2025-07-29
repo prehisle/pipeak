@@ -135,13 +135,16 @@ def create_indexes():
     try:
         # 用户集合索引
         db.users.create_index("email", unique=True)
-        
+
+        # OAuth 相关索引
+        db.users.create_index([("oauth_providers.provider", 1), ("oauth_providers.provider_id", 1)])
+
         # 课程集合索引
         db.lessons.create_index("sequence")
-        
+
         # 复习集合索引
         db.reviews.create_index([("user_id", 1), ("next_review_date", 1)])
-        
+
         print("Database indexes created successfully")
         
     except Exception as e:
@@ -154,6 +157,10 @@ def register_blueprints(app):
     # 导入并注册认证蓝图
     from app.routes.auth import auth_bp
     app.register_blueprint(auth_bp, url_prefix='/api/auth')
+
+    # 导入并注册OAuth蓝图
+    from app.routes.oauth import oauth_bp
+    app.register_blueprint(oauth_bp, url_prefix='/api/auth/oauth')
 
     # 导入并注册课程蓝图
     from app.routes.lessons import lessons_bp

@@ -8,6 +8,7 @@ import ThemeSwitcher from '../components/ThemeSwitcher'
 import Button from '../components/ui/Button'
 import { Input, Label } from '../components/ui/Input'
 import { Alert, AlertDescription } from '../components/ui/Alert'
+import GoogleLoginButton from '../components/auth/GoogleLoginButton'
 
 
 const RegisterPage = () => {
@@ -176,6 +177,24 @@ const RegisterPage = () => {
               {errors.confirmPassword && (
                 <p className="text-sm text-red-600 dark:text-red-400">{errors.confirmPassword}</p>
               )}
+            </div>
+          </div>
+
+          {/* OAuth 注册选项 */}
+          <div className="space-y-4">
+            <div className="relative">
+              <div className="absolute inset-0 flex items-center">
+                <div className="w-full border-t border-gray-300 dark:border-gray-600" />
+              </div>
+              <div className="relative flex justify-center text-sm">
+                <span className="px-2 bg-white dark:bg-gray-800 text-gray-500 dark:text-gray-400">
+                  {t('auth.orContinueWith')}
+                </span>
+              </div>
+            </div>
+
+            <div className="space-y-3">
+              <GoogleLoginButton />
             </div>
           </div>
 

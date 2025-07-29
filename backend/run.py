@@ -2,6 +2,11 @@
 LaTeX 速成训练器 - 应用入口文件
 """
 import os
+from dotenv import load_dotenv
+
+# 加载环境变量
+load_dotenv()
+
 from app import create_app
 
 # 根据环境变量选择配置
@@ -24,7 +29,11 @@ def check_env():
         'MONGODB_DB': os.environ.get('MONGODB_DB', 'NOT SET'),
         'JWT_SECRET_KEY': 'SET' if os.environ.get('JWT_SECRET_KEY') else 'NOT SET',
         'FLASK_ENV': os.environ.get('FLASK_ENV', 'NOT SET'),
-        'ENVIRONMENT': os.environ.get('ENVIRONMENT', 'NOT SET')
+        'ENVIRONMENT': os.environ.get('ENVIRONMENT', 'NOT SET'),
+        'GOOGLE_CLIENT_ID': 'SET' if os.environ.get('GOOGLE_CLIENT_ID') else 'NOT SET',
+        'GOOGLE_CLIENT_SECRET': 'SET' if os.environ.get('GOOGLE_CLIENT_SECRET') else 'NOT SET',
+        'OAUTH_REDIRECT_URI': os.environ.get('OAUTH_REDIRECT_URI', 'NOT SET'),
+        'TOKEN_ENCRYPTION_KEY': 'SET' if os.environ.get('TOKEN_ENCRYPTION_KEY') else 'NOT SET'
     }
 
     # 如果MONGODB_URI设置了，显示前缀（不显示完整URI以保护安全）

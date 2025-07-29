@@ -14,6 +14,7 @@ import LearningPage from './pages/LearningPage'
 // 移除练习中心相关页面 - 精简为核心学习路径
 import ReviewPage from './pages/ReviewPage'
 import OfflinePracticePage from './pages/OfflinePracticePage'
+import OAuthCallbackPage from './pages/OAuthCallbackPage'
 
 // 布局组件
 import Layout from './components/Layout'
@@ -65,6 +66,9 @@ function App() {
           path="/register"
           element={isAuthenticated() ? <Navigate to="/app/dashboard" replace /> : <RegisterPage />}
         />
+
+        {/* OAuth 回调路由 */}
+        <Route path="/auth/callback" element={<OAuthCallbackPage />} />
 
 
 

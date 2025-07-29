@@ -153,6 +153,35 @@ const useAuthStore = create(
         }
       },
 
+      // OAuth登录 - 直接使用OAuth响应的token和用户信息
+      loginWithOAuth: async (access_token, user, refresh_token = null) => {
+        set({ isLoading: true, error: null })
+
+        try {
+          set({
+            user,
+            accessToken: access_token,
+            refreshToken: refresh_token,
+            isLoading: false,
+            error: null
+          })
+
+          // 设置API默认认证头
+          api.defaults.headers.common['Authorization'] = `Bearer ${access_token}`
+
+          return { success: true }
+        } catch (error) {
+          set({
+            isLoading: false,
+            error: 'OAuth登录失败',
+            user: null,
+            accessToken: null,
+            refreshToken: null
+          })
+          return { success: false, error: 'OAuth登录失败' }
+        }
+      },
+
       // 注册
       register: async (email, password) => {
         set({ isLoading: true, error: null })
