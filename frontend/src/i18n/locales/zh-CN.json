@@ -20,6 +20,8 @@
     "trainer": "训练器",
     "slogan": "专注提升数学公式输入效率",
     "courseNotFound": "课程不存在",
+    "github": "GitHub 仓库",
+    "openSource": "开源项目",
     "themeToggle": {
       "tooltip": "切换到明亮模式",
       "tooltipDark": "切换到深色模式"
@@ -276,7 +278,7 @@
     "fromBasicToAdvanced": "从简单的上标下标到复杂的数学公式",
     "basicSyntax": "基础语法",
     "advancedFormulas": "进阶公式",
-    "copyright": "© 2024 LaTeX 速成训练器. 让数学公式编写变得简单."
+    "copyright": "© 2025 LaTeX 速成训练器. 让数学公式编写变得简单."
   },
   "offlinePractice": {
     "backToHome": "← 返回首页",

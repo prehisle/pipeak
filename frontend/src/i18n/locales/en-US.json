@@ -20,6 +20,8 @@
     "trainer": "Trainer",
     "slogan": "Focus on improving mathematical formula input efficiency",
     "courseNotFound": "Course not found",
+    "github": "GitHub Repository",
+    "openSource": "Open Source Project",
     "themeToggle": {
       "tooltip": "Switch to light mode",
       "tooltipDark": "Switch to dark mode"
@@ -292,7 +294,7 @@
     "fromBasicToAdvanced": "From simple superscripts and subscripts to complex mathematical formulas",
     "basicSyntax": "Basic Syntax",
     "advancedFormulas": "Advanced Formulas",
-    "copyright": "© 2024 LaTeX Quick Trainer. Making mathematical formula writing simple."
+    "copyright": "© 2025 LaTeX Quick Trainer. Making mathematical formula writing simple."
   },
   "offlinePractice": {
     "backToHome": "← Back to Home",
