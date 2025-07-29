@@ -22,7 +22,7 @@ class Config:
     JWT_REFRESH_TOKEN_EXPIRES = timedelta(days=30)
 
     # CORS 配置
-    CORS_ORIGINS = os.environ.get('CORS_ORIGINS', 'http://localhost:5173,https://pipeak.vercel.app').split(',')
+    CORS_ORIGINS = os.environ.get('CORS_ORIGINS', 'http://localhost:5173,https://pipeak.vercel.app,https://pipeak.share4y.cn').split(',')
 
     # 管理后台配置
     ADMIN_PASSWORD = os.environ.get('ADMIN_PASSWORD', 'admin123')

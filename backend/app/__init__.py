@@ -66,7 +66,7 @@ def init_extensions(app):
     else:
         # 生产环境：使用配置文件中的CORS_ORIGINS
         cors_origins = app.config.get('CORS_ORIGINS', [
-            "http://localhost:5173", "https://pipeak.vercel.app"
+            "http://localhost:5173", "https://pipeak.vercel.app", "https://pipeak.share4y.cn"
         ])
         print(f"CORS Origins: {cors_origins}")  # 调试日志
         CORS(app, resources={
