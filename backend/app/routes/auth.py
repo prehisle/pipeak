@@ -225,6 +225,16 @@ def get_current_user():
 
 # ==================== OAuth 路由 ====================
 
+@auth_bp.route('/oauth/config', methods=['GET'])
+def oauth_config():
+    """检查OAuth配置（仅用于调试）"""
+    return jsonify({
+        'redirect_uri': os.environ.get('OAUTH_REDIRECT_URI', 'NOT SET'),
+        'client_id_set': 'SET' if os.environ.get('GOOGLE_CLIENT_ID') else 'NOT SET',
+        'client_secret_set': 'SET' if os.environ.get('GOOGLE_CLIENT_SECRET') else 'NOT SET',
+        'timestamp': time.time()
+    })
+
 # 简单的请求去重缓存（生产环境应使用Redis）
 _request_cache = {}
 _cache_timeout = 30  # 30秒超时
@@ -252,6 +262,11 @@ def google_login():
 
         data = request.get_json()
         code = data.get('code')
+
+        # 添加详细的调试信息
+        print(f"[OAuth Debug] Received request from: {request.headers.get('Origin', 'Unknown')}")
+        print(f"[OAuth Debug] Authorization code: {code[:20] if code else 'None'}...")
+        print(f"[OAuth Debug] Redirect URI: {os.environ.get('OAUTH_REDIRECT_URI', 'NOT SET')}")
 
         if not code:
             return jsonify({'error': 'Missing authorization code'}), 400
