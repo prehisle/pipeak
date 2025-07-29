@@ -9,7 +9,7 @@
 
 **一个专注、高效的在线训练环境，帮助用户通过"学习-练习-反馈-复习"的科学闭环，快速掌握LaTeX数学公式的键盘输入方法。**
 
-[� 在线体验](https://pipeak.vercel.app/) | [�📖 使用指南](#-快速开始) | [🤝 贡献指南](#-贡献指南) | [📄 更新日志](#-更新日志)
+[🚀 在线体验](https://pipeak.share4y.cn/) | [📖 使用指南](#-快速开始) | [🤝 贡献指南](#-贡献指南) | [📄 更新日志](#-更新日志)
 
 </div>
 
@@ -17,7 +17,7 @@
 
 ## 🌐 在线体验
 
-**立即体验**: [https://pipeak.vercel.app/](https://pipeak.vercel.app/)
+**立即体验**: [https://pipeak.share4y.cn/](https://pipeak.share4y.cn/)
 
 > 🎯 **完整功能体验**：在线版本提供完整的学习功能，包括：
 > - 🎓 **完整课程学习**: 体验所有课程内容和学习路径
@@ -70,6 +70,7 @@
 - ⚡ **即时反馈机制**: 实时预览 + 智能验证，错误立即纠正
 - 📱 **全平台支持**: 响应式设计，支持桌面、平板、手机
 - 🔄 **科学复习算法**: 基于SM-2算法的智能复习提醒
+- 🔐 **便捷登录方式**: 支持邮箱注册和Google OAuth快速登录
 
 ### 🎯 适用场景
 
@@ -125,14 +126,21 @@
 ### 后端
 - **框架**: Flask (Python)
 - **数据库**: MongoDB
-- **认证**: Flask-JWT-Extended
+- **认证**: Flask-JWT-Extended + OAuth (Google)
 - **API**: RESTful API
+- **跨域**: Flask-CORS
+- **密码加密**: bcrypt
+- **部署**: Gunicorn
 
 ### 前端
 - **框架**: React + Vite
 - **LaTeX渲染**: KaTeX
-- **样式**: CSS Modules / Tailwind CSS
-- **状态管理**: React Context / Zustand
+- **样式**: Tailwind CSS
+- **状态管理**: Zustand
+- **路由**: React Router
+- **国际化**: i18next
+- **HTTP客户端**: Axios
+- **Markdown渲染**: React Markdown
 
 ## 📁 项目结构
 
@@ -270,11 +278,11 @@ cd frontend
 npm install
 npm run dev
 ```
-前端服务器将在 `http://localhost:5174` 启动，同时支持局域网访问。
+前端服务器将在 `http://localhost:5173` 启动，同时支持局域网访问。
 
 ### 🌐 局域网访问
 项目支持局域网多设备访问：
-- **前端**: `http://[您的IP]:5174`
+- **前端**: `http://[您的IP]:5173`
 - **后端**: `http://[您的IP]:5000`
 - 其他设备连接到相同WiFi即可访问
 
@@ -291,6 +299,8 @@ mongodb://user:password@192.168.1.4:27017/?authSource=admin
 - `POST /api/auth/register` - 用户注册
 - `POST /api/auth/login` - 用户登录
 - `POST /api/auth/refresh` - 刷新JWT令牌
+- `GET /api/auth/me` - 获取当前用户信息
+- `POST /api/auth/google` - Google OAuth登录
 
 ### 课程相关 ✅
 - `GET /api/lessons/` - 获取课程列表
@@ -301,6 +311,15 @@ mongodb://user:password@192.168.1.4:27017/?authSource=admin
 - `POST /api/practice/submit` - 提交练习答案
 - `POST /api/practice/hint` - 获取练习提示
 - `GET /api/practice/progress/{lesson_id}` - 获取练习进度
+- `GET /api/practice/list` - 获取所有练习题列表
+- `GET /api/practice/stats` - 获取用户练习统计
+
+### 复习相关 ✅
+- `GET /api/reviews/today` - 获取今日复习任务
+- `POST /api/reviews/submit` - 提交复习答案
+- `GET /api/reviews/items` - 获取用户的所有复习项目
+- `PUT /api/reviews/items/{item_id}` - 更新复习项目数据
+- `GET /api/reviews/stats` - 获取用户复习统计信息
 
 ### 用户相关 ✅
 - `GET /api/users/profile` - 获取用户资料
