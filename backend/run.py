@@ -36,6 +36,8 @@ def check_env():
         'TOKEN_ENCRYPTION_KEY': 'SET' if os.environ.get('TOKEN_ENCRYPTION_KEY') else 'NOT SET'
     }
 
+    return jsonify(env_vars)
+
 # 添加OAuth配置调试端点
 @app.route('/api/debug/oauth')
 def check_oauth():
