@@ -59,8 +59,21 @@ const OAuthCallbackPage = () => {
 
         setMessage(t('auth.processingOAuth', { provider: provider.charAt(0).toUpperCase() + provider.slice(1) }));
 
+        // 获取API基础URL
+        const getApiBaseUrl = () => {
+          // 生产环境使用环境变量
+          if (import.meta.env.VITE_API_BASE_URL) {
+            return import.meta.env.VITE_API_BASE_URL
+          }
+          // 开发环境默认
+          return 'http://localhost:5000/api'
+        }
+
         // 发送授权码到后端
-        const response = await fetch(`/api/auth/oauth/${provider}`, {
+        const apiUrl = `${getApiBaseUrl()}/auth/oauth/${provider}`
+        console.log('OAuth API URL:', apiUrl)
+
+        const response = await fetch(apiUrl, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
