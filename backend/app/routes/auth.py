@@ -302,10 +302,7 @@ def google_login():
             user = User(
                 email=email,
                 display_name=name,
-                password_hash='',  # OAuth用户不需要密码
-                oauth_provider='google',
-                oauth_id=user_info.get('id'),
-                is_verified=True  # Google账号默认已验证
+                oauth_providers=['google']  # OAuth用户标识
             )
             if user.save():
                 action = 'created'
