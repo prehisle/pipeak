@@ -8,12 +8,25 @@
  * @returns {boolean} - 是否等价
  */
 export const checkAnswerEquivalence = (userAnswer, targetAnswer) => {
-  // 标准化函数：移除多余空格，统一格式
+  // 标准化函数：移除多余空格，统一格式，处理上下标顺序
   const normalize = (str) => {
-    return str
+    let normalized = str
       .replace(/\s+/g, '') // 移除所有空格
       .toLowerCase() // 转换为小写
       .replace(/^\$+|\$+$/g, '') // 移除开头和结尾的美元符号
+
+    // 标准化上下标顺序：统一为先下标后上标的形式
+    // x^2_i -> x_i^2, x^{2}_i -> x_i^{2}
+    normalized = normalized.replace(/([a-zA-Z])(\^[^_\s]*)?(_[^_^\s]*)?/g,
+      (match, base, sup, sub) => {
+        if (sup && sub) {
+          return base + sub + sup; // 统一为先下标后上标
+        }
+        return match;
+      }
+    );
+
+    return normalized;
   }
 
   const normalizedUser = normalize(userAnswer)

@@ -352,6 +352,12 @@ def check_latex_answer(user_answer, target_answer):
             # 移除美元符号（如果存在）
             latex_str = re.sub(r'^\$+|\$+$', '', latex_str)
 
+            # 标准化上下标顺序：统一为先下标后上标的形式
+            # x^2_i -> x_i^2, x^{2}_i -> x_i^{2}
+            latex_str = re.sub(r'([a-zA-Z])(\^[^_\s]*)?(_[^_^\s]*)?',
+                              lambda m: m.group(1) + (m.group(3) or '') + (m.group(2) or ''),
+                              latex_str)
+
             # 标准化上标和下标的花括号
             # x^2 -> x^{2}, x_1 -> x_{1}
             latex_str = re.sub(r'\^([a-zA-Z0-9])', r'^{\1}', latex_str)
