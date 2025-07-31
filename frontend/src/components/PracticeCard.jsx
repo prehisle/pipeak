@@ -139,6 +139,7 @@ const PracticeCard = forwardRef(({
         setCurrentHint('')
         setHintLevel(0)
         setSyntaxSuggestions([])
+        setValidationResult(null) // 清除增强反馈小贴士
         return
       }
 
@@ -184,6 +185,7 @@ const PracticeCard = forwardRef(({
       setCurrentHint('')
       setHintLevel(0)
       setSyntaxSuggestions([])
+      setValidationResult(null) // 清除增强反馈小贴士
     }
 
     checkPracticeStatus()
