@@ -176,9 +176,20 @@ const LessonPage = () => {
     if (isCorrect && currentLesson) {
       const currentKnowledgePoint = currentLesson.knowledgePoints[currentKnowledgePointIndex]
       if (currentKnowledgePoint) {
-        // 标记知识点为已完成
+        // 标记知识点为已完成（后端需要这个状态）
         completeKnowledgePoint(currentLesson.id, currentKnowledgePoint.id)
-        showSuccess(t('lessonPage.knowledgePointCompleted'))
+
+        // 检查当前知识点类型，决定是否显示提示
+        const hasExercises = currentKnowledgePoint.exercises && currentKnowledgePoint.exercises.length > 0
+
+        if (hasExercises) {
+          // 对于练习题，不显示"知识点完成！"，因为用户已经看到了"正确！"等反馈
+          // 只有在完成整个课程时才显示课程完成提示
+          console.log('练习题完成，不显示知识点完成提示')
+        } else {
+          // 对于纯知识点（理论内容），显示知识点完成提示
+          showSuccess(t('lessonPage.knowledgePointCompleted'))
+        }
 
         // 检查是否应该完成整个课程
         setTimeout(async () => {
