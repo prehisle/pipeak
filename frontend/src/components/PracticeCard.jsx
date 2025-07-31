@@ -131,6 +131,8 @@ const PracticeCard = forwardRef(({
 
   // 检查当前练习是否已完成并加载状态
   useEffect(() => {
+    let isCancelled = false
+
     const checkPracticeStatus = async () => {
       // 复习模式下跳过完成状态检查
       if (isReviewMode) {
@@ -144,51 +146,92 @@ const PracticeCard = forwardRef(({
       }
 
       try {
-        // 获取当前课程的完成状态
-        const response = await learningAPI.getCompletionStatus(lessonId)
-        if (response.data && response.data.completed_practice_details) {
-          // 查找当前练习题的完成状态
-          const currentPractice = response.data.completed_practice_details.find(
-            practice => practice.index === cardIndex
-          )
+        // 获取当前课程的完成状态（添加缓存键）
+        const cacheKey = `completion-${lessonId}-${cardIndex}`
 
-          if (currentPractice) {
-            // 如果已完成，设置为完成状态
-            setIsCorrect(true)
-            setUserAnswer(targetFormula)
-            setFeedback({
-              type: 'success',
-              message: t('practiceCard.correctAnswer')
-            })
-          } else {
-            // 如果未完成，重置状态
-            setUserAnswer('')
-            setFeedback(null)
-            setIsCorrect(false)
+        // 检查是否有缓存的结果（5秒内有效）
+        const cached = window.practiceStatusCache?.[cacheKey]
+        if (cached && Date.now() - cached.timestamp < 5000) {
+          console.log('使用缓存的练习状态:', cacheKey)
+          const response = cached.data
+
+          if (!isCancelled) {
+            updatePracticeStatus(response)
           }
-        } else {
-          // 如果没有完成状态，重置状态
+          return
+        }
+
+        console.log('获取练习状态:', cacheKey)
+        const response = await learningAPI.getCompletionStatus(lessonId)
+
+        // 缓存结果
+        if (!window.practiceStatusCache) {
+          window.practiceStatusCache = {}
+        }
+        window.practiceStatusCache[cacheKey] = {
+          data: response,
+          timestamp: Date.now()
+        }
+
+        if (!isCancelled) {
+          updatePracticeStatus(response)
+        }
+      } catch (error) {
+        console.error('检查练习状态失败:', error)
+        if (!isCancelled) {
+          // 出错时重置状态
           setUserAnswer('')
           setFeedback(null)
           setIsCorrect(false)
         }
-      } catch (error) {
-        console.error('检查练习状态失败:', error)
-        // 出错时重置状态
+      }
+
+      if (!isCancelled) {
+        // 重置其他状态
+        setShowHint(false)
+        setCurrentHint('')
+        setHintLevel(0)
+        setSyntaxSuggestions([])
+        setValidationResult(null) // 清除增强反馈小贴士
+      }
+    }
+
+    const updatePracticeStatus = (response) => {
+      if (response.data && response.data.completed_practice_details) {
+        // 查找当前练习题的完成状态
+        const currentPractice = response.data.completed_practice_details.find(
+          practice => practice.index === cardIndex
+        )
+
+        if (currentPractice) {
+          // 如果已完成，设置为完成状态
+          setIsCorrect(true)
+          setUserAnswer(targetFormula)
+          setFeedback({
+            type: 'success',
+            message: t('practiceCard.correctAnswer')
+          })
+        } else {
+          // 如果未完成，重置状态
+          setUserAnswer('')
+          setFeedback(null)
+          setIsCorrect(false)
+        }
+      } else {
+        // 如果没有完成状态，重置状态
         setUserAnswer('')
         setFeedback(null)
         setIsCorrect(false)
       }
-
-      // 重置其他状态
-      setShowHint(false)
-      setCurrentHint('')
-      setHintLevel(0)
-      setSyntaxSuggestions([])
-      setValidationResult(null) // 清除增强反馈小贴士
     }
 
-    checkPracticeStatus()
+    // 添加防抖延迟，避免快速切换时的重复请求
+    const timeoutId = setTimeout(checkPracticeStatus, 100)
+
+    return () => {
+      isCancelled = true
+      clearTimeout(timeoutId)
+    }
   }, [cardIndex, lessonId, targetFormula, isReviewMode, t])
 
   // 智能语法检查和建议
