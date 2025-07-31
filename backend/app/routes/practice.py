@@ -478,6 +478,11 @@ def check_latex_answer(user_answer, target_answer):
             latex_str = re.sub(r'\\begin\s*\{\s*([^}]+)\s*\}', r'\\begin{\1}', latex_str)
             latex_str = re.sub(r'\\end\s*\{\s*([^}]+)\s*\}', r'\\end{\1}', latex_str)
 
+            # 标准化矩阵行分隔符：将多个反斜杠统一为双反斜杠
+            # 处理 \\\\ 和 \\\\\\\\ 等不同的转义形式
+            latex_str = re.sub(r'\\{4,}', r'\\\\', latex_str)  # 4个或更多反斜杠 -> 2个反斜杠
+            latex_str = re.sub(r'\\{3}', r'\\\\', latex_str)   # 3个反斜杠 -> 2个反斜杠
+
             # 处理常见的等价形式
             equivalence_mappings = {
                 # 分数的不同写法
