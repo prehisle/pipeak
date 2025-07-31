@@ -278,7 +278,7 @@ const LessonPage = () => {
       }
     } else {
       // 还有练习题未完成
-      showWarning(`请先完成所有练习题！已完成 ${completedPractices}/${totalPractices} 题`)
+      showWarning(t('lesson.completionRequired') + ' ' + t('lesson.progressStatus', { completed: completedPractices, total: totalPractices }))
     }
   }
 

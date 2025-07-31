@@ -3,6 +3,7 @@ import { useTranslation } from 'react-i18next'
 import MarkdownRenderer from './MarkdownRenderer'
 import { learningAPI } from '../services/api'
 import { translateHint, translateAllHintsShown } from '../utils/hintTranslator'
+import EnhancedFeedback from './EnhancedFeedback'
 
 // 练习题翻译映射
 const practiceTranslations = {
@@ -84,6 +85,7 @@ const PracticeCard = forwardRef(({
   const [originalHint, setOriginalHint] = useState('') // 存储原始提示内容用于重新翻译
   const [isCorrect, setIsCorrect] = useState(false)
   const [syntaxSuggestions, setSyntaxSuggestions] = useState([])
+  const [validationResult, setValidationResult] = useState(null)
 
   // 输入框引用
   const textareaRef = useRef(null)
@@ -294,34 +296,53 @@ const PracticeCard = forwardRef(({
     console.log('目标答案:', targetFormula.trim())
     console.log('练习数据:', practiceData)
 
-    // 使用改进的答案检查逻辑，支持多种正确格式
-    const isAnswerCorrect = checkAnswerEquivalence(userAnswer.trim(), targetFormula.trim())
+    let isAnswerCorrect = false;
 
-    console.log('答案是否正确:', isAnswerCorrect)
-
-    if (isAnswerCorrect) {
-      setIsCorrect(true)
-      setFeedback(t('practiceCard.correctAnswer'))
-
-      // 提交答案到后端API
+    try {
+      // 使用后端的增强验证API
       if (!isReviewMode) {
-        // 学习模式：提交到学习API
-        try {
-          await learningAPI.submitAnswer({
-            lesson_id: lessonId,
-            card_index: cardIndex, // cardIndex现在是正确的后端卡片索引
-            user_answer: userAnswer.trim()
-          })
-          console.log('练习答案已提交到后端')
-        } catch (error) {
-          console.error('提交练习答案失败:', error)
-          // 即使提交失败，也继续本地流程
-        }
-      }
-      // 复习模式：不在这里提交，由父组件的onComplete回调处理
+        // 学习模式：提交到后端API并获取增强验证结果
+        const response = await learningAPI.submitAnswer({
+          lesson_id: lessonId,
+          card_index: cardIndex,
+          user_answer: userAnswer.trim()
+        })
 
-      // 调用父组件的完成回调
-      if (onComplete) {
+        console.log('后端验证结果:', response)
+
+        // 处理增强验证结果
+        isAnswerCorrect = response.is_correct
+        const validationResult = response.validation
+
+        // 更新状态
+        setValidationResult(validationResult)
+
+        if (isAnswerCorrect) {
+          setIsCorrect(true)
+          setFeedback(t('practiceCard.correctAnswer'))
+        } else {
+          setFeedback(t('practiceCard.incorrectAnswer'))
+        }
+
+        console.log('答案是否正确:', isAnswerCorrect)
+        console.log('验证详情:', validationResult)
+
+      } else {
+        // 复习模式：使用前端验证（保持原有逻辑）
+        isAnswerCorrect = checkAnswerEquivalence(userAnswer.trim(), targetFormula.trim())
+
+        if (isAnswerCorrect) {
+          setIsCorrect(true)
+          setFeedback(t('practiceCard.correctAnswer'))
+        } else {
+          setFeedback(t('practiceCard.incorrectAnswer'))
+        }
+
+        console.log('答案是否正确:', isAnswerCorrect)
+      }
+
+      // 如果答案正确，调用父组件的完成回调
+      if (isAnswerCorrect && onComplete) {
         setTimeout(() => {
           if (isReviewMode) {
             // 复习模式：传递练习数据、用户答案、是否正确
@@ -332,14 +353,10 @@ const PracticeCard = forwardRef(({
           }
         }, 2000)
       }
-    } else {
-      setFeedback(t('practice.incorrectAnswer'))
 
-      // 显示提示
-      if (hintText) {
-        setCurrentHint(hintText)
-        setShowHint(true)
-      }
+    } catch (error) {
+      console.error('提交答案失败:', error)
+      setFeedback(t('practice.submitError', '提交失败，请重试'))
     }
 
     setIsSubmitting(false)
@@ -563,6 +580,11 @@ const PracticeCard = forwardRef(({
                 </div>
               )}
             </div>
+          )}
+
+          {/* 增强反馈信息（小贴士） */}
+          {validationResult && (
+            <EnhancedFeedback validationResult={validationResult} />
           )}
 
           {/* 提示信息 */}

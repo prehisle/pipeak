@@ -63,9 +63,10 @@ def submit_practice():
         if card['type'] != 'practice':
             return jsonify({'error': '该卡片不是练习题'}), 400
 
-        # 检查答案正确性
+        # 使用增强的答案检查（包含友好小贴士）
         target_formula = card['target_formula']
-        is_correct = check_latex_answer(user_answer, target_formula)
+        validation_result = enhanced_check_latex_answer(user_answer, target_formula)
+        is_correct = validation_result['isCorrect']
 
         # 保存练习记录
         practice_record = {
@@ -92,7 +93,8 @@ def submit_practice():
         response_data = {
             'is_correct': is_correct,
             'target_answer': target_formula,
-            'feedback': get_feedback(is_correct, user_answer, target_formula)
+            'feedback': get_feedback(is_correct, user_answer, target_formula),
+            'validation': validation_result  # 包含小贴士信息
         }
 
         # 如果答案错误，提供提示
@@ -335,6 +337,56 @@ def get_practice_stats():
 
     except Exception as e:
         return jsonify({'error': f'获取练习统计时出错: {str(e)}'}), 500
+
+
+def enhanced_check_latex_answer(user_answer, target_answer):
+    """增强的LaTeX答案检查 - 支持语义等价性检查和友好的小贴士"""
+    from app.utils.standardness_checker import check_latex_standardness
+
+    # 基础正确性检查
+    is_mathematically_correct = check_latex_answer(user_answer, target_answer)
+
+    if not is_mathematically_correct:
+        return {
+            'result': 'incorrect',
+            'isCorrect': False,
+            'suggestions': [],
+            'bestPractice': None
+        }
+
+    # 如果与目标答案完全一致，直接返回perfect（避免对课程标准答案进行"纠正"）
+    # 使用简单的标准化比较
+    def simple_normalize(latex_str):
+        if not latex_str:
+            return ""
+        # 移除美元符号和空格，转换为小写
+        return latex_str.strip().replace('$', '').replace(' ', '').lower()
+
+    if simple_normalize(user_answer) == simple_normalize(target_answer):
+        return {
+            'result': 'perfect',
+            'isCorrect': True,
+            'suggestions': [],
+            'bestPractice': None
+        }
+
+    # 只对用户的"创新"写法进行友好的小贴士检查
+    standardness_issues = check_latex_standardness(user_answer, target_answer)
+
+    if standardness_issues:
+        return {
+            'result': 'correct_but_non_standard',
+            'isCorrect': True,
+            'suggestions': standardness_issues,
+            'bestPractice': None
+        }
+
+    return {
+        'result': 'perfect',
+        'isCorrect': True,
+        'suggestions': [],
+        'bestPractice': None
+    }
 
 
 def check_latex_answer(user_answer, target_answer):

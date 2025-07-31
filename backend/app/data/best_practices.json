@@ -1,0 +1,232 @@
+{
+  "tips": [
+    {
+      "id": "subscript_superscript_order",
+      "category": "subscript_superscript",
+      "title": {
+        "zh": "上下标书写顺序",
+        "en": "Subscript and Superscript Order"
+      },
+      "content": {
+        "zh": "在LaTeX中，建议先写下标再写上标，这样更符合数学排版的传统习惯。",
+        "en": "In LaTeX, it's recommended to write subscripts before superscripts, following traditional mathematical typesetting conventions."
+      },
+      "example": {
+        "wrong": "x^2_i",
+        "correct": "x_i^2",
+        "explanation": {
+          "zh": "虽然两种写法在数学上等价，但 x_i^2 是更标准的写法",
+          "en": "Although both forms are mathematically equivalent, x_i^2 is the more standard notation"
+        }
+      },
+      "level": "beginner",
+      "triggers": ["subscript_superscript_order"]
+    },
+    {
+      "id": "function_names",
+      "category": "function_names",
+      "title": {
+        "zh": "数学函数名",
+        "en": "Mathematical Function Names"
+      },
+      "content": {
+        "zh": "数学函数名应该使用反斜杠开头，这样可以确保正确的字体和间距。",
+        "en": "Mathematical function names should start with a backslash to ensure proper font and spacing."
+      },
+      "example": {
+        "wrong": "sin(x) + cos(x)",
+        "correct": "\\sin(x) + \\cos(x)",
+        "explanation": {
+          "zh": "使用 \\sin 和 \\cos 可以得到正确的数学字体",
+          "en": "Using \\sin and \\cos produces the correct mathematical font"
+        }
+      },
+      "level": "beginner",
+      "triggers": ["function_names"]
+    },
+    {
+      "id": "large_operators",
+      "category": "large_operators",
+      "title": {
+        "zh": "大型运算符的上下标",
+        "en": "Large Operators with Sub/Superscripts"
+      },
+      "content": {
+        "zh": "对于求和、积分等大型运算符，建议先写下标（下限）再写上标（上限）。",
+        "en": "For large operators like summation and integration, write the subscript (lower limit) before the superscript (upper limit)."
+      },
+      "example": {
+        "wrong": "\\sum^n_{i=1}",
+        "correct": "\\sum_{i=1}^n",
+        "explanation": {
+          "zh": "先写求和的下限，再写上限，这是数学排版的标准做法",
+          "en": "Write the lower limit first, then the upper limit - this is standard mathematical typesetting"
+        }
+      },
+      "level": "intermediate",
+      "triggers": ["large_operators"]
+    },
+    {
+      "id": "bracket_usage",
+      "category": "brackets",
+      "title": {
+        "zh": "花括号的使用",
+        "en": "Using Curly Braces"
+      },
+      "content": {
+        "zh": "当上标或下标包含多个字符时，应该使用花括号将它们括起来。",
+        "en": "When superscripts or subscripts contain multiple characters, they should be enclosed in curly braces."
+      },
+      "example": {
+        "wrong": "x^10 + y_max",
+        "correct": "x^{10} + y_{max}",
+        "explanation": {
+          "zh": "花括号确保多字符内容被正确地作为一个整体处理",
+          "en": "Curly braces ensure that multi-character content is treated as a single unit"
+        }
+      },
+      "level": "beginner",
+      "triggers": ["bracket_usage"]
+    },
+    {
+      "id": "spacing_best_practices",
+      "category": "spacing",
+      "title": {
+        "zh": "空格的使用",
+        "en": "Spacing Best Practices"
+      },
+      "content": {
+        "zh": "在LaTeX中，多余的空格通常会被忽略，但保持代码整洁有助于阅读和维护。",
+        "en": "In LaTeX, extra spaces are usually ignored, but keeping code clean helps with readability and maintenance."
+      },
+      "example": {
+        "wrong": "a  +  b   =   c",
+        "correct": "a + b = c",
+        "explanation": {
+          "zh": "避免不必要的多余空格，保持代码简洁",
+          "en": "Avoid unnecessary extra spaces to keep code clean"
+        }
+      },
+      "level": "beginner",
+      "triggers": ["spacing"]
+    },
+    {
+      "id": "fraction_notation",
+      "category": "fractions",
+      "title": {
+        "zh": "分数的标准写法",
+        "en": "Standard Fraction Notation"
+      },
+      "content": {
+        "zh": "使用 \\frac{分子}{分母} 来表示分数，这比使用斜杠更清晰。",
+        "en": "Use \\frac{numerator}{denominator} for fractions, which is clearer than using slashes."
+      },
+      "example": {
+        "wrong": "1/2 + 3/4",
+        "correct": "\\frac{1}{2} + \\frac{3}{4}",
+        "explanation": {
+          "zh": "\\frac 命令可以产生更美观的分数显示",
+          "en": "The \\frac command produces more beautiful fraction display"
+        }
+      },
+      "level": "beginner",
+      "triggers": ["fractions"]
+    },
+    {
+      "id": "matrix_alignment",
+      "category": "matrices",
+      "title": {
+        "zh": "矩阵的对齐",
+        "en": "Matrix Alignment"
+      },
+      "content": {
+        "zh": "在编写矩阵时，保持元素对齐可以提高代码的可读性。",
+        "en": "When writing matrices, keeping elements aligned improves code readability."
+      },
+      "example": {
+        "wrong": "\\begin{matrix} 1 & 2 \\\\ 3 & 4 \\end{matrix}",
+        "correct": "\\begin{matrix}\n  1 & 2 \\\\\n  3 & 4\n\\end{matrix}",
+        "explanation": {
+          "zh": "适当的换行和缩进让矩阵结构更清晰",
+          "en": "Proper line breaks and indentation make matrix structure clearer"
+        }
+      },
+      "level": "intermediate",
+      "triggers": ["matrices"]
+    },
+    {
+      "id": "equation_numbering",
+      "category": "equations",
+      "title": {
+        "zh": "公式编号",
+        "en": "Equation Numbering"
+      },
+      "content": {
+        "zh": "对于重要的公式，考虑使用编号以便后续引用。",
+        "en": "For important equations, consider using numbering for later reference."
+      },
+      "example": {
+        "wrong": "$$E = mc^2$$",
+        "correct": "\\begin{equation}\nE = mc^2\n\\end{equation}",
+        "explanation": {
+          "zh": "equation 环境会自动为公式添加编号",
+          "en": "The equation environment automatically adds numbering to formulas"
+        }
+      },
+      "level": "advanced",
+      "triggers": ["equations"]
+    }
+  ],
+  "categories": {
+    "subscript_superscript": {
+      "name": {
+        "zh": "上下标",
+        "en": "Subscripts & Superscripts"
+      },
+      "description": {
+        "zh": "上标和下标的正确使用方法",
+        "en": "Proper usage of superscripts and subscripts"
+      }
+    },
+    "function_names": {
+      "name": {
+        "zh": "函数名",
+        "en": "Function Names"
+      },
+      "description": {
+        "zh": "数学函数的标准写法",
+        "en": "Standard notation for mathematical functions"
+      }
+    },
+    "large_operators": {
+      "name": {
+        "zh": "大型运算符",
+        "en": "Large Operators"
+      },
+      "description": {
+        "zh": "求和、积分等运算符的使用",
+        "en": "Usage of summation, integration and other operators"
+      }
+    },
+    "brackets": {
+      "name": {
+        "zh": "括号使用",
+        "en": "Bracket Usage"
+      },
+      "description": {
+        "zh": "各种括号的正确使用方法",
+        "en": "Proper usage of various types of brackets"
+      }
+    },
+    "spacing": {
+      "name": {
+        "zh": "空格处理",
+        "en": "Spacing"
+      },
+      "description": {
+        "zh": "空格和格式的最佳实践",
+        "en": "Best practices for spacing and formatting"
+      }
+    }
+  }
+}

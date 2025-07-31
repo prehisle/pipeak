@@ -284,7 +284,7 @@ const DashboardPage = () => {
           </div>
         </div>
         <div className="card-body">
-          {isLoading ? (
+          {lessonsLoading ? (
             <div className="text-center py-8">
               <LoadingSpinner size="lg" />
               <p className="text-gray-500 mt-4">{t('dashboard.loadingCourses')}</p>
