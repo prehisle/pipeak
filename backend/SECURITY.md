@@ -1,6 +1,12 @@
 # 安全配置说明
 
-## 数据库重置接口安全措施
+## 数据库操作接口安全措施
+
+本文档涵盖两个数据库操作接口的安全配置：
+- `/api/reset-db` - 开发环境数据库重置
+- `/api/init-db` - 生产环境数据库初始化
+
+## 1. 数据库重置接口 (`/api/reset-db`)
 
 ### ⚠️ 重要安全警告
 
@@ -86,6 +92,66 @@ FLASK_DEBUG=False curl http://localhost:5000/api/reset-db
 4. 检查访问日志是否有异常请求
 5. 如有必要，临时禁用整个接口
 
+## 2. 数据库初始化接口 (`/api/init-db`)
+
+### ⚠️ 重要安全警告
+
+`/api/init-db` 接口用于生产环境首次部署时初始化数据库。虽然相对安全，但仍需要适当的保护措施。
+
+### 🔒 安全保护机制
+
+#### 1. 密钥认证
+- **必需密钥**：必须设置 `INIT_DB_SECRET` 环境变量
+- **访问控制**：需要提供正确的 `init_key` 参数
+- **示例**：`/api/init-db?init_key=your-secret-key`
+
+#### 2. 数据库状态检查
+- **防止重复初始化**：检查数据库是否已有数据
+- **安全拒绝**：如果发现现有数据，拒绝操作
+- **状态报告**：返回当前数据库状态信息
+
+#### 3. 操作限制
+- **一次性使用**：只能在空数据库上使用
+- **明确错误信息**：提供详细的错误和状态信息
+
+### 🚀 生产环境使用方法
+
+#### 首次部署初始化
+```bash
+# 设置环境变量
+INIT_DB_SECRET=your-production-secret-key
+
+# 初始化数据库
+curl "https://your-domain/api/init-db?init_key=your-production-secret-key"
+```
+
+#### 安全检查
+```bash
+# 验证密钥保护
+curl https://your-domain/api/init-db
+# 应该返回：{"error": "Database initialization is disabled"}
+
+# 验证重复初始化保护
+curl "https://your-domain/api/init-db?init_key=correct-key"
+# 如果数据库已有数据，应该返回：{"error": "Database already contains data"}
+```
+
+### 📋 推荐的生产环境初始化流程
+
+1. **使用独立脚本**（最安全）：
+   ```bash
+   python init_railway_db.py
+   ```
+
+2. **使用受保护的API接口**：
+   ```bash
+   curl "https://your-domain/api/init-db?init_key=secret"
+   ```
+
+3. **使用管理后台**（需要登录）：
+   - 访问 `/admin` 并登录
+   - 使用管理界面进行初始化
+
 ### 🔧 进一步增强安全性
 
 如需更高的安全级别，可以考虑：
@@ -94,3 +160,4 @@ FLASK_DEBUG=False curl http://localhost:5000/api/reset-db
 - 添加操作审计日志
 - 实施请求频率限制
 - 添加二次确认机制
+- 使用临时密钥（一次性使用后失效）

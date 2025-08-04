@@ -178,7 +178,7 @@ const LessonPage = () => {
       if (currentKnowledgePoint) {
         // 标记知识点为已完成
         completeKnowledgePoint(currentLesson.id, currentKnowledgePoint.id)
-        showSuccess(t('lessonPage.knowledgePointCompleted'))
+        // 删除"知识点完成！"提示，避免频繁打断用户学习体验
 
         // 检查是否应该完成整个课程
         setTimeout(async () => {

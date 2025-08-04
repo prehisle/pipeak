@@ -39,7 +39,46 @@ def health_check():
 # 添加数据库初始化端点
 @app.route('/api/init-db')
 def init_database():
-    """初始化数据库 - 仅在生产环境首次部署时使用"""
+    """初始化数据库 - 仅在生产环境首次部署时使用
+
+    安全限制：
+    1. 需要特定的初始化密钥
+    2. 只允许在数据库为空时使用
+    3. 有操作日志记录
+    """
+    # 安全检查：需要初始化密钥
+    init_key = request.args.get('init_key', '')
+    expected_key = os.getenv('INIT_DB_SECRET', '')
+
+    if not expected_key:
+        return {
+            'error': 'Database initialization is disabled',
+            'message': 'INIT_DB_SECRET environment variable is not set'
+        }, 403
+
+    if init_key != expected_key:
+        return {
+            'error': 'Invalid initialization key',
+            'message': 'Please provide valid init_key parameter'
+        }, 401
+
+    # 检查数据库是否已有数据（防止意外重置）
+    try:
+        from app import get_db
+        db = get_db()
+        lesson_count = db.lessons.count_documents({})
+        user_count = db.users.count_documents({})
+
+        if lesson_count > 0 or user_count > 0:
+            return {
+                'error': 'Database already contains data',
+                'message': f'Found {lesson_count} lessons and {user_count} users. Use reset-db for development or manual scripts for production.',
+                'lesson_count': lesson_count,
+                'user_count': user_count
+            }, 409
+    except Exception as e:
+        return {'error': f'Database check failed: {str(e)}'}, 500
+
     try:
         import subprocess
         import sys
