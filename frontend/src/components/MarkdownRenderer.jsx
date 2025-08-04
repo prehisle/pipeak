@@ -149,12 +149,15 @@ const MarkdownRenderer = ({
     let currentIndex = 0
     const parts = []
 
-    // 按优先级匹配：代码块 > 显示数学 > 行内数学 > 粗体
+    // 按优先级匹配：数学公式 > 代码块 > 粗体
+    // 优先处理数学公式，避免被代码块匹配干扰
     const patterns = [
-      { regex: /`([^`]+)`/g, type: 'code' },
-      { regex: /\$\$([^$]+)\$\$/g, type: 'display-math' },
-      { regex: /\$([^$]+)\$/g, type: 'inline-math' },
-      { regex: /\*\*(.*?)\*\*/g, type: 'bold' }
+      { regex: /`\$\$([^$]+)\$\$`/g, type: 'display-math' },  // 代码块中的显示数学公式
+      { regex: /`\$([^$]+)\$`/g, type: 'inline-math' },       // 代码块中的行内数学公式
+      { regex: /\$\$([^$]+)\$\$/g, type: 'display-math' },    // 普通显示数学公式
+      { regex: /\$([^$]+)\$/g, type: 'inline-math' },         // 普通行内数学公式
+      { regex: /`([^`$]+)`/g, type: 'code' },                 // 普通代码块（不包含$符号）
+      { regex: /\*\*(.*?)\*\*/g, type: 'bold' }               // 粗体
     ]
 
     const matches = []
@@ -214,6 +217,12 @@ const MarkdownRenderer = ({
 
       switch (match.type) {
         case 'code':
+          // 检查代码内容是否包含数学公式，如果是则跳过代码块处理
+          if (match.content.includes('$')) {
+            // 这是一个包含数学公式的代码块，应该被数学公式模式处理
+            // 这里不应该到达，因为我们已经调整了正则表达式优先级
+            console.warn('代码块包含数学公式，可能需要调整正则表达式:', match.content)
+          }
           element.className = 'bg-gray-100 dark:bg-gray-800 text-gray-800 dark:text-gray-200 px-3 py-2 rounded text-lg font-mono border border-gray-300 dark:border-gray-600'  // 添加暗黑模式支持
           element.textContent = match.content
           break
