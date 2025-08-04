@@ -13,6 +13,10 @@ from bson import ObjectId
 import json
 import os
 
+from dotenv import load_dotenv
+# 加载环境变量
+load_dotenv()
+
 def connect_database():
     """连接数据库"""
     try:
@@ -42,7 +46,7 @@ def get_updated_lesson_data():
             'cards': [
                 {
                     'type': 'knowledge',
-                    'content': '**矩阵表示法**\n\n• `$$\\begin{matrix} a & b \\\\ c & d \\end{matrix}$$` → $$\\begin{matrix} a & b \\\\ c & d \\end{matrix}$$ (基础矩阵)\n• `$$\\begin{pmatrix} a & b \\\\ c & d \\end{pmatrix}$$` → $$\\begin{pmatrix} a & b \\\\ c & d \\end{pmatrix}$$ (圆括号矩阵)\n• `$$\\begin{bmatrix} a & b \\\\ c & d \\end{bmatrix}$$` → $$\\begin{bmatrix} a & b \\\\ c & d \\end{bmatrix}$$ (方括号矩阵)\n• `$$\\begin{vmatrix} a & b \\\\ c & d \\end{vmatrix}$$` → $$\\begin{vmatrix} a & b \\\\ c & d \\end{vmatrix}$$ (行列式)'
+                    'content': '**矩阵表示法**\n\n• `$$\\begin{matrix} a & b \\\\ c & d \\end{matrix}$$` → $$\\begin{matrix} a & b \\\\ c & d \\end{matrix}$$\n• `$$\\begin{pmatrix} a & b \\\\ c & d \\end{pmatrix}$$` → $$\\begin{pmatrix} a & b \\\\ c & d \\end{pmatrix}$$\n• `$$\\begin{bmatrix} a & b \\\\ c & d \\end{bmatrix}$$` → $$\\begin{bmatrix} a & b \\\\ c & d \\end{bmatrix}$$\n• `$$\\begin{vmatrix} a & b \\\\ c & d \\end{vmatrix}$$` → $$\\begin{vmatrix} a & b \\\\ c & d \\end{vmatrix}$$'
                 },
                 {
                     'type': 'knowledge',
@@ -89,7 +93,7 @@ def get_updated_lesson_data():
             'cards': [
                 {
                     'type': 'knowledge',
-                    'content': '**方程组表示法**\n\n• `$$\\begin{cases} x + y = 1 \\\\ x - y = 0 \\end{cases}$$` → $$\\begin{cases} x + y = 1 \\\\ x - y = 0 \\end{cases}$$ (二元方程组)\n• `$$\\begin{aligned} x + y &= 1 \\\\ 2x - y &= 3 \\end{aligned}$$` → $$\\begin{aligned} x + y &= 1 \\\\ 2x - y &= 3 \\end{aligned}$$ (对齐方程组)\n• `$$\\left\\{\\begin{array}{l} x > 0 \\\\ y > 0 \\end{array}\\right.$$` → $$\\left\\{\\begin{array}{l} x > 0 \\\\ y > 0 \\end{array}\\right.$$ (条件组)'
+                    'content': '**方程组表示法**\n\n• `$$\\begin{cases} x + y = 1 \\\\ x - y = 0 \\end{cases}$$` → $$\\begin{cases} x + y = 1 \\\\ x - y = 0 \\end{cases}$$\n• `$$\\begin{aligned} x + y &= 1 \\\\ 2x - y &= 3 \\end{aligned}$$` → $$\\begin{aligned} x + y &= 1 \\\\ 2x - y &= 3 \\end{aligned}$$\n• `$$\\left\\{\\begin{array}{l} x > 0 \\\\ y > 0 \\end{array}\\right.$$` → $$\\left\\{\\begin{array}{l} x > 0 \\\\ y > 0 \\end{array}\\right.$$'
                 },
                 {
                     'type': 'knowledge',
@@ -236,7 +240,7 @@ def main():
 
     # 连接数据库
     client, db = connect_database()
-    if not db:
+    if db is None:
         return
     
     try:
