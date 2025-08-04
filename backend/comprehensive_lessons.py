@@ -16,7 +16,7 @@ def create_comprehensive_lessons():
             '_id': ObjectId(),
             'title': '第1课：数学环境与基础语法',
             'sequence': 1,
-            'description': '学习LaTeX数学公式的基础语法，掌握数学环境、上标、下标的使用方法。',
+            'description': '学习LaTeX数学公式的基础语法，掌握数学环境、上标、下标的使用方法。（已更新）',
             'cards': [
                 {
                     'type': 'knowledge',
@@ -338,7 +338,7 @@ def create_comprehensive_lessons():
             'cards': [
                 {
                     'type': 'knowledge',
-                    'content': '**矩阵表示法**\n\n• `$$\\begin{matrix} a & b \\\\ c & d \\end{matrix}$$` → 基础矩阵\n• `$$\\begin{pmatrix} a & b \\\\ c & d \\end{pmatrix}$$` → 圆括号矩阵\n• `$$\\begin{bmatrix} a & b \\\\ c & d \\end{bmatrix}$$` → 方括号矩阵\n• `$$\\begin{vmatrix} a & b \\\\ c & d \\end{vmatrix}$$` → 行列式'
+                    'content': '**矩阵表示法**\n\n• `$$\\begin{matrix} a & b \\\\ c & d \\end{matrix}$$` → $$\\begin{matrix} a & b \\\\ c & d \\end{matrix}$$ (基础矩阵)\n• `$$\\begin{pmatrix} a & b \\\\ c & d \\end{pmatrix}$$` → $$\\begin{pmatrix} a & b \\\\ c & d \\end{pmatrix}$$ (圆括号矩阵)\n• `$$\\begin{bmatrix} a & b \\\\ c & d \\end{bmatrix}$$` → $$\\begin{bmatrix} a & b \\\\ c & d \\end{bmatrix}$$ (方括号矩阵)\n• `$$\\begin{vmatrix} a & b \\\\ c & d \\end{vmatrix}$$` → $$\\begin{vmatrix} a & b \\\\ c & d \\end{vmatrix}$$ (行列式)'
                 },
                 {
                     'type': 'knowledge',
@@ -402,7 +402,7 @@ def create_comprehensive_lessons():
             'cards': [
                 {
                     'type': 'knowledge',
-                    'content': '**方程组表示法**\n\n• `$$\\begin{cases} x + y = 1 \\\\ x - y = 0 \\end{cases}$$` → 二元方程组\n• `$$\\begin{aligned} x + y &= 1 \\\\ 2x - y &= 3 \\end{aligned}$$` → 对齐方程组\n• `$$\\left\\{\\begin{array}{l} x > 0 \\\\ y > 0 \\end{array}\\right.$$` → 条件组'
+                    'content': '**方程组表示法**\n\n• `$$\\begin{cases} x + y = 1 \\\\ x - y = 0 \\end{cases}$$` → $$\\begin{cases} x + y = 1 \\\\ x - y = 0 \\end{cases}$$ (二元方程组)\n• `$$\\begin{aligned} x + y &= 1 \\\\ 2x - y &= 3 \\end{aligned}$$` → $$\\begin{aligned} x + y &= 1 \\\\ 2x - y &= 3 \\end{aligned}$$ (对齐方程组)\n• `$$\\left\\{\\begin{array}{l} x > 0 \\\\ y > 0 \\end{array}\\right.$$` → $$\\left\\{\\begin{array}{l} x > 0 \\\\ y > 0 \\end{array}\\right.$$ (条件组)'
                 },
                 {
                     'type': 'knowledge',

@@ -149,15 +149,13 @@ const MarkdownRenderer = ({
     let currentIndex = 0
     const parts = []
 
-    // 按优先级匹配：数学公式 > 代码块 > 粗体
-    // 优先处理数学公式，避免被代码块匹配干扰
+    // 按优先级匹配：代码块 > 数学公式 > 粗体
+    // 先处理代码块，避免内部的数学公式被单独匹配
     const patterns = [
-      { regex: /`\$\$([^$]+)\$\$`/g, type: 'display-math' },  // 代码块中的显示数学公式
-      { regex: /`\$([^$]+)\$`/g, type: 'inline-math' },       // 代码块中的行内数学公式
-      { regex: /\$\$([^$]+)\$\$/g, type: 'display-math' },    // 普通显示数学公式
-      { regex: /\$([^$]+)\$/g, type: 'inline-math' },         // 普通行内数学公式
-      { regex: /`([^`$]+)`/g, type: 'code' },                 // 普通代码块（不包含$符号）
-      { regex: /\*\*(.*?)\*\*/g, type: 'bold' }               // 粗体
+      { regex: /`([^`]+)`/g, type: 'code' },                   // 代码块（包含数学公式的源码）
+      { regex: /\$\$([^$]+?)\$\$/g, type: 'display-math' },    // 显示数学公式
+      { regex: /\$([^$]+?)\$/g, type: 'inline-math' },         // 行内数学公式
+      { regex: /\*\*(.*?)\*\*/g, type: 'bold' }                // 粗体
     ]
 
     const matches = []
@@ -166,6 +164,16 @@ const MarkdownRenderer = ({
       let match
       const regex = new RegExp(pattern.regex.source, pattern.regex.flags)
       while ((match = regex.exec(text)) !== null) {
+        // 调试日志：记录匹配结果
+        if (match[1] && (match[1].includes('matrix') || match[1].includes('begin'))) {
+          console.log(`🔍 LaTeX匹配调试:`, {
+            type: pattern.type,
+            content: match[1],
+            full: match[0],
+            regex: pattern.regex.source
+          })
+        }
+
         matches.push({
           type: pattern.type,
           content: match[1],

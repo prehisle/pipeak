@@ -188,7 +188,10 @@ def dashboard():
                             <h5>系统管理</h5>
                         </div>
                         <div class="card-body">
-                            <a href="/admin/reset-database" class="btn btn-danger mb-2" 
+                            <button id="updateLessonsBtn" class="btn btn-success mb-2" onclick="updateLessons()">
+                               📚 更新课程数据
+                            </button><br>
+                            <a href="/admin/reset-database" class="btn btn-danger mb-2"
                                onclick="return confirm('确定要重置整个数据库吗？这将删除所有数据！')">
                                🔄 重置数据库
                             </a><br>
@@ -226,8 +229,149 @@ def dashboard():
                 </div>
             </div>
         </div>
-        
+
+        <!-- 课程更新状态模态框 -->
+        <div class="modal fade" id="updateModal" tabindex="-1">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title">课程数据更新</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                    </div>
+                    <div class="modal-body">
+                        <div id="updateStatus">
+                            <div class="text-center">
+                                <div class="spinner-border" role="status">
+                                    <span class="visually-hidden">更新中...</span>
+                                </div>
+                                <p class="mt-2">正在更新课程数据，请稍候...</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" id="closeModalBtn" style="display:none;">关闭</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
         <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+        <script>
+        // 课程更新功能
+        async function updateLessons() {
+            // 显示确认对话框
+            if (!confirm('确定要更新课程数据吗？\\n\\n这将使用最新的课程内容覆盖数据库中的现有课程。')) {
+                return;
+            }
+
+            // 显示更新模态框
+            const modal = new bootstrap.Modal(document.getElementById('updateModal'));
+            modal.show();
+
+            // 禁用更新按钮
+            const updateBtn = document.getElementById('updateLessonsBtn');
+            updateBtn.disabled = true;
+            updateBtn.innerHTML = '🔄 更新中...';
+
+            try {
+                const response = await fetch('/admin/update-lessons', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    }
+                });
+
+                const result = await response.json();
+
+                if (result.success) {
+                    const updateResult = result.update_result;
+                    let detailsHtml = '';
+
+                    if (updateResult.updated_lessons.length > 0) {
+                        detailsHtml += `<p><strong>📝 更新的课程 (${updateResult.updated_lessons.length})：</strong></p><ul>`;
+                        updateResult.updated_lessons.forEach(lesson => {
+                            detailsHtml += `<li>第${lesson.sequence}课：${lesson.title}</li>`;
+                        });
+                        detailsHtml += '</ul>';
+                    }
+
+                    if (updateResult.new_lessons.length > 0) {
+                        detailsHtml += `<p><strong>🆕 新增的课程 (${updateResult.new_lessons.length})：</strong></p><ul>`;
+                        updateResult.new_lessons.forEach(lesson => {
+                            detailsHtml += `<li>第${lesson.sequence}课：${lesson.title}</li>`;
+                        });
+                        detailsHtml += '</ul>';
+                    }
+
+                    if (updateResult.unchanged_lessons.length > 0) {
+                        detailsHtml += `<p><strong>✅ 无变化的课程：</strong> ${updateResult.unchanged_lessons.length} 个</p>`;
+                    }
+
+                    if (updateResult.errors.length > 0) {
+                        detailsHtml += `<p><strong>⚠️ 错误：</strong></p><ul>`;
+                        updateResult.errors.forEach(error => {
+                            const title = error.title || error.sequence || 'Unknown';
+                            const errorMsg = error.error || error.general_error || 'Unknown error';
+                            detailsHtml += `<li>${title}: ${errorMsg}</li>`;
+                        });
+                        detailsHtml += '</ul>';
+                    }
+
+                    document.getElementById('updateStatus').innerHTML = `
+                        <div class="alert alert-success">
+                            <h6>✅ 增量更新成功！</h6>
+                            <p><strong>源课程总数：</strong> ${updateResult.total_source_lessons}</p>
+                            <p><strong>更新时间：</strong> ${new Date(result.timestamp).toLocaleString()}</p>
+                            ${detailsHtml}
+                        </div>
+                    `;
+                } else {
+                    document.getElementById('updateStatus').innerHTML = `
+                        <div class="alert alert-danger">
+                            <h6>❌ 更新失败</h6>
+                            <p>${result.message}</p>
+                        </div>
+                    `;
+                }
+            } catch (error) {
+                document.getElementById('updateStatus').innerHTML = `
+                    <div class="alert alert-danger">
+                        <h6>❌ 更新失败</h6>
+                        <p>网络错误：${error.message}</p>
+                    </div>
+                `;
+            } finally {
+                // 恢复更新按钮
+                updateBtn.disabled = false;
+                updateBtn.innerHTML = '📚 更新课程数据';
+
+                // 显示关闭按钮
+                document.getElementById('closeModalBtn').style.display = 'block';
+
+                // 3秒后自动刷新页面
+                setTimeout(() => {
+                    window.location.reload();
+                }, 3000);
+            }
+        }
+
+        // 页面加载时检查课程更新状态
+        document.addEventListener('DOMContentLoaded', async function() {
+            try {
+                const response = await fetch('/admin/update-lessons-status');
+                const result = await response.json();
+
+                if (result.success && result.needs_update) {
+                    const updateBtn = document.getElementById('updateLessonsBtn');
+                    updateBtn.classList.remove('btn-success');
+                    updateBtn.classList.add('btn-warning');
+                    updateBtn.innerHTML = '📚 更新课程数据 (有新版本)';
+                }
+            } catch (error) {
+                console.log('检查更新状态失败:', error);
+            }
+        });
+        </script>
     </body>
     </html>
     '''
@@ -246,8 +390,312 @@ def reset_database():
         flash('数据库重置成功！', 'success')
     except Exception as e:
         flash(f'数据库重置失败：{str(e)}', 'error')
-    
+
     return redirect(url_for('admin.dashboard'))
+
+
+@admin_bp.route('/update-lessons', methods=['POST'])
+@admin_required
+def update_lessons():
+    """智能增量更新课程数据"""
+    try:
+        db = get_db()
+
+        # 导入最新的课程数据
+        import sys
+        import os
+
+        # 添加backend目录到Python路径
+        backend_dir = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+        if backend_dir not in sys.path:
+            sys.path.insert(0, backend_dir)
+
+        # 导入课程数据
+        from comprehensive_lessons import create_comprehensive_lessons
+        import json
+
+        # 获取课程数据
+        lessons = create_comprehensive_lessons()
+
+        # 加载英文翻译
+        try:
+            with open(os.path.join(backend_dir, 'translations', 'lessons_en_US.json'), 'r', encoding='utf-8') as f:
+                translation_data = json.load(f)
+                raw_lessons_en = translation_data.get('lessons', [])
+
+                # 转换英文翻译数据格式，按sequence索引
+                lessons_en_US = []
+                for i, lesson_data in enumerate(raw_lessons_en):
+                    if 'translations' in lesson_data and 'en-US' in lesson_data['translations']:
+                        en_lesson = lesson_data['translations']['en-US']
+                        en_lesson['sequence'] = i + 1  # 按顺序分配sequence
+                        lessons_en_US.append(en_lesson)
+
+        except Exception as e:
+            lessons_en_US = []
+            print(f"Warning: Failed to load English translations: {e}")
+
+        # 执行增量更新
+        update_result = perform_incremental_update(db, lessons, lessons_en_US)
+
+        # 记录操作日志
+        admin = get_current_admin()
+        log_entry = {
+            'action': 'incremental_update_lessons',
+            'admin_id': str(admin._id) if admin else 'unknown',
+            'admin_username': admin.username if admin else 'unknown',
+            'timestamp': datetime.utcnow(),
+            'update_result': update_result,
+            'success': True
+        }
+        db.admin_logs.insert_one(log_entry)
+
+        return jsonify({
+            'success': True,
+            'message': '课程数据增量更新成功！',
+            'update_result': update_result,
+            'timestamp': datetime.utcnow().isoformat()
+        }), 200
+
+    except Exception as e:
+        # 记录错误日志
+        try:
+            admin = get_current_admin()
+            log_entry = {
+                'action': 'incremental_update_lessons',
+                'admin_id': str(admin._id) if admin else 'unknown',
+                'admin_username': admin.username if admin else 'unknown',
+                'timestamp': datetime.utcnow(),
+                'error': str(e),
+                'success': False
+            }
+            db.admin_logs.insert_one(log_entry)
+        except:
+            pass
+
+        return jsonify({
+            'success': False,
+            'message': f'课程数据更新失败：{str(e)}'
+        }), 500
+
+
+def perform_incremental_update(db, source_lessons, source_lessons_en):
+    """执行增量更新"""
+    update_result = {
+        'total_source_lessons': len(source_lessons),
+        'updated_lessons': [],
+        'new_lessons': [],
+        'unchanged_lessons': [],
+        'errors': []
+    }
+
+    try:
+        # 获取当前数据库中的所有课程
+        current_lessons = {lesson['sequence']: lesson for lesson in db.lessons.find({})}
+
+        # 创建英文翻译映射
+        en_translations = {}
+        for lesson in source_lessons_en:
+            if 'sequence' in lesson:
+                en_translations[lesson['sequence']] = lesson
+
+        for source_lesson in source_lessons:
+            # 确保课程有sequence字段
+            if 'sequence' not in source_lesson:
+                update_result['errors'].append({
+                    'title': source_lesson.get('title', 'Unknown Lesson'),
+                    'error': 'Missing sequence field'
+                })
+                continue
+
+            sequence = source_lesson['sequence']
+
+            try:
+                # 检查课程是否存在
+                if sequence in current_lessons:
+                    current_lesson = current_lessons[sequence]
+
+                    # 比较课程内容是否有变化
+                    if lesson_content_changed(current_lesson, source_lesson):
+                        # 准备更新数据
+                        update_data = prepare_lesson_update_data(source_lesson, en_translations.get(sequence))
+
+                        # 更新课程
+                        db.lessons.update_one(
+                            {'sequence': sequence},
+                            {'$set': update_data}
+                        )
+
+                        update_result['updated_lessons'].append({
+                            'sequence': sequence,
+                            'title': source_lesson['title']
+                        })
+                    else:
+                        update_result['unchanged_lessons'].append({
+                            'sequence': sequence,
+                            'title': source_lesson['title']
+                        })
+                else:
+                    # 新课程，直接插入
+                    new_lesson_data = prepare_lesson_insert_data(source_lesson, en_translations.get(sequence))
+                    db.lessons.insert_one(new_lesson_data)
+
+                    update_result['new_lessons'].append({
+                        'sequence': sequence,
+                        'title': source_lesson['title']
+                    })
+
+            except Exception as e:
+                update_result['errors'].append({
+                    'sequence': sequence,
+                    'title': source_lesson.get('title', 'Unknown'),
+                    'error': str(e)
+                })
+
+        return update_result
+
+    except Exception as e:
+        update_result['errors'].append({
+            'title': 'General Error',
+            'error': str(e)
+        })
+        return update_result
+
+
+def lesson_content_changed(current_lesson, source_lesson):
+    """检查课程内容是否有变化"""
+    # 比较关键字段
+    fields_to_compare = ['title', 'description', 'cards']
+
+    for field in fields_to_compare:
+        if current_lesson.get(field) != source_lesson.get(field):
+            return True
+
+    return False
+
+
+def prepare_lesson_update_data(source_lesson, en_translation=None):
+    """准备课程更新数据"""
+    update_data = {
+        'title': source_lesson['title'],
+        'description': source_lesson['description'],
+        'cards': source_lesson['cards'],
+        'updated_at': datetime.utcnow()
+    }
+
+    # 添加英文翻译
+    if en_translation:
+        update_data.update({
+            'title_en': en_translation.get('title'),
+            'description_en': en_translation.get('description'),
+            'cards_en': en_translation.get('cards', [])
+        })
+
+    return update_data
+
+
+def prepare_lesson_insert_data(source_lesson, en_translation=None):
+    """准备新课程插入数据"""
+    lesson_data = {
+        '_id': ObjectId(),
+        'title': source_lesson['title'],
+        'sequence': source_lesson['sequence'],
+        'description': source_lesson['description'],
+        'cards': source_lesson['cards'],
+        'created_at': datetime.utcnow(),
+        'updated_at': datetime.utcnow()
+    }
+
+    # 添加英文翻译
+    if en_translation:
+        lesson_data.update({
+            'title_en': en_translation.get('title'),
+            'description_en': en_translation.get('description'),
+            'cards_en': en_translation.get('cards', [])
+        })
+
+    return lesson_data
+
+
+@admin_bp.route('/update-lessons-status')
+@admin_required
+def update_lessons_status():
+    """获取课程更新状态信息"""
+    try:
+        db = get_db()
+
+        # 获取当前课程统计
+        current_stats = {
+            'total_lessons': db.lessons.count_documents({}),
+            'last_updated': None
+        }
+
+        # 查找最近的更新日志
+        latest_log = db.admin_logs.find_one(
+            {'action': {'$in': ['update_lessons', 'incremental_update_lessons']}, 'success': True},
+            sort=[('timestamp', -1)]
+        )
+
+        if latest_log:
+            current_stats['last_updated'] = latest_log['timestamp'].isoformat()
+
+        # 获取源课程数据并检查是否需要更新
+        try:
+            import sys
+            import os
+            backend_dir = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+            if backend_dir not in sys.path:
+                sys.path.insert(0, backend_dir)
+
+            from comprehensive_lessons import create_comprehensive_lessons
+            lessons = create_comprehensive_lessons()
+            source_lesson_count = len(lessons)
+
+            # 检查是否有课程内容变化
+            needs_update = check_lessons_need_update(db, lessons)
+
+        except Exception:
+            source_lesson_count = 'unknown'
+            needs_update = False
+
+        return jsonify({
+            'success': True,
+            'current_stats': current_stats,
+            'source_lesson_count': source_lesson_count,
+            'needs_update': needs_update
+        }), 200
+
+    except Exception as e:
+        return jsonify({
+            'success': False,
+            'message': f'获取状态失败：{str(e)}'
+        }), 500
+
+
+def check_lessons_need_update(db, source_lessons):
+    """检查是否有课程需要更新"""
+    try:
+        # 获取当前数据库中的课程
+        current_lessons = {lesson['sequence']: lesson for lesson in db.lessons.find({})}
+
+        # 检查数量是否不同
+        if len(current_lessons) != len(source_lessons):
+            return True
+
+        # 检查每个课程的内容
+        for source_lesson in source_lessons:
+            sequence = source_lesson['sequence']
+
+            if sequence not in current_lessons:
+                return True  # 有新课程
+
+            if lesson_content_changed(current_lessons[sequence], source_lesson):
+                return True  # 有内容变化
+
+        return False
+
+    except Exception:
+        return False  # 检查失败时假设不需要更新
 
 
 @admin_bp.route('/users')

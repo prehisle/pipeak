@@ -322,7 +322,7 @@
           "cards": [
             {
               "type": "knowledge",
-              "content": "**Matrix Notation**\n\n• `$$\\begin{matrix} a & b \\\\ c & d \\end{matrix}$$` → basic matrix\n• `$$\\begin{pmatrix} a & b \\\\ c & d \\end{pmatrix}$$` → parentheses matrix\n• `$$\\begin{bmatrix} a & b \\\\ c & d \\end{bmatrix}$$` → brackets matrix\n• `$$\\begin{vmatrix} a & b \\\\ c & d \\end{vmatrix}$$` → determinant"
+              "content": "**Matrix Notation**\n\n• `$$\\begin{matrix} a & b \\\\ c & d \\end{matrix}$$` → $$\\begin{matrix} a & b \\\\ c & d \\end{matrix}$$ (basic matrix)\n• `$$\\begin{pmatrix} a & b \\\\ c & d \\end{pmatrix}$$` → $$\\begin{pmatrix} a & b \\\\ c & d \\end{pmatrix}$$ (parentheses matrix)\n• `$$\\begin{bmatrix} a & b \\\\ c & d \\end{bmatrix}$$` → $$\\begin{bmatrix} a & b \\\\ c & d \\end{bmatrix}$$ (brackets matrix)\n• `$$\\begin{vmatrix} a & b \\\\ c & d \\end{vmatrix}$$` → $$\\begin{vmatrix} a & b \\\\ c & d \\end{vmatrix}$$ (determinant)"
             },
             {
               "type": "knowledge",
@@ -385,7 +385,7 @@
           "cards": [
             {
               "type": "knowledge",
-              "content": "**Equation System Notation**\n\n• `$$\\begin{cases} x + y = 1 \\\\ x - y = 0 \\end{cases}$$` → binary equation system\n• `$$\\begin{align} x + y &= 1 \\\\ 2x - y &= 3 \\end{align}$$` → aligned equation system\n• `$$\\left\\{\\begin{array}{l} x > 0 \\\\ y > 0 \\end{array}\\right.$$` → condition group"
+              "content": "**Equation System Notation**\n\n• `$$\\begin{cases} x + y = 1 \\\\ x - y = 0 \\end{cases}$$` → $$\\begin{cases} x + y = 1 \\\\ x - y = 0 \\end{cases}$$ (binary equation system)\n• `$$\\begin{aligned} x + y &= 1 \\\\ 2x - y &= 3 \\end{aligned}$$` → $$\\begin{aligned} x + y &= 1 \\\\ 2x - y &= 3 \\end{aligned}$$ (aligned equation system)\n• `$$\\left\\{\\begin{array}{l} x > 0 \\\\ y > 0 \\end{array}\\right.$$` → $$\\left\\{\\begin{array}{l} x > 0 \\\\ y > 0 \\end{array}\\right.$$ (condition group)"
             },
             {
               "type": "knowledge",
