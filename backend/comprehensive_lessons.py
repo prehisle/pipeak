@@ -350,8 +350,8 @@ def create_comprehensive_lessons():
                     'target_formula': '$\\begin{pmatrix} a & b \\\\ c & d \\end{pmatrix}$',
                     'hints': [
                         '使用 \\begin{pmatrix}...\\end{pmatrix} 环境',
-                        '矩阵元素用 & 分隔，行用 \\\\\\\\ 分隔',
-                        '完整格式：$\\begin{pmatrix} a & b \\\\\\\\ c & d \\end{pmatrix}$'
+                        '矩阵元素用 & 分隔，行用 \\\\ 分隔',
+                        '完整格式：$\\begin{pmatrix} a & b \\\\ c & d \\end{pmatrix}$'
                     ],
                     'difficulty': 'hard'
                 },
@@ -384,7 +384,7 @@ def create_comprehensive_lessons():
                     'hints': [
                         '使用 pmatrix 环境',
                         '三行三列，对角线为1，其余为0',
-                        '每行用 \\\\\\\\ 分隔，每列用 & 分隔'
+                        '每行用 \\\\ 分隔，每列用 & 分隔'
                     ],
                     'difficulty': 'hard'
                 }
@@ -402,7 +402,7 @@ def create_comprehensive_lessons():
             'cards': [
                 {
                     'type': 'knowledge',
-                    'content': '**方程组表示法**\n\n• `$$\\begin{cases} x + y = 1 \\\\ x - y = 0 \\end{cases}$$` → 二元方程组\n• `$$\\begin{align} x + y &= 1 \\\\ 2x - y &= 3 \\end{align}$$` → 对齐方程组\n• `$$\\left\\{\\begin{array}{l} x > 0 \\\\ y > 0 \\end{array}\\right.$$` → 条件组'
+                    'content': '**方程组表示法**\n\n• `$$\\begin{cases} x + y = 1 \\\\ x - y = 0 \\end{cases}$$` → 二元方程组\n• `$$\\begin{aligned} x + y &= 1 \\\\ 2x - y &= 3 \\end{aligned}$$` → 对齐方程组\n• `$$\\left\\{\\begin{array}{l} x > 0 \\\\ y > 0 \\end{array}\\right.$$` → 条件组'
                 },
                 {
                     'type': 'knowledge',
@@ -414,8 +414,8 @@ def create_comprehensive_lessons():
                     'target_formula': '$\\begin{cases} x + y = 1 \\\\ x - y = 0 \\end{cases}$',
                     'hints': [
                         '使用 \\begin{cases}...\\end{cases} 环境',
-                        '方程之间用 \\\\\\\\ 分隔',
-                        '完整格式：$\\begin{cases} x + y = 1 \\\\\\\\ x - y = 0 \\end{cases}$'
+                        '方程之间用 \\\\ 分隔',
+                        '完整格式：$\\begin{cases} x + y = 1 \\\\ x - y = 0 \\end{cases}$'
                     ],
                     'difficulty': 'hard'
                 },
@@ -438,7 +438,7 @@ def create_comprehensive_lessons():
                         '使用 cases 环境',
                         '条件用 \\text{} 包围',
                         '& 用于对齐',
-                        '完整格式：$f(x) = \\begin{cases} x^2 & \\text{if } x \\geq 0 \\\\\\\\ -x^2 & \\text{if } x < 0 \\end{cases}$'
+                        '完整格式：$f(x) = \\begin{cases} x^2 & \\text{if } x \\geq 0 \\\\ -x^2 & \\text{if } x < 0 \\end{cases}$'
                     ],
                     'difficulty': 'hard'
                 }

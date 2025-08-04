@@ -166,12 +166,29 @@ const ContentRenderer = ({
       case 'inline-math':
         element.className = 'inline-block mx-1'
         try {
-          katex.render(part.content, element, {
+          // 预处理LaTeX内容
+          let processedContent = part.content
+          // 修复转义字符问题
+          processedContent = processedContent.replace(/\\\\\\\\/g, '\\\\')
+
+          katex.render(processedContent, element, {
             displayMode: false,
             throwOnError: false,
             errorColor: errorColor,
             strict: false,
-            trust: false
+            trust: true,  // 允许更多LaTeX命令
+            macros: {
+              // 添加自定义宏定义
+              '\\gcd': '\\operatorname{gcd}',
+              '\\lcm': '\\operatorname{lcm}',
+              '\\Ack': '\\operatorname{Ack}',
+              // 矩阵和向量相关宏
+              '\\mat': '\\begin{pmatrix}#1\\end{pmatrix}',
+              '\\det': '\\begin{vmatrix}#1\\end{vmatrix}',
+              // 确保常用命令可用
+              '\\vec': '\\overrightarrow{#1}',
+              '\\norm': '\\left\\|#1\\right\\|',
+            }
           })
         } catch (e) {
           element.textContent = `[LaTeX错误: ${part.content}]`

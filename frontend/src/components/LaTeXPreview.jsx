@@ -92,12 +92,29 @@ const LaTeXPreview = ({
           mathSpan.style.display = part.displayMode ? 'block' : 'inline'
           mathSpan.style.margin = part.displayMode ? '0.5rem 0' : '0 0.2rem'
 
-          katex.render(part.content, mathSpan, {
+          // 预处理LaTeX内容
+          let processedContent = part.content
+          // 修复转义字符问题
+          processedContent = processedContent.replace(/\\\\\\\\/g, '\\\\')
+
+          katex.render(processedContent, mathSpan, {
             displayMode: part.displayMode,
             throwOnError: false,
             errorColor: errorColor,
             strict: false,
-            trust: false
+            trust: true,  // 允许更多LaTeX命令
+            macros: {
+              // 添加自定义宏定义
+              '\\gcd': '\\operatorname{gcd}',
+              '\\lcm': '\\operatorname{lcm}',
+              '\\Ack': '\\operatorname{Ack}',
+              // 矩阵和向量相关宏
+              '\\mat': '\\begin{pmatrix}#1\\end{pmatrix}',
+              '\\det': '\\begin{vmatrix}#1\\end{vmatrix}',
+              // 确保常用命令可用
+              '\\vec': '\\overrightarrow{#1}',
+              '\\norm': '\\left\\|#1\\right\\|',
+            }
           })
 
           container.appendChild(mathSpan)

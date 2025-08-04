@@ -334,8 +334,8 @@
               "target_formula": "$\\begin{pmatrix} a & b \\\\ c & d \\end{pmatrix}$",
               "hints": [
                 "Use \\begin{pmatrix}...\\end{pmatrix} environment",
-                "Matrix elements separated by &, rows separated by \\\\\\\\",
-                "Complete format: $\\begin{pmatrix} a & b \\\\\\\\ c & d \\end{pmatrix}$"
+                "Matrix elements separated by &, rows separated by \\\\",
+                "Complete format: $\\begin{pmatrix} a & b \\\\ c & d \\end{pmatrix}$"
               ],
               "difficulty": "hard"
             },

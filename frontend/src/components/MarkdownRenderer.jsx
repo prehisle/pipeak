@@ -94,6 +94,10 @@ const MarkdownRenderer = ({
   const preprocessLatex = (latex) => {
     let processed = latex
 
+    // 修复转义字符问题
+    // 处理数据库中可能出现的双重转义
+    processed = processed.replace(/\\\\\\\\/g, '\\\\')
+
     // 修复一些KaTeX不支持的命令
     const replacements = {
       // 数论符号替换
@@ -115,6 +119,26 @@ const MarkdownRenderer = ({
     // 应用替换
     for (const [from, to] of Object.entries(replacements)) {
       processed = processed.replace(new RegExp(from.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'), 'g'), to)
+    }
+
+    // 修复矩阵环境的兼容性问题
+    // 确保矩阵环境前后有适当的空格
+    processed = processed.replace(/\\begin\{(matrix|pmatrix|bmatrix|vmatrix)\}/g, '\\begin{$1}')
+    processed = processed.replace(/\\end\{(matrix|pmatrix|bmatrix|vmatrix)\}/g, '\\end{$1}')
+
+    // 修复cases环境（如果KaTeX不支持，提供替代方案）
+    // cases环境在KaTeX中需要特殊处理
+    if (processed.includes('\\begin{cases}')) {
+      // KaTeX支持cases环境，但需要确保格式正确
+      processed = processed.replace(/\\begin\{cases\}/g, '\\begin{cases}')
+      processed = processed.replace(/\\end\{cases\}/g, '\\end{cases}')
+    }
+
+    // 修复align环境（KaTeX可能不完全支持，提供替代方案）
+    if (processed.includes('\\begin{align}')) {
+      // 将align环境转换为aligned环境（在displaymath中使用）
+      processed = processed.replace(/\\begin\{align\}/g, '\\begin{aligned}')
+      processed = processed.replace(/\\end\{align\}/g, '\\end{aligned}')
     }
 
     return processed
@@ -214,6 +238,12 @@ const MarkdownRenderer = ({
                 '\\gcd': '\\operatorname{gcd}',
                 '\\lcm': '\\operatorname{lcm}',
                 '\\Ack': '\\operatorname{Ack}',
+                // 矩阵和向量相关宏
+                '\\mat': '\\begin{pmatrix}#1\\end{pmatrix}',
+                '\\det': '\\begin{vmatrix}#1\\end{vmatrix}',
+                // 确保常用命令可用
+                '\\vec': '\\overrightarrow{#1}',
+                '\\norm': '\\left\\|#1\\right\\|',
               }
             })
           } catch (e) {
@@ -239,6 +269,12 @@ const MarkdownRenderer = ({
                 '\\gcd': '\\operatorname{gcd}',
                 '\\lcm': '\\operatorname{lcm}',
                 '\\Ack': '\\operatorname{Ack}',
+                // 矩阵和向量相关宏
+                '\\mat': '\\begin{pmatrix}#1\\end{pmatrix}',
+                '\\det': '\\begin{vmatrix}#1\\end{vmatrix}',
+                // 确保常用命令可用
+                '\\vec': '\\overrightarrow{#1}',
+                '\\norm': '\\left\\|#1\\right\\|',
               }
             })
           } catch (e) {
