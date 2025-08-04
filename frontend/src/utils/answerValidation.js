@@ -123,6 +123,194 @@ export const checkLatexSemanticEquivalence = (latex1, latex2) => {
   return false
 }
 
+/**
+ * 常见错误模式列表 - 检测用户常见的LaTeX错误并给出专门提示
+ */
+const COMMON_ERROR_PATTERNS = [
+  // 上下标顺序错误
+  {
+    pattern: /^([a-zA-Z])(\^[^_]*)?(_[^_]*)?(\^[^_]*)?$/,
+    checkError: (userAnswer, targetAnswer) => {
+      // 检测是否是上下标顺序问题
+      const userNorm = userAnswer.replace(/[\s${}]/g, '').toLowerCase()
+      const targetNorm = targetAnswer.replace(/[\s${}]/g, '').toLowerCase()
+
+      console.log(`检查上下标顺序: "${userNorm}" vs "${targetNorm}"`)
+
+      // 特殊检查：x^2_1 vs x_1^2
+      if ((userNorm === 'x^2_1' && targetNorm === 'x_1^2') ||
+          (userNorm === 'x_1^2' && targetNorm === 'x^2_1')) {
+        return {
+          type: 'subscript_superscript_order',
+          message: `注意上下标的顺序：x₁² 表示"x下标1的平方"，而 x²₁ 表示"x的平方，下标1"`
+        }
+      }
+
+      // 通用检查：检查是否包含相同的字母、上标、下标，但顺序不同
+      const userParts = extractScriptParts(userNorm)
+      const targetParts = extractScriptParts(targetNorm)
+
+      console.log('用户部分:', userParts)
+      console.log('目标部分:', targetParts)
+
+      if (userParts.base === targetParts.base &&
+          userParts.superscript === targetParts.superscript &&
+          userParts.subscript === targetParts.subscript &&
+          userNorm !== targetNorm) {
+        return {
+          type: 'subscript_superscript_order',
+          message: `注意上下标的顺序：${targetParts.base}${targetParts.subscript ? '₍' + targetParts.subscript + '₎' : ''}${targetParts.superscript ? '^' + targetParts.superscript : ''} 表示"${targetParts.base}${targetParts.subscript ? '下标' + targetParts.subscript : ''}${targetParts.superscript ? '的' + targetParts.superscript + '次方' : ''}"`
+        }
+      }
+      return null
+    }
+  },
+
+  // 函数反斜杠缺失
+  {
+    pattern: /\b(sin|cos|tan|log|ln|exp|sqrt|lim|sum|int)\b/,
+    checkError: (userAnswer, targetAnswer) => {
+      const userNorm = userAnswer.replace(/[\s$]/g, '').toLowerCase()
+      const targetNorm = targetAnswer.replace(/[\s$]/g, '').toLowerCase()
+
+      const functions = ['sin', 'cos', 'tan', 'log', 'ln', 'exp', 'sqrt', 'lim', 'sum', 'int']
+
+      for (const func of functions) {
+        if (userNorm.includes(func) && !userNorm.includes('\\' + func) &&
+            targetNorm.includes('\\' + func)) {
+          return {
+            type: 'missing_backslash',
+            message: `数学函数需要使用反斜杠：\\${func} 而不是 ${func}`
+          }
+        }
+      }
+      return null
+    }
+  },
+
+  // 分数格式错误
+  {
+    pattern: /\d+\/\d+/,
+    checkError: (userAnswer, targetAnswer) => {
+      const userNorm = userAnswer.replace(/[\s$]/g, '')
+      const targetNorm = targetAnswer.replace(/[\s$]/g, '')
+
+      if (userNorm.match(/\d+\/\d+/) && targetNorm.includes('\\frac')) {
+        const match = userNorm.match(/(\d+)\/(\d+)/)
+        if (match) {
+          return {
+            type: 'fraction_format',
+            message: `分数应该使用 \\frac{${match[1]}}{${match[2]}} 格式，而不是 ${match[1]}/${match[2]}}`
+          }
+        }
+      }
+      return null
+    }
+  },
+
+  // 希腊字母拼写错误
+  {
+    pattern: /\b(alpha|beta|gamma|delta|theta|pi|sigma|omega)\b/,
+    checkError: (userAnswer, targetAnswer) => {
+      const userNorm = userAnswer.replace(/[\s$]/g, '').toLowerCase()
+      const targetNorm = targetAnswer.replace(/[\s$]/g, '').toLowerCase()
+
+      const greekLetters = ['alpha', 'beta', 'gamma', 'delta', 'theta', 'pi', 'sigma', 'omega']
+
+      for (const letter of greekLetters) {
+        if (userNorm.includes(letter) && !userNorm.includes('\\' + letter) &&
+            targetNorm.includes('\\' + letter)) {
+          return {
+            type: 'greek_letter_format',
+            message: `希腊字母需要使用反斜杠：\\${letter} 而不是 ${letter}`
+          }
+        }
+      }
+      return null
+    }
+  },
+
+  // 括号缺失或多余
+  {
+    pattern: /.*/,
+    checkError: (userAnswer, targetAnswer) => {
+      const userNorm = userAnswer.replace(/[\s$]/g, '')
+      const targetNorm = targetAnswer.replace(/[\s$]/g, '')
+
+      // 检查函数括号
+      if (userNorm.includes('\\sin') && targetNorm.includes('\\sin')) {
+        if (userNorm.includes('\\sin(') && !targetNorm.includes('\\sin(')) {
+          return {
+            type: 'unnecessary_parentheses',
+            message: '正弦函数通常写作 \\sin x，不需要括号'
+          }
+        }
+        if (!userNorm.includes('\\sin(') && targetNorm.includes('\\sin(')) {
+          return {
+            type: 'missing_parentheses',
+            message: '这里的正弦函数需要括号：\\sin(x)'
+          }
+        }
+      }
+      return null
+    }
+  }
+]
+
+/**
+ * 提取上标下标部分
+ */
+const extractScriptParts = (latex) => {
+  const result = { base: '', superscript: '', subscript: '' }
+
+  // 更精确的解析，处理 x^2_1 和 x_1^2 格式
+  const baseMatch = latex.match(/^([a-zA-Z]+)/)
+  if (baseMatch) {
+    result.base = baseMatch[1]
+
+    // 查找所有上标
+    const superscriptMatches = latex.match(/\^([^_^]+)/g)
+    if (superscriptMatches) {
+      result.superscript = superscriptMatches[0].substring(1) // 移除^符号
+    }
+
+    // 查找所有下标
+    const subscriptMatches = latex.match(/_([^_^]+)/g)
+    if (subscriptMatches) {
+      result.subscript = subscriptMatches[0].substring(1) // 移除_符号
+    }
+  }
+
+  return result
+}
+
+/**
+ * 检查常见错误并返回专门提示
+ * @param {string} userAnswer - 用户答案
+ * @param {string} targetAnswer - 正确答案
+ * @returns {Object|null} - 错误信息对象或null
+ */
+export const checkCommonErrors = (userAnswer, targetAnswer) => {
+  console.log(`🔍 开始检查常见错误: "${userAnswer}" vs "${targetAnswer}"`)
+
+  for (let i = 0; i < COMMON_ERROR_PATTERNS.length; i++) {
+    const errorPattern = COMMON_ERROR_PATTERNS[i]
+    try {
+      console.log(`检查错误模式 ${i + 1}/${COMMON_ERROR_PATTERNS.length}`)
+      const error = errorPattern.checkError(userAnswer, targetAnswer)
+      if (error) {
+        console.log(`🎯 检测到常见错误: ${error.type} - ${error.message}`)
+        return error
+      }
+    } catch (e) {
+      console.warn(`错误模式 ${i + 1} 检测失败:`, e)
+    }
+  }
+
+  console.log('❌ 未检测到任何常见错误模式')
+  return null
+}
+
 // 删除未使用的Canvas相关函数，专注于语义等价比较
 
 /**
@@ -156,17 +344,17 @@ export const checkAnswerEquivalence = (userAnswer, targetAnswer) => {
 }
 
 /**
- * 增强的LaTeX答案验证（混合方案：先字符串比较，再语义比较）
+ * 增强的LaTeX答案验证（混合方案：字符串比较 → 语义比较 → 错误检测）
  * @param {string} userAnswer - 用户输入的答案
  * @param {string} targetAnswer - 目标答案
  * @param {boolean} useSemanticComparison - 是否启用语义比较
- * @returns {Promise<boolean>} - 是否等价
+ * @returns {Promise<Object>} - 验证结果对象 {isCorrect: boolean, errorInfo?: Object}
  */
 export const checkAdvancedAnswerEquivalence = async (userAnswer, targetAnswer, useSemanticComparison = true) => {
   // 第一步：基本字符串比较
   if (checkAnswerEquivalence(userAnswer, targetAnswer)) {
     console.log('字符串比较匹配')
-    return true
+    return { isCorrect: true }
   }
 
   // 第二步：如果启用语义比较且字符串比较失败，尝试语义比较
@@ -176,37 +364,38 @@ export const checkAdvancedAnswerEquivalence = async (userAnswer, targetAnswer, u
       const semanticResult = checkLatexSemanticEquivalence(userAnswer, targetAnswer)
       if (semanticResult) {
         console.log('语义比较匹配！')
-        return true
+        return { isCorrect: true }
       }
     } catch (error) {
       console.error('语义比较出错，回退到字符串比较:', error)
     }
   }
 
-  return false
+  // 第三步：检查常见错误，提供专门提示
+  console.log('语义比较失败，检查常见错误...')
+  const errorInfo = checkCommonErrors(userAnswer, targetAnswer)
+
+  if (errorInfo) {
+    console.log(`发现常见错误: ${errorInfo.message}`)
+    return { isCorrect: false, errorInfo }
+  }
+
+  // 第四步：通用失败
+  return { isCorrect: false }
 }
 
 /**
- * 测试函数，用于验证语义比较功能
- * @param {string} latex1 - 第一个LaTeX公式
- * @param {string} latex2 - 第二个LaTeX公式
- * @returns {boolean} - 返回语义比较结果
+ * 兼容性函数：保持原有的boolean返回值接口
+ * @param {string} userAnswer - 用户输入的答案
+ * @param {string} targetAnswer - 目标答案
+ * @param {boolean} useSemanticComparison - 是否启用语义比较
+ * @returns {Promise<boolean>} - 是否等价
  */
-export const testSemanticComparison = (latex1, latex2) => {
-  const stringResult = checkAnswerEquivalence(latex1, latex2)
-
-  try {
-    const semanticResult = checkLatexSemanticEquivalence(latex1, latex2)
-
-    if (stringResult !== semanticResult) {
-      console.log(`🎯 "${latex1}" vs "${latex2}": 语义比较检测到字符串比较遗漏的等价性`)
-    }
-
-    return semanticResult
-  } catch (error) {
-    console.error('语义比较测试失败:', error)
-    return false
-  }
+export const checkAdvancedAnswerEquivalenceBoolean = async (userAnswer, targetAnswer, useSemanticComparison = true) => {
+  const result = await checkAdvancedAnswerEquivalence(userAnswer, targetAnswer, useSemanticComparison)
+  return result.isCorrect
 }
+
+// 删除测试函数，保持代码简洁
 
 export default checkAnswerEquivalence

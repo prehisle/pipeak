@@ -7,7 +7,7 @@ import ThemeSwitcher from '../components/ThemeSwitcher'
 import LanguageSwitcher from '../components/LanguageSwitcher'
 import { getQuickExperienceData } from '../data/quickExperience'
 import { translateHint, translateAllHintsShown } from '../utils/hintTranslator'
-import { checkAdvancedAnswerEquivalence, testSemanticComparison } from '../utils/answerValidation'
+import { checkAdvancedAnswerEquivalence } from '../utils/answerValidation'
 
 const OfflinePracticePage = () => {
   const navigate = useNavigate()
@@ -79,19 +79,19 @@ const OfflinePracticePage = () => {
       console.log('用户答案:', userAnswer.trim())
       console.log('目标答案:', currentQuestion.target_formula.trim())
 
-      // 使用增强的答案检查逻辑（包含语义比较）
-      const isAnswerCorrect = await checkAdvancedAnswerEquivalence(
+      // 使用增强的答案检查逻辑（包含语义比较和错误检测）
+      const result = await checkAdvancedAnswerEquivalence(
         userAnswer.trim(),
         currentQuestion.target_formula.trim(),
         true // 启用语义比较
       )
 
-      console.log('最终验证结果:', isAnswerCorrect)
+      console.log('最终验证结果:', result)
 
-      setIsCorrect(isAnswerCorrect)
+      setIsCorrect(result.isCorrect)
       setAnsweredQuestions(answeredQuestions + 1)
 
-      if (isAnswerCorrect) {
+      if (result.isCorrect) {
         setScore(score + 1)
         // 检查用户答案是否包含$，以提供友好提示
         if (!userAnswer.trim().includes('$')) {
@@ -101,7 +101,12 @@ const OfflinePracticePage = () => {
         }
         // 答对后不自动跳转，由用户手动控制
       } else {
-        setFeedback(t('lesson.incorrect'))
+        // 如果有专门的错误提示，显示专门提示；否则显示通用错误信息
+        if (result.errorInfo) {
+          setFeedback(`❌ ${result.errorInfo.message}`)
+        } else {
+          setFeedback(t('lesson.incorrect'))
+        }
       }
     } catch (error) {
       setFeedback(t('practice.submitError'))
@@ -179,70 +184,7 @@ const OfflinePracticePage = () => {
     setShowResults(false)
   }
 
-  // 测试语义比较功能
-  const handleTestSemanticComparison = async () => {
-    console.log('🧪 开始测试语义等价组比较功能（基于15道离线练习题目）...')
-
-    // 测试用例：基于实际的15道离线练习题目
-    const testCases = [
-      // 应该等价的情况（基于实际题目的不同写法）
-      ['$x^2$', '$x^{2}$'],                    // 题目1: 上标写法
-      ['$a_1$', '$a_{1}$'],                    // 题目2: 下标写法
-      ['$x_i^2$', '$x_{i}^{2}$'],              // 题目3: 上下标组合
-      ['$\\frac{1}{2}$', '$\\frac{ 1 }{ 2 }$'], // 题目4: 分数空格
-      ['$\\sqrt{2}$', '$\\sqrt{ 2 }$'],        // 题目5: 根号空格
-      ['$\\frac{(x+y)^2}{2}$', '$\\frac{(x + y)^2}{2}$'], // 题目6: 复杂分数
-      ['$\\sqrt[3]{8}$', '$\\sqrt[ 3 ]{ 8 }$'], // 题目7: n次根号
-      ['$\\alpha + \\beta$', '$\\alpha+\\beta$'], // 题目9: 希腊字母组合
-      ['$x \\neq \\infty$', '$x\\neq\\infty$'], // 题目10: 运算符空格
-      ['$\\sin x$', '$\\sin  x$'],             // 题目12: 函数空格
-      ['$f(x) = x^2$', '$f(x)=x^{2}$'],        // 题目13: 函数定义
-      ['$\\ln(e^x) = x$', '$\\ln(e^{x})=x$'],  // 题目15: 对数函数
-
-      // 应该不等价的情况（不同的数学表达式）
-      ['$x^2$', '$x^3$'],                      // 不同指数
-      ['$a_1$', '$a_2$'],                      // 不同下标
-      ['$\\frac{1}{2}$', '$\\frac{2}{1}$'],    // 分数颠倒
-      ['$\\sqrt{2}$', '$\\sqrt{3}$'],          // 不同根号内容
-      ['$\\alpha$', '$\\beta$'],               // 不同希腊字母
-      ['$x \\neq \\infty$', '$x = \\infty$'],  // 不同运算符
-      ['$\\sin x$', '$\\cos x$'],              // 不同函数
-      ['$\\ln(e^x)$', '$\\log(e^x)$'],         // 不同对数函数
-      ['$\\sin x$', '$\\sin(x)$'],             // 函数括号差异（严格要求）
-    ]
-
-    console.log('=== 语义比较测试结果 ===')
-    let shouldBeEqual = 0
-    let shouldNotBeEqual = 0
-    let correctPredictions = 0
-
-    for (let i = 0; i < testCases.length; i++) {
-      const [latex1, latex2] = testCases[i]
-      const shouldEqual = i < 12 // 前12个应该等价
-
-      if (shouldEqual) shouldBeEqual++
-      else shouldNotBeEqual++
-
-      const result = testSemanticComparison(latex1, latex2)
-
-      if (result === shouldEqual) {
-        correctPredictions++
-        console.log(`✅ 正确: "${latex1}" vs "${latex2}" -> ${result ? '等价' : '不等价'}`)
-      } else {
-        console.log(`❌ 错误: "${latex1}" vs "${latex2}" -> ${result ? '等价' : '不等价'} (期望: ${shouldEqual ? '等价' : '不等价'})`)
-      }
-    }
-
-    const accuracy = (correctPredictions / testCases.length * 100).toFixed(1)
-    console.log(`\n📊 语义比较测试总结:`)
-    console.log(`总测试用例: ${testCases.length}`)
-    console.log(`正确预测: ${correctPredictions}`)
-    console.log(`准确率: ${accuracy}%`)
-    console.log(`应该等价的用例: ${shouldBeEqual}`)
-    console.log(`应该不等价的用例: ${shouldNotBeEqual}`)
-
-    console.log('🧪 语义比较测试完成 - 已覆盖所有15道离线练习题目的等价性')
-  }
+  // 删除测试功能，保持界面简洁
 
   if (questions.length === 0) {
     return (
@@ -318,13 +260,6 @@ const OfflinePracticePage = () => {
 
           {/* 主题和语言切换器 */}
           <div className="flex items-center space-x-2">
-            <button
-              onClick={handleTestSemanticComparison}
-              className="px-2 py-1 text-xs bg-purple-100 dark:bg-purple-900 text-purple-700 dark:text-purple-300 rounded hover:bg-purple-200 dark:hover:bg-purple-800 transition-colors"
-              title="测试语义比较功能（查看控制台输出）"
-            >
-              🧪 测试
-            </button>
             <ThemeSwitcher />
             <LanguageSwitcher />
           </div>
