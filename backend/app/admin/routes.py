@@ -188,7 +188,10 @@ def dashboard():
                             <h5>系统管理</h5>
                         </div>
                         <div class="card-body">
-                            <a href="/admin/reset-database" class="btn btn-danger mb-2" 
+                            <button id="updateLessonsBtn" class="btn btn-success mb-2" onclick="updateLessons()">
+                               📚 更新课程数据
+                            </button><br>
+                            <a href="/admin/reset-database" class="btn btn-danger mb-2"
                                onclick="return confirm('确定要重置整个数据库吗？这将删除所有数据！')">
                                🔄 重置数据库
                             </a><br>
@@ -226,8 +229,116 @@ def dashboard():
                 </div>
             </div>
         </div>
-        
+
+        <!-- 课程更新状态模态框 -->
+        <div class="modal fade" id="updateModal" tabindex="-1">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title">课程数据更新</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                    </div>
+                    <div class="modal-body">
+                        <div id="updateStatus">
+                            <div class="text-center">
+                                <div class="spinner-border" role="status">
+                                    <span class="visually-hidden">更新中...</span>
+                                </div>
+                                <p class="mt-2">正在更新课程数据，请稍候...</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" id="closeModalBtn" style="display:none;">关闭</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
         <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+        <script>
+        // 课程更新功能
+        async function updateLessons() {
+            // 显示确认对话框
+            if (!confirm('确定要更新课程数据吗？\\n\\n这将使用最新的课程内容覆盖数据库中的现有课程。')) {
+                return;
+            }
+
+            // 显示更新模态框
+            const modal = new bootstrap.Modal(document.getElementById('updateModal'));
+            modal.show();
+
+            // 禁用更新按钮
+            const updateBtn = document.getElementById('updateLessonsBtn');
+            updateBtn.disabled = true;
+            updateBtn.innerHTML = '🔄 更新中...';
+
+            try {
+                const response = await fetch('/admin/update-lessons', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    }
+                });
+
+                const result = await response.json();
+
+                if (result.success) {
+                    document.getElementById('updateStatus').innerHTML = `
+                        <div class="alert alert-success">
+                            <h6>✅ 更新成功！</h6>
+                            <p><strong>备份课程数：</strong> ${result.backup_count}</p>
+                            <p><strong>更新后课程数：</strong> ${result.updated_count}</p>
+                            <p><strong>更新时间：</strong> ${new Date(result.timestamp).toLocaleString()}</p>
+                        </div>
+                    `;
+                } else {
+                    document.getElementById('updateStatus').innerHTML = `
+                        <div class="alert alert-danger">
+                            <h6>❌ 更新失败</h6>
+                            <p>${result.message}</p>
+                        </div>
+                    `;
+                }
+            } catch (error) {
+                document.getElementById('updateStatus').innerHTML = `
+                    <div class="alert alert-danger">
+                        <h6>❌ 更新失败</h6>
+                        <p>网络错误：${error.message}</p>
+                    </div>
+                `;
+            } finally {
+                // 恢复更新按钮
+                updateBtn.disabled = false;
+                updateBtn.innerHTML = '📚 更新课程数据';
+
+                // 显示关闭按钮
+                document.getElementById('closeModalBtn').style.display = 'block';
+
+                // 3秒后自动刷新页面
+                setTimeout(() => {
+                    window.location.reload();
+                }, 3000);
+            }
+        }
+
+        // 页面加载时检查课程更新状态
+        document.addEventListener('DOMContentLoaded', async function() {
+            try {
+                const response = await fetch('/admin/update-lessons-status');
+                const result = await response.json();
+
+                if (result.success && result.needs_update) {
+                    const updateBtn = document.getElementById('updateLessonsBtn');
+                    updateBtn.classList.remove('btn-success');
+                    updateBtn.classList.add('btn-warning');
+                    updateBtn.innerHTML = '📚 更新课程数据 (有新版本)';
+                }
+            } catch (error) {
+                console.log('检查更新状态失败:', error);
+            }
+        });
+        </script>
     </body>
     </html>
     '''
@@ -246,8 +357,127 @@ def reset_database():
         flash('数据库重置成功！', 'success')
     except Exception as e:
         flash(f'数据库重置失败：{str(e)}', 'error')
-    
+
     return redirect(url_for('admin.dashboard'))
+
+
+@admin_bp.route('/update-lessons', methods=['POST'])
+@admin_required
+def update_lessons():
+    """更新课程数据"""
+    try:
+        db = get_db()
+
+        # 备份当前课程数据
+        backup_count = db.lessons.count_documents({})
+
+        # 直接调用重置数据库API来更新课程
+        import requests
+        import os
+
+        # 获取当前服务器地址
+        base_url = request.host_url.rstrip('/')
+        reset_url = f"{base_url}/api/reset-db"
+
+        # 调用重置API
+        response = requests.get(reset_url)
+
+        if response.status_code == 200:
+            result_data = response.json()
+            updated_count = result_data.get('lesson_count', 0)
+
+            # 记录操作日志
+            admin = get_current_admin()
+            log_entry = {
+                'action': 'update_lessons',
+                'admin_id': str(admin._id) if admin else 'unknown',
+                'admin_username': admin.username if admin else 'unknown',
+                'timestamp': datetime.utcnow(),
+                'backup_lesson_count': backup_count,
+                'updated_lesson_count': updated_count,
+                'success': True
+            }
+            db.admin_logs.insert_one(log_entry)
+
+            return jsonify({
+                'success': True,
+                'message': '课程数据更新成功！',
+                'backup_count': backup_count,
+                'updated_count': updated_count,
+                'timestamp': datetime.utcnow().isoformat()
+            }), 200
+        else:
+            raise Exception(f"重置API调用失败: {response.status_code}")
+
+    except Exception as e:
+        # 记录错误日志
+        try:
+            admin = get_current_admin()
+            log_entry = {
+                'action': 'update_lessons',
+                'admin_id': str(admin._id) if admin else 'unknown',
+                'admin_username': admin.username if admin else 'unknown',
+                'timestamp': datetime.utcnow(),
+                'error': str(e),
+                'success': False
+            }
+            db.admin_logs.insert_one(log_entry)
+        except:
+            pass  # 如果日志记录失败，不影响错误响应
+
+        return jsonify({
+            'success': False,
+            'message': f'课程数据更新失败：{str(e)}'
+        }), 500
+
+
+@admin_bp.route('/update-lessons-status')
+@admin_required
+def update_lessons_status():
+    """获取课程更新状态信息"""
+    try:
+        db = get_db()
+
+        # 获取当前课程统计
+        current_stats = {
+            'total_lessons': db.lessons.count_documents({}),
+            'last_updated': None
+        }
+
+        # 查找最近的更新日志
+        latest_log = db.admin_logs.find_one(
+            {'action': 'update_lessons', 'success': True},
+            sort=[('timestamp', -1)]
+        )
+
+        if latest_log:
+            current_stats['last_updated'] = latest_log['timestamp'].isoformat()
+
+        # 获取comprehensive_lessons.py中的课程数量
+        try:
+            import sys
+            import os
+            backend_dir = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+            if backend_dir not in sys.path:
+                sys.path.insert(0, backend_dir)
+
+            from comprehensive_lessons import lessons
+            source_lesson_count = len(lessons)
+        except Exception:
+            source_lesson_count = 'unknown'
+
+        return jsonify({
+            'success': True,
+            'current_stats': current_stats,
+            'source_lesson_count': source_lesson_count,
+            'needs_update': current_stats['total_lessons'] != source_lesson_count if isinstance(source_lesson_count, int) else False
+        }), 200
+
+    except Exception as e:
+        return jsonify({
+            'success': False,
+            'message': f'获取状态失败：{str(e)}'
+        }), 500
 
 
 @admin_bp.route('/users')
