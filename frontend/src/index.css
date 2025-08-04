@@ -333,24 +333,24 @@ body {
   }
 }
 
-/* KaTeX 样式覆盖 - 增大字体以提高可读性 */
+/* KaTeX 样式覆盖 - 统一字体大小以保持一致性 */
 .katex {
-  font-size: 1.3em;  /* 从1.1em增大到1.3em */
+  font-size: 1.4em !important;  /* 统一基础字体大小 */
   line-height: 1.4;
 }
 
 .katex-display {
   margin: var(--spacing-lg) 0;  /* 增加上下间距 */
-  font-size: 1.4em;  /* 显示模式的公式更大 */
+  font-size: 1.4em !important;  /* 显示模式保持一致 */
 }
 
-/* 知识点区域的LaTeX公式特别优化 */
+/* 知识点区域的LaTeX公式保持适中大小 */
 .markdown-renderer .katex {
-  font-size: 1.6em !important;  /* 知识点区域的公式更大 */
+  font-size: 1.4em !important;  /* 与其他区域保持一致 */
 }
 
 .markdown-renderer .katex-display {
-  font-size: 1.8em !important;  /* 知识点区域的显示公式最大 */
+  font-size: 1.4em !important;  /* 显示公式保持一致 */
   margin: var(--spacing-xl) 0;
 }
 
@@ -738,10 +738,11 @@ body {
   color: #f59e0b;
 }
 
-/* KaTeX 数学公式样式优化 */
-.katex {
+/* KaTeX 数学公式样式优化 - 移除冲突的字体大小设置 */
+/* 注释掉冲突的字体大小设置，使用统一的1.2em */
+/* .katex {
   font-size: 1em !important;
-}
+} */
 
 /* 调整上标和下标的字体大小 */
 .katex .msupsub {
@@ -765,16 +766,15 @@ body {
   font-size: 1em !important;
 }
 
-/* 显示模式下的数学公式 - 缩小字体大小 */
-.katex-display {
+/* 移除冲突的显示模式字体大小设置 */
+/* .katex-display {
   margin: 0.8em 0 !important;
-  font-size: 1em !important; /* 进一步缩小到与行内公式相近 */
+  font-size: 1em !important;
 }
 
-/* 进一步控制显示模式数学公式的大小 */
 .katex-display .katex {
-  font-size: 0.9em !important; /* 稍微小于正常文本 */
-}
+  font-size: 0.9em !important;
+} */
 
 /* 行内数学公式的垂直对齐 */
 .katex {

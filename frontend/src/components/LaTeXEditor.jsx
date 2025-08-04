@@ -152,7 +152,7 @@ const LaTeXEditor = ({
             <LaTeXPreview
               latex={latex ? (displayMode ? `$$${latex}$$` : `$${latex}$`) : ''}
               displayMode={false} // 让LaTeXPreview自己处理displayMode
-              className="min-h-[200px] border border-gray-200 rounded-lg"
+              className="h-[200px] border border-gray-200 rounded-lg overflow-hidden"
             />
             {latex && (
               <div className="mt-2 text-xs text-gray-500">

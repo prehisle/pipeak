@@ -488,10 +488,10 @@ const PracticeCard = forwardRef(({
           {/* 实时预览 */}
           <div className="mb-3">
             <p className="text-base font-medium text-green-800 dark:text-green-200 mb-2">{t('practice.livePreview')}</p>
-            <div className="bg-gray-50 dark:bg-gray-800 p-3 rounded-lg border border-gray-200 dark:border-gray-700 min-h-[50px] flex items-center justify-center">
+            <div className="bg-gray-50 dark:bg-gray-800 p-3 rounded-lg border border-gray-200 dark:border-gray-700 h-[70px] flex items-center justify-center overflow-hidden">
               <div className="text-center w-full">
                 {userAnswer.trim() ? (
-                  <MarkdownRenderer content={userAnswer} />
+                  <MarkdownRenderer content={userAnswer.includes('$') ? userAnswer : `$${userAnswer}$`} />
                 ) : (
                   <span className="text-gray-400 dark:text-gray-500 text-xs">{t('practice.enterLatex')}</span>
                 )}
