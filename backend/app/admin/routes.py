@@ -310,7 +310,9 @@ def dashboard():
                     if (updateResult.errors.length > 0) {
                         detailsHtml += `<p><strong>⚠️ 错误：</strong></p><ul>`;
                         updateResult.errors.forEach(error => {
-                            detailsHtml += `<li>${error.title || 'Unknown'}: ${error.error}</li>`;
+                            const title = error.title || error.sequence || 'Unknown';
+                            const errorMsg = error.error || error.general_error || 'Unknown error';
+                            detailsHtml += `<li>${title}: ${errorMsg}</li>`;
                         });
                         detailsHtml += '</ul>';
                     }
@@ -419,9 +421,19 @@ def update_lessons():
         try:
             with open(os.path.join(backend_dir, 'translations', 'lessons_en_US.json'), 'r', encoding='utf-8') as f:
                 translation_data = json.load(f)
-                lessons_en_US = translation_data.get('lessons', [])
+                raw_lessons_en = translation_data.get('lessons', [])
+
+                # 转换英文翻译数据格式，按sequence索引
+                lessons_en_US = []
+                for i, lesson_data in enumerate(raw_lessons_en):
+                    if 'translations' in lesson_data and 'en-US' in lesson_data['translations']:
+                        en_lesson = lesson_data['translations']['en-US']
+                        en_lesson['sequence'] = i + 1  # 按顺序分配sequence
+                        lessons_en_US.append(en_lesson)
+
         except Exception as e:
             lessons_en_US = []
+            print(f"Warning: Failed to load English translations: {e}")
 
         # 执行增量更新
         update_result = perform_incremental_update(db, lessons, lessons_en_US)
@@ -482,9 +494,20 @@ def perform_incremental_update(db, source_lessons, source_lessons_en):
         current_lessons = {lesson['sequence']: lesson for lesson in db.lessons.find({})}
 
         # 创建英文翻译映射
-        en_translations = {lesson['sequence']: lesson for lesson in source_lessons_en}
+        en_translations = {}
+        for lesson in source_lessons_en:
+            if 'sequence' in lesson:
+                en_translations[lesson['sequence']] = lesson
 
         for source_lesson in source_lessons:
+            # 确保课程有sequence字段
+            if 'sequence' not in source_lesson:
+                update_result['errors'].append({
+                    'title': source_lesson.get('title', 'Unknown Lesson'),
+                    'error': 'Missing sequence field'
+                })
+                continue
+
             sequence = source_lesson['sequence']
 
             try:
@@ -533,7 +556,8 @@ def perform_incremental_update(db, source_lessons, source_lessons_en):
 
     except Exception as e:
         update_result['errors'].append({
-            'general_error': str(e)
+            'title': 'General Error',
+            'error': str(e)
         })
         return update_result
 

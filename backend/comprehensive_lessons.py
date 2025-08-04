@@ -16,7 +16,7 @@ def create_comprehensive_lessons():
             '_id': ObjectId(),
             'title': '第1课：数学环境与基础语法',
             'sequence': 1,
-            'description': '学习LaTeX数学公式的基础语法，掌握数学环境、上标、下标的使用方法。',
+            'description': '学习LaTeX数学公式的基础语法，掌握数学环境、上标、下标的使用方法。（已更新）',
             'cards': [
                 {
                     'type': 'knowledge',
