@@ -299,7 +299,7 @@ const OfflinePracticePage = () => {
           {/* 实时预览 */}
           <div className="mb-4">
             <p className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">{t('offlinePractice.realTimePreview')}</p>
-            <div className="bg-gray-50 dark:bg-gray-700 p-4 rounded-lg border border-gray-200 dark:border-gray-600 h-[80px] flex items-center justify-center overflow-hidden">
+            <div className="bg-gray-50 dark:bg-gray-700 p-4 rounded-lg border border-gray-200 dark:border-gray-600 min-h-[80px] max-h-[140px] flex items-center justify-center overflow-auto">
               <div className="text-center w-full">
                 {userAnswer.trim() ? (
                   <MarkdownRenderer content={userAnswer.includes('$') ? userAnswer : `$${userAnswer}$`} />
