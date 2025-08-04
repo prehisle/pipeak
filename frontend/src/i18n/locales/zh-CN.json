@@ -104,6 +104,7 @@
     "example": "例如：$x^2$",
     "perfectAnswer": "🎉 太棒了！答案完全正确！",
     "incorrectAnswer": "答案不正确，请再试一次",
+    "dollarSignHint": "小提示：标准的LaTeX数学公式需要用 `$` 包裹哦。",
     "incorrectHint": "💡 提示：检查LaTeX语法，或点击\"获取提示\"按钮",
     "allHintsShown": "已显示所有提示",
     "difficulty": {

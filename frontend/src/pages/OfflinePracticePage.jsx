@@ -83,7 +83,12 @@ const OfflinePracticePage = () => {
 
       if (isAnswerCorrect) {
         setScore(score + 1)
-        setFeedback(t('lesson.correct'))
+        // 检查用户答案是否包含$，以提供友好提示
+        if (!userAnswer.trim().includes('$')) {
+          setFeedback(t('lesson.correct') + ' ' + t('practice.dollarSignHint'))
+        } else {
+          setFeedback(t('lesson.correct'))
+        }
         // 答对后不自动跳转，由用户手动控制
       } else {
         setFeedback(t('lesson.incorrect'))
@@ -280,7 +285,7 @@ const OfflinePracticePage = () => {
             <div className="bg-gray-50 dark:bg-gray-700 p-4 rounded-lg border border-gray-200 dark:border-gray-600 min-h-[60px] flex items-center justify-center">
               <div className="text-center w-full">
                 {userAnswer.trim() ? (
-                  <MarkdownRenderer content={userAnswer} />
+                  <MarkdownRenderer content={`$$${userAnswer.replace(/\$/g, '')}$$`} />
                 ) : (
                   <span className="text-gray-400 dark:text-gray-500 text-sm">{t('offlinePractice.previewPlaceholder')}</span>
                 )}

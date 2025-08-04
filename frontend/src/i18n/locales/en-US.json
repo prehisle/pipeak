@@ -121,6 +121,7 @@
     "example": "Example: $x^2$",
     "perfectAnswer": "🎉 Excellent! Your answer is completely correct!",
     "incorrectAnswer": "Answer is incorrect, please try again",
+    "dollarSignHint": "Friendly reminder: Standard LaTeX math formulas should be wrapped in `$`.",
     "incorrectHint": "💡 Hint: Check LaTeX syntax, or click \"Get Hint\" button",
     "allHintsShown": "All hints shown",
     "difficulty": {
