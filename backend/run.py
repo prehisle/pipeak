@@ -8,6 +8,7 @@ from dotenv import load_dotenv
 load_dotenv()
 
 from app import create_app
+from flask import request
 
 # 根据环境变量选择配置
 config_name = os.environ.get('FLASK_ENV', 'development')
@@ -63,10 +64,39 @@ def init_database():
     except Exception as e:
         return {'error': f'Database initialization failed: {str(e)}'}, 500
 
-# 添加强制重新初始化端点
+# 添加强制重新初始化端点 - 仅限开发环境
 @app.route('/api/reset-db')
 def reset_database():
-    """强制重新初始化数据库 - 使用comprehensive_lessons.py中的完整课程数据"""
+    """强制重新初始化数据库 - 使用comprehensive_lessons.py中的完整课程数据
+
+    安全限制：
+    1. 仅在开发环境启用
+    2. 生产环境直接拒绝访问
+    3. 需要特定的开发环境标识
+    """
+    # 安全检查：只允许在开发环境使用
+    import os
+
+    # 检查环境变量
+    env = os.getenv('FLASK_ENV', 'production')
+    debug_mode = os.getenv('FLASK_DEBUG', 'False').lower() == 'true'
+    dev_secret = os.getenv('DEV_RESET_SECRET', '')
+
+    # 生产环境直接拒绝
+    if env == 'production' or not debug_mode:
+        return {
+            'error': 'Database reset is disabled in production environment',
+            'message': 'This endpoint is only available in development mode'
+        }, 403
+
+    # 开发环境也需要特殊密钥（可选的额外保护）
+    reset_key = request.args.get('dev_key', '')
+    if dev_secret and reset_key != dev_secret:
+        return {
+            'error': 'Invalid development key',
+            'message': 'Please provide valid dev_key parameter'
+        }, 401
+
     try:
         from app import get_db
         from bson import ObjectId
