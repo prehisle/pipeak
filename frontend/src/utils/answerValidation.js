@@ -127,44 +127,7 @@ export const checkLatexSemanticEquivalence = (latex1, latex2) => {
  * 常见错误模式列表 - 检测用户常见的LaTeX错误并给出专门提示
  */
 const COMMON_ERROR_PATTERNS = [
-  // 上下标顺序错误
-  {
-    pattern: /^([a-zA-Z])(\^[^_]*)?(_[^_]*)?(\^[^_]*)?$/,
-    checkError: (userAnswer, targetAnswer) => {
-      // 检测是否是上下标顺序问题
-      const userNorm = userAnswer.replace(/[\s${}]/g, '').toLowerCase()
-      const targetNorm = targetAnswer.replace(/[\s${}]/g, '').toLowerCase()
-
-      console.log(`检查上下标顺序: "${userNorm}" vs "${targetNorm}"`)
-
-      // 特殊检查：x^2_1 vs x_1^2
-      if ((userNorm === 'x^2_1' && targetNorm === 'x_1^2') ||
-          (userNorm === 'x_1^2' && targetNorm === 'x^2_1')) {
-        return {
-          type: 'subscript_superscript_order',
-          message: `注意上下标的顺序：x₁² 表示"x下标1的平方"，而 x²₁ 表示"x的平方，下标1"`
-        }
-      }
-
-      // 通用检查：检查是否包含相同的字母、上标、下标，但顺序不同
-      const userParts = extractScriptParts(userNorm)
-      const targetParts = extractScriptParts(targetNorm)
-
-      console.log('用户部分:', userParts)
-      console.log('目标部分:', targetParts)
-
-      if (userParts.base === targetParts.base &&
-          userParts.superscript === targetParts.superscript &&
-          userParts.subscript === targetParts.subscript &&
-          userNorm !== targetNorm) {
-        return {
-          type: 'subscript_superscript_order',
-          message: `注意上下标的顺序：${targetParts.base}${targetParts.subscript ? '₍' + targetParts.subscript + '₎' : ''}${targetParts.superscript ? '^' + targetParts.superscript : ''} 表示"${targetParts.base}${targetParts.subscript ? '下标' + targetParts.subscript : ''}${targetParts.superscript ? '的' + targetParts.superscript + '次方' : ''}"`
-        }
-      }
-      return null
-    }
-  },
+  // 删除上下标顺序错误检测 - 这通常是理解题目错误，不是语法错误
 
   // 函数反斜杠缺失
   {
@@ -257,32 +220,7 @@ const COMMON_ERROR_PATTERNS = [
   }
 ]
 
-/**
- * 提取上标下标部分
- */
-const extractScriptParts = (latex) => {
-  const result = { base: '', superscript: '', subscript: '' }
-
-  // 更精确的解析，处理 x^2_1 和 x_1^2 格式
-  const baseMatch = latex.match(/^([a-zA-Z]+)/)
-  if (baseMatch) {
-    result.base = baseMatch[1]
-
-    // 查找所有上标
-    const superscriptMatches = latex.match(/\^([^_^]+)/g)
-    if (superscriptMatches) {
-      result.superscript = superscriptMatches[0].substring(1) // 移除^符号
-    }
-
-    // 查找所有下标
-    const subscriptMatches = latex.match(/_([^_^]+)/g)
-    if (subscriptMatches) {
-      result.subscript = subscriptMatches[0].substring(1) // 移除_符号
-    }
-  }
-
-  return result
-}
+// 删除未使用的extractScriptParts函数
 
 /**
  * 检查常见错误并返回专门提示

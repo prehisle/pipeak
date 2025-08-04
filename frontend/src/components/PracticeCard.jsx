@@ -2,6 +2,7 @@ import { useState, useEffect, useRef, useImperativeHandle, forwardRef } from 're
 import { useTranslation } from 'react-i18next'
 import MarkdownRenderer from './MarkdownRenderer'
 import { learningAPI } from '../services/api'
+import { checkAdvancedAnswerEquivalence } from '../utils/answerValidation'
 import { translateHint, translateAllHintsShown } from '../utils/hintTranslator'
 
 // 练习题翻译映射
@@ -243,30 +244,7 @@ const PracticeCard = forwardRef(({
     }
   }, [userAnswer])
 
-  // 答案等价性检查函数
-  const checkAnswerEquivalence = (userAnswer, targetAnswer) => {
-    // 标准化函数：移除多余空格，统一格式
-    const normalize = (str) => {
-      return str
-        .replace(/\s+/g, '') // 移除所有空格
-        .toLowerCase() // 转换为小写
-        .replace(/^\$+|\$+$/g, '') // 移除开头和结尾的美元符号
-    }
-
-    const normalizedUser = normalize(userAnswer)
-    const normalizedTarget = normalize(targetAnswer)
-
-    // 直接比较标准化后的字符串
-    if (normalizedUser === normalizedTarget) {
-      return true
-    }
-
-    // 检查是否只是美元符号的差异
-    const userWithDollar = `$${normalizedUser}$`
-    const targetWithDollar = `$${normalizedTarget}$`
-
-    return normalize(userWithDollar) === normalize(targetWithDollar)
-  }
+  // 删除旧的本地验证函数，使用新的增强验证系统
 
   const handleSubmit = async () => {
     if (!userAnswer.trim()) {
@@ -281,12 +259,16 @@ const PracticeCard = forwardRef(({
     console.log('目标答案:', targetFormula.trim())
     console.log('练习数据:', practiceData)
 
-    // 使用改进的答案检查逻辑，支持多种正确格式
-    const isAnswerCorrect = checkAnswerEquivalence(userAnswer.trim(), targetFormula.trim())
+    // 使用增强的答案检查逻辑（包含语义比较和错误检测）
+    const result = await checkAdvancedAnswerEquivalence(
+      userAnswer.trim(),
+      targetFormula.trim(),
+      true // 启用语义比较
+    )
 
-    console.log('答案是否正确:', isAnswerCorrect)
+    console.log('验证结果:', result)
 
-    if (isAnswerCorrect) {
+    if (result.isCorrect) {
       setIsCorrect(true)
       setFeedback(t('practiceCard.correctAnswer'))
 
@@ -320,7 +302,12 @@ const PracticeCard = forwardRef(({
         }, 2000)
       }
     } else {
-      setFeedback(t('practice.incorrectAnswer'))
+      // 如果有专门的错误提示，显示专门提示；否则显示通用错误信息
+      if (result.errorInfo) {
+        setFeedback(`❌ ${result.errorInfo.message}`)
+      } else {
+        setFeedback(t('practice.incorrectAnswer'))
+      }
 
       // 显示提示
       if (hintText) {
