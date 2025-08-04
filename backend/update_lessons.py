@@ -11,18 +11,26 @@ import pymongo
 from datetime import datetime
 from bson import ObjectId
 import json
+import os
 
 def connect_database():
     """连接数据库"""
     try:
-        client = pymongo.MongoClient('mongodb://user:password@192.168.1.4:27017/?authSource=admin')
-        db = client['latex_trainer']
+        # 尝试从环境变量获取数据库连接信息
+        mongodb_uri = os.getenv('MONGODB_URI', 'mongodb://user:password@192.168.1.4:27017/?authSource=admin')
+        db_name = os.getenv('DB_NAME', 'latex_trainer')
+
+        print(f"🔌 尝试连接数据库: {db_name}")
+        client = pymongo.MongoClient(mongodb_uri)
+        db = client[db_name]
+
         # 测试连接
         db.lessons.find_one()
         print("✅ 数据库连接成功")
         return client, db
     except Exception as e:
         print(f"❌ 数据库连接失败: {e}")
+        print("💡 提示：请检查数据库连接信息或设置环境变量 MONGODB_URI")
         return None, None
 
 def get_updated_lesson_data():
