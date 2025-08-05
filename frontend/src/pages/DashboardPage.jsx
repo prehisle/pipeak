@@ -338,7 +338,7 @@ const DashboardPage = () => {
 
                     <div className="lesson-actions">
                       <Link
-                        to={`/app/lesson/${lesson.id}`}
+                        to={completed ? `/app/lesson/${lesson.id}?mode=review` : `/app/lesson/${lesson.id}`}
                         className={`lesson-btn ${
                           completed ? 'lesson-btn-review' : 'lesson-btn-learn'
                         }`}

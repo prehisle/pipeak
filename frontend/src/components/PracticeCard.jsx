@@ -131,12 +131,16 @@ const PracticeCard = forwardRef(({
   // 检查当前练习是否已完成并加载状态
   useEffect(() => {
     const checkPracticeStatus = async () => {
-      // 复习模式下跳过完成状态检查
+      // 复习模式下完全重置状态，不检查完成状态
       if (isReviewMode) {
-        // 重置其他状态
+        // 重置所有状态到初始状态
+        setUserAnswer('')
+        setFeedback(null)
+        setIsCorrect(false)
         setShowHint(false)
         setCurrentHint('')
         setHintLevel(0)
+        setOriginalHint('')
         setSyntaxSuggestions([])
         return
       }
@@ -186,7 +190,7 @@ const PracticeCard = forwardRef(({
     }
 
     checkPracticeStatus()
-  }, [cardIndex, lessonId, targetFormula, isReviewMode, t])
+  }, [cardIndex, lessonId, targetFormula, isReviewMode, t, practiceIndex, exercise?.review_id])
 
   // 智能语法检查和建议
   const checkSyntax = (input) => {
@@ -254,19 +258,12 @@ const PracticeCard = forwardRef(({
 
     setIsSubmitting(true)
 
-    console.log('=== 调试答案验证 ===')
-    console.log('用户答案:', userAnswer.trim())
-    console.log('目标答案:', targetFormula.trim())
-    console.log('练习数据:', practiceData)
-
     // 使用增强的答案检查逻辑（包含语义比较和错误检测）
     const result = await checkAdvancedAnswerEquivalence(
       userAnswer.trim(),
       targetFormula.trim(),
       true // 启用语义比较
     )
-
-    console.log('验证结果:', result)
 
     if (result.isCorrect) {
       setIsCorrect(true)
@@ -281,7 +278,6 @@ const PracticeCard = forwardRef(({
             card_index: cardIndex, // cardIndex现在是正确的后端卡片索引
             user_answer: userAnswer.trim()
           })
-          console.log('练习答案已提交到后端')
         } catch (error) {
           console.error('提交练习答案失败:', error)
           // 即使提交失败，也继续本地流程
@@ -293,8 +289,14 @@ const PracticeCard = forwardRef(({
       if (onComplete) {
         setTimeout(() => {
           if (isReviewMode) {
-            // 复习模式：传递练习数据、用户答案、是否正确
-            onComplete(practiceData, userAnswer.trim(), true)
+            // 复习模式：区分ReviewPage和LessonPage
+            if (lessonId === 'review') {
+              // ReviewPage：传递 (reviewData, userAnswer, isCorrect)
+              onComplete(practiceData, userAnswer.trim(), true)
+            } else {
+              // LessonPage复习模式：传递 (isCorrect, immediate)
+              onComplete(true, false)
+            }
           } else {
             // 学习模式：传递原有参数
             onComplete(true, false) // false 表示非立即执行
@@ -405,16 +407,20 @@ const PracticeCard = forwardRef(({
   }
 
   const handleKeyPress = (e) => {
-    console.log('PracticeCard键盘事件:', e.key, '答案是否正确:', isCorrect, '用户答案:', userAnswer.trim())
-
     // 如果答案正确，按回车键进入下一题
     if (e.key === 'Enter' && isCorrect) {
       e.preventDefault()
-      console.log('触发Enter键进入下一题')
       // 立即触发完成回调，不等待2秒延迟
       if (onComplete) {
         if (isReviewMode) {
-          onComplete(practiceData, userAnswer.trim(), true)
+          // 复习模式：区分ReviewPage和LessonPage
+          if (lessonId === 'review') {
+            // ReviewPage：传递 (reviewData, userAnswer, isCorrect)
+            onComplete(practiceData, userAnswer.trim(), true)
+          } else {
+            // LessonPage复习模式：传递 (isCorrect, immediate)
+            onComplete(true, true)
+          }
         } else {
           onComplete(true, true) // true 表示立即执行
         }
@@ -425,7 +431,6 @@ const PracticeCard = forwardRef(({
     // 普通 Enter 键提交答案（如果答案未正确且有内容）
     if (e.key === 'Enter' && !isCorrect && userAnswer.trim()) {
       e.preventDefault()
-      console.log('触发Enter键提交答案')
       handleSubmit()
       return
     }
@@ -433,13 +438,11 @@ const PracticeCard = forwardRef(({
     // Ctrl+Enter 或 Cmd+Enter 强制提交答案
     if (e.key === 'Enter' && (e.ctrlKey || e.metaKey)) {
       e.preventDefault()
-      console.log('触发Ctrl+Enter强制提交')
       handleSubmit()
     }
     // Tab 键获取提示
     else if (e.key === 'Tab' && !e.shiftKey) {
       e.preventDefault()
-      console.log('触发Tab键获取提示')
       handleGetHint()
     }
   }
@@ -585,7 +588,14 @@ const PracticeCard = forwardRef(({
                 onClick={() => {
                   if (onComplete) {
                     if (isReviewMode) {
-                      onComplete(practiceData, userAnswer.trim(), true)
+                      // 复习模式：区分ReviewPage和LessonPage
+                      if (lessonId === 'review') {
+                        // ReviewPage：传递 (reviewData, userAnswer, isCorrect)
+                        onComplete(practiceData, userAnswer.trim(), true)
+                      } else {
+                        // LessonPage复习模式：传递 (isCorrect, immediate)
+                        onComplete(true, true)
+                      }
                     } else {
                       onComplete(true, true)
                     }

@@ -19,11 +19,6 @@ const ReviewPage = () => {
 
   // 数据适配器：将复习数据转换为PracticeCard期望的格式
   const adaptReviewDataToPracticeCard = (reviewData) => {
-    console.log('=== 调试复习数据适配 ===')
-    console.log('原始复习数据:', reviewData)
-    console.log('target_formula:', reviewData.target_formula)
-    console.log('question:', reviewData.question)
-
     const adaptedData = {
       question: reviewData.question,
       answer: reviewData.target_formula,
@@ -37,7 +32,6 @@ const ReviewPage = () => {
       memory_strength: reviewData.easiness_factor
     }
 
-    console.log('适配后的数据:', adaptedData)
     return adaptedData
   }
 
@@ -57,10 +51,12 @@ const ReviewPage = () => {
       setTimeout(() => {
         if (currentReviewIndex < reviews.length - 1) {
           setCurrentReviewIndex(currentReviewIndex + 1)
-          // 聚焦到下一个练习卡片
-          if (practiceCardRef.current) {
-            practiceCardRef.current.focus()
-          }
+          // 延迟聚焦，确保组件状态已重置
+          setTimeout(() => {
+            if (practiceCardRef.current) {
+              practiceCardRef.current.focus()
+            }
+          }, 100)
         } else {
           // 所有复习任务完成，重新加载数据显示统计
           loadTodayReviews()
@@ -83,22 +79,6 @@ const ReviewPage = () => {
     try {
       setLoading(true)
       const response = await reviewAPI.getTodayReviews()
-      console.log('=== 调试加载复习数据 ===')
-      console.log('API响应:', response)
-      console.log('reviews数组:', response.reviews)
-      console.log('第一个review:', response.reviews?.[0])
-      console.log('第一个review的review_id:', response.reviews?.[0]?.review_id)
-
-    // 打印所有复习任务的详细信息
-    console.log('=== 所有复习任务详情 ===')
-    response.reviews.forEach((review, index) => {
-      console.log(`任务${index + 1}:`, {
-        question: review.question,
-        target_formula: review.target_formula,
-        difficulty: review.difficulty,
-        lesson_title: review.lesson_title
-      })
-    })
 
       setReviews(response.reviews)
       setStats(response.stats)
@@ -106,21 +86,13 @@ const ReviewPage = () => {
       // 判断是否有待复习任务：优先使用stats.due_today，fallback到reviews.length
       const hasDueReviews = (response.stats?.due_today > 0) || (response.reviews.length > 0)
 
-      console.log('复习任务检查:', {
-        'stats.due_today': response.stats?.due_today,
-        'reviews.length': response.reviews.length,
-        'hasDueReviews': hasDueReviews
-      })
-
       if (!hasDueReviews) {
         // 没有复习任务，加载详细统计
-        console.log('没有待复习任务，显示统计页面')
         const statsResponse = await reviewAPI.getStats()
         setStats(statsResponse.stats)
         setShowStats(true)
       } else {
         // 有待复习任务，应该显示复习界面
-        console.log('有待复习任务，应该显示复习界面')
         setReviews(response.reviews)
         setStats(response.stats)
       }
@@ -311,6 +283,7 @@ const ReviewPage = () => {
       {/* 使用PracticeCard组件进行复习练习 */}
       {currentReview && (
         <PracticeCard
+          key={`review-${currentReview.review_id}-${currentReviewIndex}`}
           ref={practiceCardRef}
           exercise={adaptReviewDataToPracticeCard(currentReview)}
           lessonId="review"

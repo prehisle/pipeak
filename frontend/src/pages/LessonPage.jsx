@@ -21,6 +21,10 @@ const LessonPage = () => {
   const [isTransitioning, setIsTransitioning] = useState(false)
   const [showLessonCompleteModal, setShowLessonCompleteModal] = useState(false)
 
+  // 检查是否是复习模式（通过URL查询参数）
+  const urlParams = new URLSearchParams(window.location.search)
+  const isReviewMode = urlParams.get('mode') === 'review'
+
   // Toast系统
   const { showSuccess, showError, showWarning, ToastContainer } = useToast()
 
@@ -172,7 +176,16 @@ const LessonPage = () => {
   }
 
   const handlePracticeComplete = (isCorrect, immediate = false) => {
-    console.log('LessonPage收到练习完成回调:', { isCorrect, immediate })
+    // 复习模式下不更新进度，不检查课程完成
+    if (isReviewMode) {
+      if (immediate) {
+        // 复习模式下仍然支持Enter键切换到下一题
+        handleNextKnowledgePoint()
+      }
+      return
+    }
+
+    // 学习模式下的正常逻辑
     if (isCorrect && currentLesson) {
       const currentKnowledgePoint = currentLesson.knowledgePoints[currentKnowledgePointIndex]
       if (currentKnowledgePoint) {
@@ -188,7 +201,6 @@ const LessonPage = () => {
 
       if (immediate) {
         // 立即进入下一个知识点（用户按Enter键触发）
-        console.log('立即进入下一个知识点')
         handleNextKnowledgePoint()
       }
       // 移除自动跳转逻辑，让用户主动控制学习进度
@@ -216,11 +228,8 @@ const LessonPage = () => {
       return
     }
 
-    console.log(`课程完成检查: ${completedPractices}/${totalPractices} 练习题已完成`)
-
     if (completedPractices === totalPractices && totalPractices > 0) {
       // 所有练习题都已完成，自动完成课程
-      console.log('所有练习题已完成，自动完成课程')
       completeLesson(currentLesson.id)
       showSuccess(t('lessonPage.lessonCompleted'))
       setShowLessonCompleteModal(true)
@@ -228,9 +237,7 @@ const LessonPage = () => {
       // 尝试同步到后端（失败也不影响前端流程）
       try {
         import('../services/api').then(({ learningAPI }) => {
-          learningAPI.completeLesson(currentLesson.id).then(() => {
-            console.log('课程完成状态已同步到后端')
-          }).catch((error) => {
+          learningAPI.completeLesson(currentLesson.id).catch((error) => {
             console.error('同步课程完成状态到后端失败:', error)
           })
         })
@@ -243,6 +250,12 @@ const LessonPage = () => {
   // 处理课程完成 - 基于后端状态检查所有练习题是否完成
   const handleCompleteLesson = async () => {
     if (!currentLesson) return
+
+    // 复习模式下不允许完成课程
+    if (isReviewMode) {
+      navigate('/app/dashboard')
+      return
+    }
 
     // 统计课程中的所有练习题（仅登录用户）
     let totalPractices = 0
@@ -271,7 +284,6 @@ const LessonPage = () => {
       try {
         const { learningAPI } = await import('../services/api')
         await learningAPI.completeLesson(currentLesson.id)
-        console.log('课程完成状态已同步到后端')
       } catch (error) {
         console.error('同步课程完成状态到后端失败:', error)
         // 不显示错误，因为前端流程已经完成
@@ -395,13 +407,14 @@ const LessonPage = () => {
 
                   return (
                     <PracticeCard
-                      key={index}
+                      key={`${index}-${isReviewMode ? 'review' : 'normal'}`}
                       ref={practiceCardRef}
                       exercise={exercise}
                       lessonId={currentLesson.id}
                       knowledgePointId={currentKnowledgePoint.id}
                       cardIndex={cardIndex}
                       practiceIndex={practiceIndex}
+                      isReviewMode={isReviewMode}
                       onComplete={handlePracticeComplete}
                     />
                   );
@@ -461,13 +474,23 @@ const LessonPage = () => {
         </button>
 
         {isLastKnowledgePoint ? (
-          <button
-            onClick={handleCompleteLesson}
-            disabled={isTransitioning}
-            className="btn btn-primary disabled:opacity-50 disabled:cursor-not-allowed"
-          >
-            {t('lessonPage.lessonCompleted')} ✓
-          </button>
+          isReviewMode ? (
+            <button
+              onClick={() => navigate('/app/dashboard')}
+              disabled={isTransitioning}
+              className="btn btn-secondary disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              结束复习 ✓
+            </button>
+          ) : (
+            <button
+              onClick={handleCompleteLesson}
+              disabled={isTransitioning}
+              className="btn btn-primary disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              {t('lessonPage.lessonCompleted')} ✓
+            </button>
+          )
         ) : (
           <button
             onClick={handleNextKnowledgePoint}

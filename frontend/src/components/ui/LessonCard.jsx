@@ -42,7 +42,7 @@ const LessonCard = ({
     if (isCompleted) {
       return (
         <Button variant="outline" size="sm" asChild>
-          <Link to={`/lesson/${lesson._id}`}>
+          <Link to={`/lesson/${lesson._id}?mode=review`}>
             {t('learning.reviewLesson')}
           </Link>
         </Button>
