@@ -57,6 +57,22 @@ const ReviewPage = () => {
     }
   }
 
+  // 手动切换到下一题
+  const handleNextReview = () => {
+    if (currentReviewIndex < reviews.length - 1) {
+      setCurrentReviewIndex(currentReviewIndex + 1)
+      // 延迟聚焦，确保组件状态已重置
+      setTimeout(() => {
+        if (practiceCardRef.current) {
+          practiceCardRef.current.focus()
+        }
+      }, 100)
+    } else {
+      // 所有复习任务完成，重新加载数据显示统计
+      loadTodayReviews()
+    }
+  }
+
   // 加载今日复习任务
   useEffect(() => {
     loadTodayReviews()
@@ -278,9 +294,12 @@ const ReviewPage = () => {
           cardIndex={currentReviewIndex + 1}
           practiceIndex={currentReviewIndex + 1}
           isReviewMode={true}
-          onComplete={(exerciseData, userAnswer, isCorrect) =>
+          onComplete={(exerciseData, userAnswer, isCorrect) => {
+            // 先提交答案
             handleReviewComplete(currentReview, userAnswer, isCorrect)
-          }
+            // 然后切换到下一题
+            handleNextReview()
+          }}
         />
       )}
 
