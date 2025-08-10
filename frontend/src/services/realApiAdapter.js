@@ -177,35 +177,22 @@ class RealApiAdapter {
 
   async submitReview(reviewData) {
     try {
-      console.log('=== 调试submitReview方法 ===')
-      console.log('reviewData:', reviewData)
-      console.log('typeof reviewData:', typeof reviewData)
-      console.log('reviewData.review_id:', reviewData?.review_id)
-
       // 支持两种调用方式：对象参数和传统参数
       let reviewId, answer, quality, isCorrect;
 
       if (typeof reviewData === 'object' && reviewData.review_id) {
-        console.log('使用新的对象参数方式')
         // 新的对象参数方式
         reviewId = reviewData.review_id;
         answer = reviewData.user_answer;
         quality = reviewData.quality || 3;
         isCorrect = reviewData.is_correct;
       } else {
-        console.log('使用传统的位置参数方式')
         // 传统的位置参数方式（向后兼容）
         reviewId = arguments[0];
         answer = arguments[1];
         quality = arguments[2] || 3;
         isCorrect = undefined;
       }
-
-      console.log('解析后的参数:')
-      console.log('reviewId:', reviewId)
-      console.log('answer:', answer)
-      console.log('quality:', quality)
-      console.log('isCorrect:', isCorrect)
 
       const requestBody = {
         review_id: reviewId,

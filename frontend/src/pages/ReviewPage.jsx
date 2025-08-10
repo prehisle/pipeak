@@ -47,21 +47,8 @@ const ReviewPage = () => {
 
       const response = await reviewAPI.submitReview(submitData)
 
-      // 自动切换到下一个复习任务
-      setTimeout(() => {
-        if (currentReviewIndex < reviews.length - 1) {
-          setCurrentReviewIndex(currentReviewIndex + 1)
-          // 延迟聚焦，确保组件状态已重置
-          setTimeout(() => {
-            if (practiceCardRef.current) {
-              practiceCardRef.current.focus()
-            }
-          }, 100)
-        } else {
-          // 所有复习任务完成，重新加载数据显示统计
-          loadTodayReviews()
-        }
-      }, 2000) // 2秒后自动切换
+      // 移除自动跳转，让用户手动控制复习进度
+      // 用户可以通过"下一题"按钮或Enter键手动切换到下一题
 
       return response
     } catch (error) {
