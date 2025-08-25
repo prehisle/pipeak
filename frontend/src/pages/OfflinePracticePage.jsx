@@ -33,7 +33,6 @@ const OfflinePracticePage = () => {
   useEffect(() => {
     const data = getQuickExperienceData(i18n.language)
     setQuestions(data.questions)
-    console.log(`Quick Experience加载了 ${data.questions.length} 道练习题 (${i18n.language})`)
   }, [i18n.language])
 
   // 监听语言变化，重新翻译当前显示的提示
@@ -75,18 +74,12 @@ const OfflinePracticePage = () => {
         return
       }
 
-      console.log('🔍 开始答案验证...')
-      console.log('用户答案:', userAnswer.trim())
-      console.log('目标答案:', currentQuestion.target_formula.trim())
-
       // 使用增强的答案检查逻辑（包含语义比较和错误检测）
       const result = await checkAdvancedAnswerEquivalence(
         userAnswer.trim(),
         currentQuestion.target_formula.trim(),
         true // 启用语义比较
       )
-
-      console.log('最终验证结果:', result)
 
       setIsCorrect(result.isCorrect)
       setAnsweredQuestions(answeredQuestions + 1)
@@ -302,7 +295,7 @@ const OfflinePracticePage = () => {
             <div className="bg-gray-50 dark:bg-gray-700 p-4 rounded-lg border border-gray-200 dark:border-gray-600 min-h-[80px] max-h-[140px] flex items-center justify-center overflow-auto">
               <div className="text-center w-full">
                 {userAnswer.trim() ? (
-                  <MarkdownRenderer content={userAnswer.includes('$') ? userAnswer : `$${userAnswer}$`} />
+                  <MarkdownRenderer content={userAnswer.includes('$') || userAnswer.includes('\\begin{equation}') ? userAnswer : `$${userAnswer}$`} />
                 ) : (
                   <span className="text-gray-400 dark:text-gray-500 text-sm">{t('offlinePractice.previewPlaceholder')}</span>
                 )}

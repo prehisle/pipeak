@@ -13,57 +13,65 @@ const LaTeXPreview = ({
 
   // 解析混合文本和LaTeX公式
   const parseContent = (content) => {
-    if (!content) return []
+    if (!content) return [];
 
-    const parts = []
-    let currentIndex = 0
+    const parts = [];
+    let currentIndex = 0;
 
-    // 更精确的正则表达式，避免匹配 $...$ 和 $$...$$ 这样的示例文本
-    // 只匹配包含实际数学内容的公式（不是纯省略号或空格）
-    const mathRegex = /(\$\$[^$\s][^$]*[^$\s]\$\$|\$[^$\s][^$]*[^$\s]\$)/g
-    let match
+    // 更新正则表达式以包含 \begin{equation}...\end{equation}
+    const mathRegex = /(\\begin{equation}[\s\S]*?\\end{equation}|\$\$[^$\s][^$]*[^$\s]\$\$|\$[^$\s][^$]*[^$\s]\$)/g;
+    let match;
 
     while ((match = mathRegex.exec(content)) !== null) {
       // 添加数学公式前的普通文本
       if (match.index > currentIndex) {
-        const textPart = content.slice(currentIndex, match.index)
+        const textPart = content.slice(currentIndex, match.index);
         if (textPart.trim()) {
-          parts.push({ type: 'text', content: textPart })
+          parts.push({ type: 'text', content: textPart });
         }
       }
 
       // 添加数学公式
-      const mathContent = match[0]
-      const isDisplayMode = mathContent.startsWith('$$')
-      const formula = isDisplayMode
-        ? mathContent.slice(2, -2)
-        : mathContent.slice(1, -1)
+      const mathContent = match[0];
+      let isDisplayMode = false;
+      let formula = '';
+
+      if (mathContent.startsWith('\\begin{equation}')) {
+        isDisplayMode = true;
+        formula = mathContent.slice('\\begin{equation}'.length, -'\\end{equation}'.length);
+      } else if (mathContent.startsWith('$$')) {
+        isDisplayMode = true;
+        formula = mathContent.slice(2, -2);
+      } else { // $...$
+        isDisplayMode = false;
+        formula = mathContent.slice(1, -1);
+      }
 
       // 检查是否是有效的数学公式（不是纯省略号）
       if (formula.trim() !== '...' && formula.trim() !== '') {
         parts.push({
           type: 'math',
           content: formula,
-          displayMode: isDisplayMode
-        })
+          displayMode: isDisplayMode,
+        });
       } else {
         // 如果是省略号或空内容，作为普通文本处理
-        parts.push({ type: 'text', content: mathContent })
+        parts.push({ type: 'text', content: mathContent });
       }
 
-      currentIndex = match.index + match[0].length
+      currentIndex = match.index + match[0].length;
     }
 
     // 添加剩余的普通文本
     if (currentIndex < content.length) {
-      const textPart = content.slice(currentIndex)
+      const textPart = content.slice(currentIndex);
       if (textPart.trim()) {
-        parts.push({ type: 'text', content: textPart })
+        parts.push({ type: 'text', content: textPart });
       }
     }
 
-    return parts.length > 0 ? parts : [{ type: 'text', content }]
-  }
+    return parts.length > 0 ? parts : [{ type: 'text', content }];
+  };
 
   useEffect(() => {
     if (!containerRef.current) return

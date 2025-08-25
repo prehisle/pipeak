@@ -54,10 +54,10 @@ def init_extensions(app):
     # 初始化CORS - 支持局域网访问
     # 获取当前环境，如果是开发环境则允许所有来源
     if app.config.get('DEBUG', False):
-        # 开发环境：允许所有来源（包括局域网IP）
+        # 开发环境：允许特定来源（包括局域网IP），因为 supports_credentials=True 不能与 origins='*' 一起使用
         CORS(app, resources={
             r"/api/*": {
-                "origins": "*",  # 允许所有来源
+                "origins": ["http://localhost:5173", "http://127.0.0.1:5173"],
                 "methods": ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
                 "allow_headers": ["Content-Type", "Authorization"],
                 "supports_credentials": True
@@ -68,7 +68,6 @@ def init_extensions(app):
         cors_origins = app.config.get('CORS_ORIGINS', [
             "http://localhost:5173", "https://pipeak.vercel.app", "https://pipeak.share4y.cn"
         ])
-        print(f"CORS Origins: {cors_origins}")  # 调试日志
         CORS(app, resources={
             r"/api/*": {
                 "origins": cors_origins,
@@ -84,17 +83,14 @@ def init_extensions(app):
     # JWT错误处理
     @jwt.expired_token_loader
     def expired_token_callback(jwt_header, jwt_payload):
-        print(f"DEBUG JWT: Token expired - header: {jwt_header}, payload: {jwt_payload}")
         return {'message': 'Token has expired'}, 401
 
     @jwt.invalid_token_loader
     def invalid_token_callback(error):
-        print(f"DEBUG JWT: Invalid token - error: {error}")
         return {'message': 'Invalid token'}, 401
 
     @jwt.unauthorized_loader
     def missing_token_callback(error):
-        print(f"DEBUG JWT: Missing token - error: {error}")
         return {'message': 'Authorization token is required'}, 401
 
 
@@ -143,10 +139,9 @@ def create_indexes():
         # 复习集合索引
         db.reviews.create_index([("user_id", 1), ("next_review_date", 1)])
 
-        print("Database indexes created successfully")
-        
     except Exception as e:
-        print(f"Error creating indexes: {e}")
+        # Errors during index creation will be caught by the main app logger.
+        app.logger.error(f"Error creating indexes: {e}")
 
 
 def register_blueprints(app):

@@ -39,7 +39,7 @@ const DashboardPage = () => {
         // 登录用户：从API获取课程数据（已包含进度数据）
         await fetchLessons()
       } catch (error) {
-        console.log('用户未登录，跳过课程数据获取:', error.message)
+        // 用户未登录时，fetchLessons会抛出错误，这里静默处理
       }
     }
 

@@ -89,41 +89,27 @@ const LearningPage = () => {
   }
 
   const findNextLesson = async () => {
-    console.log('DEBUG: findNextLesson 开始，lessons:', lessons)
-
     if (!lessons || lessons.length === 0) {
-      console.log('DEBUG: 没有课程数据，返回 null')
       return null
     }
-
-    console.log('DEBUG: 开始检查课程完成状态，总课程数:', lessons.length)
 
     // 找到第一个未完成的课程
     for (let i = 0; i < lessons.length; i++) {
       const lesson = lessons[i]
-      console.log(`DEBUG: 检查课程 ${i + 1}/${lessons.length}: ${lesson.title} (ID: ${lesson._id})`)
-
       try {
         const status = await learningAPI.getCompletionStatus(lesson._id)
-        console.log(`DEBUG: 课程 ${lesson._id} 状态:`, status)
-
         // 检查课程是否已经完成（用户已标记完成）
         const isCompleted = status.data && status.data.is_already_completed
-        console.log(`DEBUG: 课程 ${lesson._id} 是否已完成:`, isCompleted)
-
         if (!isCompleted) {
-          console.log(`DEBUG: 找到未完成的课程:`, lesson)
           return lesson
         }
       } catch (err) {
         console.error(`检查课程 ${lesson._id} 状态失败:`, err)
         // 如果检查失败，认为课程未完成，返回这个课程
-        console.log(`DEBUG: 由于检查失败，返回课程:`, lesson)
         return lesson
       }
     }
 
-    console.log('DEBUG: 所有课程都已完成，返回 null')
     return null // 所有课程都已完成
   }
 

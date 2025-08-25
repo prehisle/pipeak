@@ -86,7 +86,6 @@ const OAuthCallbackPage = () => {
 
         if (response.ok) {
           // OAuth登录成功
-          console.log('OAuth login successful, setting auth state...');
           await loginWithOAuth(data.access_token, data.user, data.refresh_token);
 
           setStatus('success');
@@ -98,7 +97,6 @@ const OAuthCallbackPage = () => {
 
           // 延迟跳转，让用户看到成功消息
           setTimeout(() => {
-            console.log('Redirecting to:', redirectPath);
             navigate(redirectPath);
           }, 1500); // 减少延迟时间
         } else {

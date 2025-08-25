@@ -263,11 +263,6 @@ def google_login():
         data = request.get_json()
         code = data.get('code')
 
-        # 添加详细的调试信息
-        print(f"[OAuth Debug] Received request from: {request.headers.get('Origin', 'Unknown')}")
-        print(f"[OAuth Debug] Authorization code: {code[:20] if code else 'None'}...")
-        print(f"[OAuth Debug] Redirect URI: {os.environ.get('OAUTH_REDIRECT_URI', 'NOT SET')}")
-
         if not code:
             return jsonify({'error': 'Missing authorization code'}), 400
 

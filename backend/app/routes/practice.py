@@ -255,6 +255,30 @@ def get_practice_list():
         return jsonify({'error': f'获取练习题列表时出错: {str(e)}'}), 500
 
 
+@practice_bp.route('/complete', methods=['POST'])
+@jwt_required()
+def complete_practice():
+    """标记一个练习题为已完成（通常在答对后由前端调用）"""
+    try:
+        data = request.get_json()
+        user_id = get_jwt_identity()
+        lesson_id = data.get('lesson_id')
+        card_index = data.get('card_index')
+
+        if not all([lesson_id, card_index is not None]):
+            return jsonify({'error': '缺少 lesson_id 或 card_index'}), 400
+
+        from app import get_db
+        db = get_db()
+        
+        # 核心逻辑：只更新进度，不处理答案
+        update_user_progress(db, user_id, lesson_id, card_index, is_correct=True)
+
+        return jsonify({'message': '练习已标记为完成'}), 200
+    except Exception as e:
+        return jsonify({'error': f'标记练习完成时出错: {str(e)}'}), 500
+
+
 @practice_bp.route('/stats', methods=['GET'])
 @jwt_required()
 def get_practice_stats():
@@ -340,131 +364,121 @@ def get_practice_stats():
 def check_latex_answer(user_answer, target_answer):
     """检查 LaTeX 答案是否正确 - 支持语义等价性检查"""
 
-    def normalize_latex(latex_str):
-        """增强的LaTeX标准化函数，支持更多等价形式"""
-        if not latex_str:
-            return ""
+def normalize_latex(latex_str):
+    """增强的LaTeX标准化函数，与前端逻辑对齐"""
+    if not latex_str:
+        return ""
 
-        try:
-            # 移除首尾空格
-            latex_str = latex_str.strip()
+    try:
+        # 移除首尾空格
+        latex_str = latex_str.strip()
 
-            # 移除美元符号（如果存在）
-            latex_str = re.sub(r'^\$+|\$+$', '', latex_str)
+        # 1. 标准化数学环境分隔符
+        if latex_str.startswith('\\begin{equation}') and latex_str.endswith('\\end{equation}'):
+            latex_str = latex_str[len('\\begin{equation}'):-len('\\end{equation}')].strip()
+        if latex_str.startswith('$$') and latex_str.endswith('$$'):
+            latex_str = latex_str[2:-2].strip()
+        if latex_str.startswith('\\(') and latex_str.endswith('\\)'):
+            latex_str = latex_str[2:-2].strip()
+        if latex_str.startswith('$') and latex_str.endswith('$'):
+            latex_str = latex_str[1:-1].strip()
 
-            # 标准化上标和下标的花括号
-            # x^2 -> x^{2}, x_1 -> x_{1}
-            latex_str = re.sub(r'\^([a-zA-Z0-9])', r'^{\1}', latex_str)
-            latex_str = re.sub(r'_([a-zA-Z0-9])', r'_{\1}', latex_str)
+        # 2. 标准化括号
+        latex_str = latex_str.replace('\\left', '').replace('\\right', '')
 
-            # 标准化分数形式
-            latex_str = re.sub(r'\\frac\s*\{\s*([^}]+)\s*\}\s*\{\s*([^}]+)\s*\}', r'\\frac{\1}{\2}', latex_str)
+        # 3. 移除常见空格命令
+        spacing_commands = ['\\,', '\\thinspace', '\\:', '\\medspace', '\\;', '\\thickspace', '\\!', '\\negthinspace', '\\negmedspace', '\\negthickspace', '\\quad', '\\qquad']
+        for cmd in spacing_commands:
+            latex_str = latex_str.replace(cmd, ' ')
 
-            # 标准化根号形式
-            latex_str = re.sub(r'\\sqrt\s*\{\s*([^}]+)\s*\}', r'\\sqrt{\1}', latex_str)
+        # 4. 标准化等价命令 (核心变更)
+        # 将各种形式映射到单一的、标准的LaTeX形式
+        equivalence_mappings = {
+            '\\ne': '\\neq',
+            '\\le': '\\leq',
+            '\\ge': '\\geq',
+            '\\to': '\\rightarrow',
+            '\\gets': '\\leftarrow',
+            '\\iff': '\\leftrightarrow',
+            '\\cong': '\\approx',
+            '\\subset': '\\subseteq',
+            '\\supset': '\\supseteq',
+            '\\lt': '<',
+            '\\gt': '>',
+            '\\cdot': '\\times',
+        }
+        # 4. 标准化等价命令 (最终修复方案：使用 re.sub 和精确的负向先行断言)
+        replacement_map = {
+            '\\ne': '\\neq',
+            '\\le': '\\leq',
+            '\\ge': '\\geq',
+            '\\to': '\\rightarrow',
+            '\\gets': '\\leftarrow',
+            '\\iff': '\\leftrightarrow',
+            '\\cong': '\\approx',
+            '\\subset': '\\subseteq',
+            '\\supset': '\\supseteq',
+            '\\lt': '<',
+            '\\gt': '>',
+            '\\cdot': '\\times',
+        }
 
-            # 标准化数学函数名
-            function_mappings = {
-                ' sin ': ' \\sin ',
-                ' cos ': ' \\cos ',
-                ' tan ': ' \\tan ',
-                ' cot ': ' \\cot ',
-                ' sec ': ' \\sec ',
-                ' csc ': ' \\csc ',
-                ' ln ': ' \\ln ',
-                ' log ': ' \\log ',
-                ' exp ': ' \\exp ',
-                ' sqrt ': ' \\sqrt ',
-                # 处理开头和结尾的情况
-                'sin(': '\\sin(',
-                'cos(': '\\cos(',
-                'tan(': '\\tan(',
-                'ln(': '\\ln(',
-                'log(': '\\log(',
-                'exp(': '\\exp(',
-                'sqrt(': '\\sqrt(',
-            }
+        # 按键(old)的长度降序排序，以优先匹配更长的字符串（如 \gets vs \ge）
+        sorted_keys = sorted(replacement_map.keys(), key=len, reverse=True)
+        
+        # 为每个key创建一个带负向先行断言的pattern，确保匹配的是完整命令
+        # 例如，`\ne` 会变成 `\\ne(?![a-zA-Z])`
+        # 这能匹配 `\ne ` 或 `\ne{`，但不会匹配 `\neq` 中的 `\ne`
+        pattern = re.compile("|".join(f"{re.escape(k)}(?![a-zA-Z])" for k in sorted_keys))
 
-            # 添加空格以便匹配
-            latex_str = ' ' + latex_str + ' '
+        # 定义一个清晰的回调函数来执行替换
+        def replacer(match):
+            # match.group(0) 是匹配到的完整字符串，例如 `\ne`
+            return replacement_map[match.group(0)]
 
-            # 应用函数名映射
-            for old, new in function_mappings.items():
-                latex_str = latex_str.replace(old, new)
+        # 执行安全的、非递归的替换
+        latex_str = pattern.sub(replacer, latex_str)
+        
+        # 5. 标准化数学函数名
+        function_mappings = {
+            ' sin ': ' \\sin ', ' cos ': ' \\cos ', ' tan ': ' \\tan ',
+            ' cot ': ' \\cot ', ' sec ': ' \\sec ', ' csc ': ' \\csc ',
+            ' ln ': ' \\ln ', ' log ': ' \\log ', ' exp ': ' \\exp ',
+            'sin(': '\\sin(', 'cos(': '\\cos(', 'tan(': '\\tan(',
+            'ln(': '\\ln(', 'log(': '\\log(', 'exp(': '\\exp(',
+        }
+        latex_str = ' ' + latex_str + ' '
+        for old, new in function_mappings.items():
+            latex_str = latex_str.replace(old, new)
+        latex_str = latex_str.strip()
 
-            # 移除添加的空格
-            latex_str = latex_str.strip()
+        # 6. 结构化标准化
+        latex_str = re.sub(r'\^([a-zA-Z0-9])', r'^{\1}', latex_str)
+        latex_str = re.sub(r'_([a-zA-Z0-9])', r'_{\1}', latex_str)
+        latex_str = re.sub(r'\\frac\s*\{\s*([^}]+)\s*\}\s*\{\s*([^}]+)\s*\}', r'\\frac{\1}{\2}', latex_str)
+        latex_str = re.sub(r'\\sqrt\s*\{\s*([^}]+)\s*\}', r'\\sqrt{\1}', latex_str)
 
-            # 标准化运算符
-            operator_mappings = {
-                '\\cdot': '*',
-                '\\times': '*',
-                '\\div': '/',
-                '\\neq': '!=',
-                '\\leq': '<=',
-                '\\geq': '>=',
-            }
+        # 7. 最终清理
+        # 移除所有空格进行比较。这是在完全对齐前端的复杂语义分析之前，
+        # 实现鲁棒性价比较高的方式。它能处理绝大多数格式问题。
+        latex_str = re.sub(r'\s+', '', latex_str)
 
-            for old, new in operator_mappings.items():
-                latex_str = latex_str.replace(old, new)
+        return latex_str.lower()
 
-            # 标准化希腊字母和特殊符号的空格
-            latex_str = re.sub(r'\\([a-zA-Z]+)\s+', r'\\\1 ', latex_str)
-
-            # 标准化求和、积分等大型运算符
-            latex_str = re.sub(r'\\sum\s*_\s*\{\s*([^}]+)\s*\}\s*\^\s*\{\s*([^}]+)\s*\}', r'\\sum_{\1}^{\2}', latex_str)
-            latex_str = re.sub(r'\\int\s*_\s*\{\s*([^}]+)\s*\}\s*\^\s*\{\s*([^}]+)\s*\}', r'\\int_{\1}^{\2}', latex_str)
-            latex_str = re.sub(r'\\lim\s*_\s*\{\s*([^}]+)\s*\}', r'\\lim_{\1}', latex_str)
-
-            # 标准化矩阵和方程组环境
-            latex_str = re.sub(r'\\begin\s*\{\s*([^}]+)\s*\}', r'\\begin{\1}', latex_str)
-            latex_str = re.sub(r'\\end\s*\{\s*([^}]+)\s*\}', r'\\end{\1}', latex_str)
-
-            # 处理常见的等价形式
-            equivalence_mappings = {
-                # 分数的不同写法
-                '1/2': '\\frac{1}{2}',
-                '(1)/(2)': '\\frac{1}{2}',
-                # 平方根的不同写法
-                'sqrt(x)': '\\sqrt{x}',
-                'sqrt x': '\\sqrt{x}',
-                # 指数的不同写法
-                'e^x': '\\exp(x)',
-                'exp(x)': '\\exp(x)',
-            }
-
-            for old, new in equivalence_mappings.items():
-                latex_str = latex_str.replace(old, new)
-
-            # 最终标准化：移除多余空格但保留必要结构
-            latex_str = re.sub(r'\s+', ' ', latex_str)
-            latex_str = latex_str.strip()
-
-            # 对于最终比较，移除所有空格
-            latex_str = re.sub(r'\s+', '', latex_str)
-
-            return latex_str.lower()
-
-        except Exception as e:
-            print(f"ERROR in normalize_latex: {e}")
-            # 如果出错，回退到简单处理
-            return latex_str.strip().lower().replace(' ', '')
+    except Exception:
+        # 如果出错，回退到简单处理
+        return latex_str.strip().lower().replace(' ', '')
 
     try:
         user_normalized = normalize_latex(user_answer)
         target_normalized = normalize_latex(target_answer)
 
-        print(f"DEBUG: 用户答案: '{user_answer}' -> 标准化: '{user_normalized}'")
-        print(f"DEBUG: 目标答案: '{target_answer}' -> 标准化: '{target_normalized}'")
-
         # 直接比较标准化后的结果
         result = user_normalized == target_normalized
-        print(f"DEBUG: 答案比较结果: {result}")
 
         return result
 
-    except Exception as e:
-        print(f"ERROR: 答案检查出错: {e}")
+    except Exception:
         # 出错时回退到简单比较
         try:
             simple_user = user_answer.strip().lower().replace(' ', '')
@@ -533,3 +547,4 @@ def update_user_progress(db, user_id, lesson_id, card_index, is_correct):
         progress,
         upsert=True
     )
+

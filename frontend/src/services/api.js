@@ -172,15 +172,29 @@ export const learningAPI = {
     return { data: { completed_practice_details: [], pending_practice_details: [] } }
   },
 
-  // 完成课程
-  completeLesson: async (lessonId) => {
-    const adapter = getApiAdapter()
-    if (adapter.completeLesson) {
-      return adapter.completeLesson(lessonId)
+    // 完成课程
+    completeLesson: async (lessonId) => {
+      const adapter = getApiAdapter()
+      if (adapter.completeLesson) {
+        return adapter.completeLesson(lessonId)
+      }
+      // 降级方案：如果适配器不支持，返回成功状态
+      return { message: '课程已完成（前端状态）', completed: true }
+    },
+
+    // 标记练习完成
+    completePractice: async ({ lessonId, cardIndex }) => {
+      try {
+        const response = await api.post('/practice/complete', {
+          lesson_id: lessonId,
+          card_index: cardIndex,
+        });
+        return response.data;
+      } catch (error) {
+        console.error('Error completing practice:', error.response?.data?.message || error.message);
+        throw error;
+      }
     }
-    // 降级方案：如果适配器不支持，返回成功状态
-    return { message: '课程已完成（前端状态）', completed: true }
-  }
 }
 
 // 练习相关的 API

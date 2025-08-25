@@ -276,10 +276,17 @@ const PracticeCard = forwardRef(({
           await learningAPI.submitAnswer({
             lesson_id: lessonId,
             card_index: cardIndex, // cardIndex现在是正确的后端卡片索引
-            user_answer: userAnswer.trim()
-          })
+            user_answer: userAnswer.trim(),
+            is_correct: true // 明确告知后端答案是正确的
+          });
+
+          // 如果答案正确，调用新的API来标记练习完成
+          await learningAPI.completePractice({
+            lessonId,
+            cardIndex,
+          });
         } catch (error) {
-          console.error('提交练习答案失败:', error)
+          console.error('提交或完成练习失败:', error);
           // 即使提交失败，也继续本地流程
         }
       }
@@ -481,7 +488,7 @@ const PracticeCard = forwardRef(({
             <div className="bg-gray-50 dark:bg-gray-800 p-3 rounded-lg border border-gray-200 dark:border-gray-700 min-h-[70px] max-h-[120px] flex items-center justify-center overflow-auto">
               <div className="text-center w-full">
                 {userAnswer.trim() ? (
-                  <MarkdownRenderer content={userAnswer.includes('$') ? userAnswer : `$${userAnswer}$`} />
+                  <MarkdownRenderer content={userAnswer.includes('$') || userAnswer.includes('\\begin{equation}') ? userAnswer : `$${userAnswer}$`} />
                 ) : (
                   <span className="text-gray-400 dark:text-gray-500 text-xs">{t('practice.enterLatex')}</span>
                 )}

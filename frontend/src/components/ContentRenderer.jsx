@@ -63,6 +63,7 @@ const ContentRenderer = ({
     // 按优先级顺序匹配：代码块 > LaTeX > 粗体
     const patterns = [
       { regex: /`([^`]+)`/g, type: 'code' },
+      { regex: /\\begin{equation}([\s\S]*?)\\end{equation}/g, type: 'equation' },
       { regex: /\$\$([^$]+)\$\$/g, type: 'display-math' },
       { regex: /\$([^$]+)\$/g, type: 'inline-math' },
       { regex: /\*\*(.*?)\*\*/g, type: 'bold' }
@@ -197,6 +198,7 @@ const ContentRenderer = ({
         break
 
       case 'display-math':
+      case 'equation':
         element.className = 'block my-3 text-center'
         try {
           katex.render(part.content, element, {
@@ -204,7 +206,7 @@ const ContentRenderer = ({
             throwOnError: false,
             errorColor: errorColor,
             strict: false,
-            trust: false
+            trust: true
           })
         } catch (e) {
           element.textContent = `[${t('contentRenderer.latexError', { content: part.content })}]`

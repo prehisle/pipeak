@@ -149,11 +149,9 @@ const LaTeXEditor = ({
             <label className="block text-sm font-medium text-gray-700 mb-2">
               实时预览
             </label>
-            <LaTeXPreview
-              latex={latex ? (displayMode ? `$$${latex}$$` : `$${latex}$`) : ''}
-              displayMode={false} // 让LaTeXPreview自己处理displayMode
-              className="h-[200px] border border-gray-200 rounded-lg overflow-hidden"
-            />
+            <div className="h-[200px] border border-gray-200 rounded-lg overflow-y-auto p-4">
+              <LaTeXPreview content={latex} />
+            </div>
             {latex && (
               <div className="mt-2 text-xs text-gray-500">
                 <p>字符数: {latex.length}</p>

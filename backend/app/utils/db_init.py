@@ -9,8 +9,6 @@ from app.models.practice import Practice
 def create_sample_lessons():
     """创建示例课程数据"""
 
-    print("创建课程1: 基础环境与上下标")
-
     # 课程1: 基础环境与上下标
     lesson1 = Lesson(
         title="基础环境与上下标",
@@ -45,7 +43,6 @@ def create_sample_lessons():
         topic_tags=["superscript", "basic"]
     )
     if practice1_1.save():
-        print("练习1_1保存成功")
         lesson1.cards.append({
             'type': 'practice',
             'practice_id': str(practice1_1._id)
@@ -62,17 +59,13 @@ def create_sample_lessons():
         topic_tags=["subscript", "basic"]
     )
     if practice1_2.save():
-        print("练习1_2保存成功")
         lesson1.cards.append({
             'type': 'practice',
             'practice_id': str(practice1_2._id)
         })
 
-    if lesson1.save():
-        print("课程1保存成功")
+    lesson1.save()
     
-    print("创建课程2: 分数与根号")
-
     # 课程2: 分数与根号
     lesson2 = Lesson(
         title="分数与根号",
@@ -85,21 +78,14 @@ def create_sample_lessons():
         'content': "分数使用 \\frac{分子}{分母} 命令。例如：\\frac{1}{2} 表示二分之一。"
     })
 
-    if lesson2.save():
-        print("课程2保存成功")
-    
-    print("示例课程数据创建完成！")
-    print(f"已创建 {Lesson.get_total_count()} 个课程")
+    lesson2.save()
 
 
 def init_database():
     """初始化数据库"""
-    print("开始初始化数据库...")
     
     # 创建示例课程
     create_sample_lessons()
-    
-    print("数据库初始化完成！")
 
 
 if __name__ == "__main__":
