@@ -422,6 +422,10 @@ mongodb://user:password@192.168.1.4:27017/?authSource=admin
 
 ## 🙏 致谢
 
+### 🤝 赞助商
+- [跃界星图](https://yuejxt.cn) - 感谢跃界星图对本项目的赞助支持
+
+### 🛠️ 技术栈
 - [KaTeX](https://katex.org/) - 优秀的LaTeX数学公式渲染库
 - [React](https://reactjs.org/) - 强大的前端框架
 - [Flask](https://flask.palletsprojects.com/) - 轻量级的Python Web框架
