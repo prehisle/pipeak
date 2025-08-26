@@ -13,16 +13,23 @@ lessons_bp = Blueprint('lessons', __name__)
 
 @lessons_bp.route('', methods=['GET', 'OPTIONS'])
 @lessons_bp.route('/', methods=['GET', 'OPTIONS'])
-@jwt_required(optional=True)
 def get_lessons():
+    """获取课程列表"""
     # 处理 OPTIONS 预检请求
     if request.method == 'OPTIONS':
-        return '', 200
+        response = jsonify()
+        response.headers.add('Access-Control-Allow-Origin', '*')
+        response.headers.add('Access-Control-Allow-Headers', 'Content-Type,Authorization')
+        response.headers.add('Access-Control-Allow-Methods', 'GET,POST,PUT,DELETE,OPTIONS')
+        return response, 200
     
     # GET 请求需要认证
-    if not get_jwt_identity():
+    from flask_jwt_extended import verify_jwt_in_request
+    try:
+        verify_jwt_in_request()
+    except:
         return jsonify({'message': 'Authorization token is required'}), 401
-    """获取课程列表"""
+    
     try:
         current_user_id = get_jwt_identity()
         user = User.find_by_id(current_user_id)
@@ -49,6 +56,9 @@ def get_lessons():
             'lessons': lessons_data,
             'total_count': len(lessons_data)
         }), 200
+
+    except Exception as e:
+        return jsonify({'message': f'服务器错误: {str(e)}'}), 500
 
     except Exception as e:
         return jsonify({'message': f'服务器错误: {str(e)}'}), 500
