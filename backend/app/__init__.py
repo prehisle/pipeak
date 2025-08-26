@@ -54,10 +54,10 @@ def init_extensions(app):
     # 初始化CORS - 支持局域网访问
     # 获取当前环境，如果是开发环境则允许所有来源
     if app.config.get('DEBUG', False):
-        # 开发环境：允许特定来源（包括局域网IP），因为 supports_credentials=True 不能与 origins='*' 一起使用
+        # 开发环境：允许所有来源（包括局域网IP）
         CORS(app, resources={
             r"/api/*": {
-                "origins": ["http://localhost:5173", "http://127.0.0.1:5173"],
+                "origins": "*",  # 允许所有来源
                 "methods": ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
                 "allow_headers": ["Content-Type", "Authorization"],
                 "supports_credentials": True
@@ -65,22 +65,10 @@ def init_extensions(app):
         })
     else:
         # 生产环境：使用配置文件中的CORS_ORIGINS
-        cors_origins_config = app.config.get('CORS_ORIGINS', [
-            "http://localhost:5173", 
-            "https://pipeak.vercel.app", 
-            "https://pipeak.share4y.cn",
-            "https://pipeak-production.up.railway.app"
+        cors_origins = app.config.get('CORS_ORIGINS', [
+            "http://localhost:5173", "https://pipeak.vercel.app", "https://pipeak.share4y.cn"
         ])
-        
-        # 如果CORS_ORIGINS是字符串，转换为列表
-        if isinstance(cors_origins_config, str):
-            cors_origins = [origin.strip() for origin in cors_origins_config.split(',')]
-        else:
-            cors_origins = cors_origins_config
-            
-        # 添加调试信息
-        app.logger.info(f"CORS Origins configured: {cors_origins}")
-        
+        print(f"CORS Origins: {cors_origins}")  # 调试日志
         CORS(app, resources={
             r"/api/*": {
                 "origins": cors_origins,
