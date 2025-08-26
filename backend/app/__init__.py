@@ -66,7 +66,10 @@ def init_extensions(app):
     else:
         # 生产环境：使用配置文件中的CORS_ORIGINS
         cors_origins = app.config.get('CORS_ORIGINS', [
-            "http://localhost:5173", "https://pipeak.vercel.app", "https://pipeak.share4y.cn"
+            "http://localhost:5173", 
+            "https://pipeak.vercel.app", 
+            "https://pipeak.share4y.cn",
+            "https://pipeak-production.up.railway.app"
         ])
         CORS(app, resources={
             r"/api/*": {
@@ -141,7 +144,7 @@ def create_indexes():
 
     except Exception as e:
         # Errors during index creation will be caught by the main app logger.
-        app.logger.error(f"Error creating indexes: {e}")
+        print(f"Error creating indexes: {e}")
 
 
 def register_blueprints(app):
