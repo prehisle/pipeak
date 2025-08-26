@@ -11,10 +11,17 @@ from app.models.user import User
 lessons_bp = Blueprint('lessons', __name__)
 
 
-@lessons_bp.route('', methods=['GET'])
-@lessons_bp.route('/', methods=['GET'])
-@jwt_required()
+@lessons_bp.route('', methods=['GET', 'OPTIONS'])
+@lessons_bp.route('/', methods=['GET', 'OPTIONS'])
+@jwt_required(optional=True)
 def get_lessons():
+    # 处理 OPTIONS 预检请求
+    if request.method == 'OPTIONS':
+        return '', 200
+    
+    # GET 请求需要认证
+    if not get_jwt_identity():
+        return jsonify({'message': 'Authorization token is required'}), 401
     """获取课程列表"""
     try:
         current_user_id = get_jwt_identity()
