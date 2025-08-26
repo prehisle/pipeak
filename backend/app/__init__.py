@@ -26,6 +26,9 @@ def create_app(config_name=None):
     """
     app = Flask(__name__)
     
+    # 禁用自动重定向，防止 CORS 预检请求被重定向
+    app.url_map.strict_slashes = False
+    
     # 加载配置
     from config import config
     if config_name:

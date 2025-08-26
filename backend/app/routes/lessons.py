@@ -12,7 +12,6 @@ lessons_bp = Blueprint('lessons', __name__)
 
 
 @lessons_bp.route('', methods=['GET', 'OPTIONS'])
-@lessons_bp.route('/', methods=['GET', 'OPTIONS'])
 def get_lessons():
     """获取课程列表"""
     # 处理 OPTIONS 预检请求
