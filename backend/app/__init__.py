@@ -65,12 +65,22 @@ def init_extensions(app):
         })
     else:
         # 生产环境：使用配置文件中的CORS_ORIGINS
-        cors_origins = app.config.get('CORS_ORIGINS', [
+        cors_origins_config = app.config.get('CORS_ORIGINS', [
             "http://localhost:5173", 
             "https://pipeak.vercel.app", 
             "https://pipeak.share4y.cn",
             "https://pipeak-production.up.railway.app"
         ])
+        
+        # 如果CORS_ORIGINS是字符串，转换为列表
+        if isinstance(cors_origins_config, str):
+            cors_origins = [origin.strip() for origin in cors_origins_config.split(',')]
+        else:
+            cors_origins = cors_origins_config
+            
+        # 添加调试信息
+        app.logger.info(f"CORS Origins configured: {cors_origins}")
+        
         CORS(app, resources={
             r"/api/*": {
                 "origins": cors_origins,
