@@ -59,6 +59,53 @@ class RealApiAdapter {
         return Promise.reject(error)
       }
     )
+
+    // 响应拦截器 - 处理token刷新
+    this.api.interceptors.response.use(
+      (response) => {
+        return response
+      },
+      async (error) => {
+        const originalRequest = error.config
+
+        // 如果是401错误且错误信息是token过期，尝试刷新token
+        if (error.response?.status === 401 && !originalRequest._retry) {
+          const errorMessage = error.response?.data?.message
+          
+          // 检查是否是token过期错误
+          if (errorMessage === 'Token has expired') {
+            originalRequest._retry = true
+            
+            try {
+              // 动态导入authStore以避免循环依赖
+              const { useAuthStore } = await import('../stores/authStore')
+              const authStore = useAuthStore.getState()
+              
+              // 尝试刷新token
+              const refreshSuccess = await authStore.refreshAccessToken()
+              
+              if (refreshSuccess) {
+                // 获取新的token并重试原始请求
+                const newToken = useAuthStore.getState().accessToken
+                originalRequest.headers.Authorization = `Bearer ${newToken}`
+                return this.api(originalRequest)
+              } else {
+                // 刷新失败，跳转到登录页面
+                window.location.href = '/login'
+                return Promise.reject(error)
+              }
+            } catch (refreshError) {
+              // 刷新过程中出错，跳转到登录页面
+              console.error('Token refresh failed:', refreshError)
+              window.location.href = '/login'
+              return Promise.reject(error)
+            }
+          }
+        }
+
+        return Promise.reject(error)
+      }
+    )
   }
 
   // 课程相关方法

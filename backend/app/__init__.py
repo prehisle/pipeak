@@ -72,14 +72,12 @@ def init_extensions(app):
             "http://localhost:5173", "https://pipeak.vercel.app", "https://pipeak.share4y.cn"
         ])
         print(f"CORS Origins: {cors_origins}")  # 调试日志
-        CORS(app, resources={
-            r"/api/*": {
-                "origins": cors_origins,
-                "methods": ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
-                "allow_headers": ["Content-Type", "Authorization"],
-                "supports_credentials": True
-            }
-        })
+        # 使用 CORS(app) 而不是 resources 参数，以确保所有路由都正确处理 CORS
+        CORS(app, 
+             origins=cors_origins,
+             methods=["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+             allow_headers=["Content-Type", "Authorization"],
+             supports_credentials=True)
     
     # 初始化JWT
     jwt.init_app(app)
