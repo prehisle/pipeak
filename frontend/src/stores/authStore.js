@@ -4,6 +4,7 @@ import api from '../services/api'
 import { useUserModeStore } from './userModeStore'
 import localStorageManager from '../utils/localStorage'
 import i18n from '../i18n'
+import axios from 'axios'
 
 // 错误信息国际化映射
 const getLocalizedErrorMessage = (errorMessage) => {
@@ -326,11 +327,22 @@ const useAuthStore = create(
         const { refreshToken } = get()
         
         if (!refreshToken) {
+          console.log('No refresh token available')
           return false
         }
         
         try {
-          const response = await api.post('/auth/refresh', {}, {
+          // 创建独立的axios实例，避免被拦截器处理
+          const refreshApi = axios.create({
+            baseURL: api.defaults.baseURL,
+            timeout: 10000,
+            headers: {
+              'Content-Type': 'application/json',
+            }
+          })
+          
+          console.log('Attempting to refresh token...')
+          const response = await refreshApi.post('/auth/refresh', {}, {
             headers: {
               'Authorization': `Bearer ${refreshToken}`
             }
@@ -341,8 +353,10 @@ const useAuthStore = create(
           set({ accessToken: access_token })
           api.defaults.headers.common['Authorization'] = `Bearer ${access_token}`
           
+          console.log('Token refreshed successfully')
           return true
         } catch (error) {
+          console.error('Token refresh failed:', error.response?.data?.message || error.message)
           // 刷新失败，清除所有认证信息
           get().logout()
           return false

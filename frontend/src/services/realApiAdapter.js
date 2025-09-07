@@ -68,12 +68,17 @@ class RealApiAdapter {
       async (error) => {
         const originalRequest = error.config
 
+        // 如果是刷新请求本身，不要进行拦截处理
+        if (originalRequest.url?.includes('/auth/refresh')) {
+          return Promise.reject(error)
+        }
+
         // 如果是401错误且错误信息是token过期，尝试刷新token
         if (error.response?.status === 401 && !originalRequest._retry) {
           const errorMessage = error.response?.data?.message
           
           // 检查是否是token过期错误
-          if (errorMessage === 'Token has expired') {
+          if (errorMessage === 'Token has expired' || errorMessage === 'Authorization token is required') {
             originalRequest._retry = true
             
             try {
@@ -91,12 +96,13 @@ class RealApiAdapter {
                 return this.api(originalRequest)
               } else {
                 // 刷新失败，跳转到登录页面
+                console.log('Redirecting to login due to refresh failure')
                 window.location.href = '/login'
                 return Promise.reject(error)
               }
             } catch (refreshError) {
               // 刷新过程中出错，跳转到登录页面
-              console.error('Token refresh failed:', refreshError)
+              console.error('Token refresh process failed:', refreshError)
               window.location.href = '/login'
               return Promise.reject(error)
             }
